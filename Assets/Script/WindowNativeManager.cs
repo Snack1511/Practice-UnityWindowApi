@@ -95,25 +95,24 @@ public static class WindowNativeManager
         sFlag &= ~(WS.CAPTION | WS.THICKFRAME | WS.MINIMIZEBOX | WS.MAXIMIZEBOX | WS.SYSMENU);
         sFlag |= WS.POPUP;//(WS.OVERLAPPEDWINDOW);
 
+        // 윈도우 상태 설정
         SetWindowLong(hWnd, GWL.STYLE, sFlag);
  
+        // 얜 뭐냐
         //uint exFlag = GetWindowLong(hWnd, GWL.EXSTYLE);
         //exFlag |= (WS_EX.LAYERED);
         //SetWindowLong(hWnd, GWL.EXSTYLE, exFlag);
 
+        //윈도우 위치 및 크기 지정
         SetWindowPos(hWnd, HWND_TOPMOST, windowPosX, windowPosY, windowW, windowH, SWP.FRAMECHANGED);
 
-        //MARGINS margins = new MARGINS { 
-        //    cxLeftWidth = 100,
-        //    cxRightWidth = 100,
-        //    cyTopHeight = 100,
-        //    cyBottomHeight = 100,
-        //};
+        //렌더링 영역 제거
         MARGINS margins = new MARGINS { 
             cxLeftWidth = -1
         };
         DwmExtendFrameIntoClientArea(hWnd, ref margins);
 
+        //윈도우 전체 색상 조절 --> 렌더링 한 결과까지 투명화 처리
         //SetLayeredWindowAttributes(hWnd, 0, 0, LWA.ALPHA);
 
         var buffer = new System.Text.StringBuilder(256);
