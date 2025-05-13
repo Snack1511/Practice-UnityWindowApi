@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.XR;
+using static UnityEngine.Rendering.DebugUI.MessageBox;
 
 public static class WindowNativeManager
 {
-#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+#if (UNITY_STANDALONE_WIN && !UNITY_EDITOR) || DEBUG
     #region Win API
     [DllImport("User32.dll")] public static extern IntPtr GetActiveWindow();
 
@@ -48,6 +50,13 @@ public static class WindowNativeManager
         public const uint POPUP = 0x80000000;
         public const uint VISIBLE = 0x10000000;
         public const uint OVERLAPPEDWINDOW = 0x00CF0000;
+        public const uint BORDER = 0x00800000;
+        public const uint DLGFRAME = 0x00400000;
+        public const uint CAPTION = 0x00C00000;
+        public const uint SYSMENU = 0x00080000;
+        public const uint THICKFRAME = 0x00040000;
+        public const uint MINIMIZEBOX = 0x00020000;
+        public const uint MAXIMIZEBOX = 0x00010000;
     }
 
     public struct WS_EX
@@ -76,23 +85,36 @@ public static class WindowNativeManager
 
     public static IntPtr hWnd;
 
-    public static string SetWindowFrame(int windowW, int windowH) 
+    public static string SetWindowFrame(int windowPosX = 0, int windowPosY = 0, int windowW = 1280, int windowH = 720) 
     {
         string str = "None";
         hWnd = GetActiveWindow();
 
+        // 타이틀바 설정 변경 플래그
         uint sFlag = GetWindowLong(hWnd, GWL.STYLE);
-        sFlag |= (WS.OVERLAPPEDWINDOW);
+        sFlag &= ~(WS.CAPTION | WS.THICKFRAME | WS.MINIMIZEBOX | WS.MAXIMIZEBOX | WS.SYSMENU);
+        sFlag |= WS.POPUP;//(WS.OVERLAPPEDWINDOW);
+
         SetWindowLong(hWnd, GWL.STYLE, sFlag);
+ 
+        //uint exFlag = GetWindowLong(hWnd, GWL.EXSTYLE);
+        //exFlag |= (WS_EX.LAYERED);
+        //SetWindowLong(hWnd, GWL.EXSTYLE, exFlag);
 
-        uint exFlag = GetWindowLong(hWnd, GWL.EXSTYLE);
-        exFlag |= (WS_EX.LAYERED);
-        SetWindowLong(hWnd, GWL.EXSTYLE, exFlag);
+        SetWindowPos(hWnd, HWND_TOPMOST, windowPosX, windowPosY, windowW, windowH, SWP.FRAMECHANGED);
 
-        SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, windowW, windowH, SWP.SHOWWINDOW|SWP.FRAMECHANGED);
-
-        MARGINS margins = new MARGINS { cxLeftWidth = -1 };
+        //MARGINS margins = new MARGINS { 
+        //    cxLeftWidth = 100,
+        //    cxRightWidth = 100,
+        //    cyTopHeight = 100,
+        //    cyBottomHeight = 100,
+        //};
+        MARGINS margins = new MARGINS { 
+            cxLeftWidth = -1
+        };
         DwmExtendFrameIntoClientArea(hWnd, ref margins);
+
+        //SetLayeredWindowAttributes(hWnd, 0, 0, LWA.ALPHA);
 
         var buffer = new System.Text.StringBuilder(256);
         GetWindowText(hWnd, buffer, buffer.Capacity);

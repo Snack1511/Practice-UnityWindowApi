@@ -19,7 +19,7 @@ class BlitPass : ScriptableRenderPass
     class PassData
     {
         public TextureHandle src;
-        public TextureHandle tmp;
+        //public TextureHandle tmp;
         public Material material;
     }
 
@@ -41,10 +41,10 @@ class BlitPass : ScriptableRenderPass
             desc.enableRandomWrite = false;
             desc.graphicsFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm;
 
-            passData.tmp = UniversalRenderer.CreateRenderGraphTexture(renderGraph, desc, "_TmpCopy", true);
+            //passData.tmp = UniversalRenderer.CreateRenderGraphTexture(renderGraph, desc, "_TmpCopy", true);
 
             builder.UseTexture(passData.src, AccessFlags.ReadWrite);
-            builder.UseTexture(passData.tmp, AccessFlags.ReadWrite);
+            //builder.UseTexture(passData.tmp, AccessFlags.ReadWrite);
 
             builder.AllowPassCulling(false);
             builder.AllowGlobalStateModification(true);
@@ -57,11 +57,11 @@ class BlitPass : ScriptableRenderPass
                     return;
                 }
 
-                if (!data.tmp.IsValid())
-                {
-                    Debug.LogError("Temporary texture creation failed!");
-                    return;
-                }
+                //if (!data.tmp.IsValid())
+                //{
+                //    Debug.LogError("Temporary texture creation failed!");
+                //    return;
+                //}
 
                 var CommandBuffer = CommandBufferHelpers.GetNativeCommandBuffer(ctx.cmd);
                 if(CommandBuffer == null)
@@ -70,11 +70,11 @@ class BlitPass : ScriptableRenderPass
                     return;
                 }
 
-                if (data.src.Equals(data.tmp))
-                {
-                    Debug.LogError("BlitPass: Source and temporary textures are the same! This may cause unexpected behavior.");
-                    return;
-                }
+                //if (data.src.Equals(data.tmp))
+                //{
+                //    Debug.LogError("BlitPass: Source and temporary textures are the same! This may cause unexpected behavior.");
+                //    return;
+                //}
                 //Blitter.BlitTexture(CommandBuffer, data.src, data.tmp, );
                 Blitter.BlitTexture(CommandBuffer, data.src, data.src, data.material, 0);
             });
