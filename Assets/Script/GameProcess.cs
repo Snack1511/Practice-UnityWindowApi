@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ public class GameProcess : MonoBehaviour
     private float deltaTime = 0f;
     private int size = 25;
     private Color color = Color.red;
+
+    private bool isOnDebugObject = false;
+    public List<GameObject> debugObjects = new List<GameObject>();
     protected void Awake()
     {
         int rWidth = Display.main.systemWidth;
@@ -26,6 +30,14 @@ public class GameProcess : MonoBehaviour
         deltaTime = (deltaTime >= 1.0f) ? 
             deltaTime - 1.0f : deltaTime;
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
+
+#if DEBUG
+        if (Input.GetKeyDown(KeyCode.Tab)) 
+        {
+            isOnDebugObject = !isOnDebugObject;
+            debugObjects.ForEach(x => x.gameObject.SetActive(isOnDebugObject));
+        }
+#endif
     }
 
     public void OnGUI()

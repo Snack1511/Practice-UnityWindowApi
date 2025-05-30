@@ -1272,7 +1272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3bd35da278bf644cbbb0572440a2f97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugSpeed: 1
+  debugSpeed: 0.5
 --- !u!61 &1675209048
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1391,6 +1391,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugText: {fileID: 341990385}
+  debugObjects:
+  - {fileID: 1987761624}
+  - {fileID: 341990383}
 --- !u!1 &1987761624
 GameObject:
   m_ObjectHideFlags: 0
