@@ -5,13 +5,14 @@ using UnityEngine;
 
 public class PlatformingControllerScript : MonoBehaviour
 {
+    [SerializeField] private MoveController moveController = null;
     private PlatformingModel platformingModel;
-    private Rigidbody2D rigidbody2D;
+    //private Rigidbody2D rigidbody2D;
  
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        SetupRigidbody();
+        moveController.SetupComponent();
         SetupPlatformingModel();
     }
 
@@ -28,7 +29,7 @@ public class PlatformingControllerScript : MonoBehaviour
     {
         if (platformingModel.CanJump())
         {
-            AddForce(Vector3.up, platformingModel.JumpForce);
+            moveController.Move(Vector3.up, platformingModel.JumpForce, Time.deltaTime);
             platformingModel.IncreaseCurJumpCount(-1);
         }
     }
@@ -40,19 +41,7 @@ public class PlatformingControllerScript : MonoBehaviour
             platformingModel.ResetCurJumpCount();
         }
     }
-
-
-    private void AddForce(Vector3 forceDir, float force) 
-    {
-        rigidbody2D.AddForce(forceDir * force, ForceMode2D.Impulse);
-    }
     
-    private void SetupRigidbody()
-    {
-        rigidbody2D ??= GetComponent<Rigidbody2D>();
-        rigidbody2D.gravityScale = 2;        
-    }
-
     private void SetupPlatformingModel()
     {
         platformingModel ??= GetComponent<PlatformingModel>();

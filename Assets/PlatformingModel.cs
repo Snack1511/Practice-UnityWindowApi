@@ -1,9 +1,10 @@
+using ChracterDefine;
 using UnityEngine;
 
 public class PlatformingModel : MonoBehaviour
 {
-    public float JumpForce { get; private set; } = 1;
-
+    [field:SerializeField] public float JumpForce { get; private set; } = 1;
+    private UserCharacterData baseCharacterData;
     private int jumpCount = 1;
     private int curJumpCount = 0;
 

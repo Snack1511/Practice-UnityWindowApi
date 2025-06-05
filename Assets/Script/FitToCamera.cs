@@ -4,13 +4,9 @@ public class FitToCamera : MonoBehaviour
 {
     public Camera targetCamera;
     public float originalObjectWidth = 1f; // 기본 스케일(1,1,1)일 때 오브젝트의 실제 너비값
+    
 
-    void Awake()
-    {
-        FitWidthToViewport();
-    }
-
-    void FitWidthToViewport()
+    public void FitWidthToViewport()
     {
         if (!targetCamera.orthographic)
         {

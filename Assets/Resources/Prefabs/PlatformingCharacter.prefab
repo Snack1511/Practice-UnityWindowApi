@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 5067526682359191844}
   - component: {fileID: 352566810599437645}
   - component: {fileID: 5454964798874702453}
+  - component: {fileID: 6380030650163855365}
   - component: {fileID: 2509472399254086389}
   - component: {fileID: 3726986220090456459}
   m_Layer: 14
@@ -135,6 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c9fcc996d58b774b8d699640816d3ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <JumpForce>k__BackingField: 1
 --- !u!114 &5454964798874702453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,6 +149,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3bd35da278bf644cbbb0572440a2f97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveController: {fileID: 6380030650163855365}
+--- !u!114 &6380030650163855365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8452964489196757308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a402a7e9a8118d43ad867f632dc9ea8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useRigid: 1
 --- !u!50 &2509472399254086389
 Rigidbody2D:
   serializedVersion: 5

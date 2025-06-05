@@ -39,7 +39,7 @@ public class GameProcess : MonoBehaviour
         }
 #endif
     }
-
+#if DEBUG
     public void OnGUI()
     {
         GUIStyle style = new GUIStyle();
@@ -55,4 +55,5 @@ public class GameProcess : MonoBehaviour
 
         GUI.Label(rect, text, style);
     }
+#endif
 }
