@@ -1,33 +1,54 @@
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 public class ContentPlatform : MonoBehaviour
 {
-    //[SerializeField] private Camera targetCamera;
-    //
-    //private UniversalAdditionalCameraData baseAdditionalCameraData;
+    [SerializeField] private float StartWaitingTime = 3.0f;
+
+    [SerializeField] private ObjectSpawner characterSpawner;
+    [SerializeField] private ObjectSpawner obstacleSpawner;
+    
+    private CancellationTokenSource contentStartTaskCTS = null;
     private void Awake()
     {
-        //RegistAddistionalCamera();
+        RequestTaskStartContent();
     }
     
     private void OnDestroy()
     {
-        //RegistAddistionalCamera();
+        CancelTask();
+    }
+    
+    private void RequestTaskStartContent()
+    {
+        contentStartTaskCTS = new CancellationTokenSource();
+        StartContentAsync(contentStartTaskCTS.Token).Forget();
     }
 
-    // private void RegistAddistionalCamera(Camera camera)
-    // {
-    //     baseAdditionalCameraData ??= Camera.main.GetComponent<UniversalAdditionalCameraData>();
-    //     baseAdditionalCameraData.cameraStack.Add(camera);        
-    // }
-    //
-    // private void UnregistAddistionalCamera(Camera camera)
-    // {
-    //     baseAdditionalCameraData ??= Camera.main.GetComponent<UniversalAdditionalCameraData>();
-    //     baseAdditionalCameraData.cameraStack.Add(camera);        
-    // }
+    private void CancelTask()
+    {
+        contentStartTaskCTS.Cancel();
+        contentStartTaskCTS.Dispose();
+        contentStartTaskCTS = null;
+    }
 
+    async private UniTask StartContentAsync(CancellationToken token)
+    {
+        float targetTimer = StartWaitingTime;
 
+        //UI생성
+        
+        //캐릭터 스폰
+        await characterSpawner.StartSpawnAsync(token);
+        
+        //timer대기
+        await UniTask.Delay(TimeSpan.FromSeconds(targetTimer), cancellationToken: token);
+        
+        //장애물 생성
+        await obstacleSpawner.StartSpawnAsync(token);
+    }
+    
+    
 }

@@ -110,6 +110,7 @@ MonoBehaviour:
   spawnObjects:
   - {fileID: 8452964489196757308, guid: 505ef5a486158054e9217dc124e4bceb, type: 3}
   spawnCount: 1
+  spawnDelayTime: 1
 --- !u!1 &2837365711339231354
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,6 +159,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11349c67ba4b573498f515819e73aca2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StartWaitingTime: 3
+  characterSpawner: {fileID: 648660829201959818}
+  obstacleSpawner: {fileID: 8812235165975207816}
 --- !u!1 &5062355853427367956
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,6 +319,7 @@ MonoBehaviour:
   spawnObjects:
   - {fileID: 3651865253142406084, guid: 5554d769945674f428e220f6afbd1e4e, type: 3}
   spawnCount: 1
+  spawnDelayTime: 1
 --- !u!114 &8271540783185837080
 MonoBehaviour:
   m_ObjectHideFlags: 0

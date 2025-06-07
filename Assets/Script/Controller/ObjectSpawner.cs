@@ -15,28 +15,28 @@ public class ObjectSpawner : MonoBehaviour
     [SerializeField] private float spawnDelayTime = 1.0f;
     
     Dictionary<int, List<GameObject>> spawnedPools = new Dictionary<int, List<GameObject>>();
+    //private CancellationTokenSource autoSpawnTaskCTS = null;
     
-    private CancellationTokenSource autoSpawnTaskCTS = null;
     private void Awake()
     {
         // TODO : 임시코드
-        autoSpawnTaskCTS = new CancellationTokenSource();
+        //autoSpawnTaskCTS = new CancellationTokenSource();
         //SpawnObjectByIndex(0, 0);
     }
 
-    private void Start()
-    {
-        SpawnTask(autoSpawnTaskCTS.Token).Forget();
-    }
+    // private void Start()
+    // {
+    //     SpawnTask(autoSpawnTaskCTS.Token).Forget();
+    // }
 
     private void OnDestroy()
     {
-        autoSpawnTaskCTS.Cancel();
-        autoSpawnTaskCTS.Dispose();
-        autoSpawnTaskCTS = null;
+        // autoSpawnTaskCTS.Cancel();
+        // autoSpawnTaskCTS.Dispose();
+        // autoSpawnTaskCTS = null;
     }
 
-    async private UniTask SpawnTask(CancellationToken autoSpawnTaskToken)
+    async public UniTask StartSpawnAsync(CancellationToken autoSpawnTaskToken)
     {
         while (0 != spawnCount)
         {
