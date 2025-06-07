@@ -35,6 +35,8 @@ public class ObstacleObject : MonoBehaviour
 
     private void OnBoundary(Camera targetCamera)
     {
-        gameObject.SetActive(false);
+        Vector3 viewpos = targetCamera.WorldToViewportPoint(transform.position);
+        if(viewpos.x < 0)
+            gameObject.SetActive(false);
     }
 }
