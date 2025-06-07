@@ -5,7 +5,7 @@ public class PlatformingModel : MonoBehaviour
 {
     [field:SerializeField] public float JumpForce { get; private set; } = 1;
     private UserCharacterData baseCharacterData;
-    private int jumpCount = 1;
+    private int jumpCount = 2;
     private int curJumpCount = 0;
 
     public void SetupModel()

@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 
-public class PlatformingControllerScript : MonoBehaviour
+public class PlatformingCharacterObject : MonoBehaviour
 {
     [SerializeField] private MoveController moveController = null;
     private PlatformingModel platformingModel;
@@ -13,6 +13,7 @@ public class PlatformingControllerScript : MonoBehaviour
     void Awake()
     {
         moveController.SetupComponent();
+        moveController.SetIgnoreDamping(true);
         SetupPlatformingModel();
     }
 

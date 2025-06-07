@@ -8,6 +8,8 @@ public class MoveController : MonoBehaviour
     private Transform targetTransform = null;
     private Rigidbody2D targetRigidBody2D = null;
 
+    private bool isIgnoreDamping = false;
+    
     public void SetupComponent()
     {
         if (useRigid)
@@ -18,6 +20,11 @@ public class MoveController : MonoBehaviour
         {
             SetupTransform();
         }
+    }
+
+    public void SetIgnoreDamping(bool isIgnoreDamping)
+    {
+        this.isIgnoreDamping = isIgnoreDamping;
     }
 
     private void SetupRigidbody()
@@ -46,6 +53,12 @@ public class MoveController : MonoBehaviour
     
     private void Force(Vector3 forceDir, float force) 
     {
+        if (isIgnoreDamping)
+        {
+            targetRigidBody2D.linearVelocity = Vector2.zero;
+            targetRigidBody2D.angularVelocity = 0.0f;
+        }
+
         targetRigidBody2D.AddForce(forceDir * force, ForceMode2D.Impulse);
     }
     
