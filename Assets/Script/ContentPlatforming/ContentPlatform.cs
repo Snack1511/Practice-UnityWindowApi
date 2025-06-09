@@ -13,7 +13,7 @@ public class ContentPlatform : MonoBehaviour
     private CancellationTokenSource contentStartTaskCTS = null;
     private void Awake()
     {
-        RequestTaskStartContent();
+        StartTaskStartContent();
     }
     
     private void OnDestroy()
@@ -21,7 +21,7 @@ public class ContentPlatform : MonoBehaviour
         CancelTask();
     }
     
-    private void RequestTaskStartContent()
+    private void StartTaskStartContent()
     {
         contentStartTaskCTS = new CancellationTokenSource();
         StartContentAsync(contentStartTaskCTS.Token).Forget();
