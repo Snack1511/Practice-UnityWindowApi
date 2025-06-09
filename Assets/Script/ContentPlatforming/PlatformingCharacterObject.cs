@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlatformingCharacterObject : MonoBehaviour
 {
     [SerializeField] private MoveController moveController = null;
+    [SerializeField] private SPUM_Prefabs spumPrefabs = null; 
     private PlatformingModel platformingModel;
     //private Rigidbody2D rigidbody2D;
  
@@ -15,6 +16,16 @@ public class PlatformingCharacterObject : MonoBehaviour
         moveController.SetupComponent();
         moveController.SetIgnoreDamping(true);
         SetupPlatformingModel();
+
+        if (spumPrefabs.allListsHaveItemsExist())
+        {
+            spumPrefabs.PopulateAnimationLists();
+        }
+
+        spumPrefabs.OverrideControllerInit();
+        Vector3 curLocalScale = spumPrefabs.transform.localScale;
+        curLocalScale.x = -1;
+        spumPrefabs.transform.localScale = curLocalScale;
     }
 
     // Update is called once per frame
@@ -22,6 +33,7 @@ public class PlatformingCharacterObject : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            test();
             Jump();
         }
     }
@@ -47,5 +59,10 @@ public class PlatformingCharacterObject : MonoBehaviour
     {
         platformingModel ??= GetComponent<PlatformingModel>();
         platformingModel.SetupModel();
+    }
+
+    private void test()
+    {
+        spumPrefabs.PlayAnimation(PlayerState.OTHER, 1);
     }
 }
