@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using MonoExtensions;
+using Framework.Extension.Component;
 
 public class Ground : MonoBehaviour
 {

@@ -1,5 +1,5 @@
 using System;
-using MonoExtensions;
+using Framework.Extension.Component;
 using UnityEngine;
 
 public class SpriteController : MonoBehaviour

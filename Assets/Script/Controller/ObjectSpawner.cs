@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using CollectionExtension;
+using Framework.Extension.Collection;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
