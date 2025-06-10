@@ -47,14 +47,25 @@ public class PlatformingCharacterObject : MonoBehaviour
         }
     }
 
+    private const string COLLISIONTAG_GROUND = "Ground";
+    private const string COLLISIONTAG_OBSTACLE = "Obstacle";
+    
     public void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.collider.CompareTag("Ground"))
+        if (other.collider.CompareTag(COLLISIONTAG_GROUND))
         {
             platformingModel.ResetCurJumpCount();
         }
     }
-    
+
+    public void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag(COLLISIONTAG_OBSTACLE))
+        {
+            Debug.Log("Collision Obstacle");
+        }
+    }
+
     private void SetupPlatformingModel()
     {
         platformingModel ??= GetComponent<PlatformingModel>();

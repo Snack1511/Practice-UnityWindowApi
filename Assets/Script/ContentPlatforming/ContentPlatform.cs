@@ -49,6 +49,4 @@ public class ContentPlatform : MonoBehaviour
         //장애물 생성
         await obstacleSpawner.StartSpawnAsync(token);
     }
-    
-    
 }
