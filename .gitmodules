@@ -1,0 +1,6 @@
+[submodule "Assets/ThirdParty/UnityFramework-Extension"]
+	path = Assets/ThirdParty/UnityFramework-Extension
+	url = https://github.com/Snack1511/UnityFramework-Extension.git
+[submodule "Assets/ThirdParty/UnityFramwork-Module"]
+	path = Assets/ThirdParty/UnityFramwork-Module
+	url = https://github.com/Snack1511/UnityFramwork-Module.git
