@@ -63,6 +63,9 @@ public class PlatformingCharacterObject : MonoBehaviour
         if (other.CompareTag(COLLISIONTAG_OBSTACLE))
         {
             Debug.Log("Collision Obstacle");
+            // 게임 정지 노티파이 트리거
+            // 타이머 정지 호출
+            // 개별 시간 필요할듯? -- > 타이머 매니저..?
         }
     }
 
