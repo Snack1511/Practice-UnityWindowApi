@@ -120,6 +120,17 @@ public static class WindowNativeManager
         str = buffer.ToString();
         return str;
     }
+    
+    public static string GetWindowName() 
+    {
+        string str = "None";
+        hWnd = GetActiveWindow();
+
+        var buffer = new System.Text.StringBuilder(256);
+        GetWindowText(hWnd, buffer, buffer.Capacity);
+        str = buffer.ToString();
+        return str;
+    }
 
     public static bool IsTransparentClick { get; set; } = false;
     public static void SetTransparentClick(bool flag)
