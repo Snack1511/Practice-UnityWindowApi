@@ -7,9 +7,10 @@ namespace Manager
         public static GameProcess ProcessObject { get; private set; }
 
         private const string GameProcessPath = "";
-        public static void Initialize(Loader loader)
+        public static void Initialize()
         {
-            loader.Load<GameProcess>(GameProcessPath, SetProcessObject);
+            Loader<GameProcess> loader = new();
+            loader.Load(GameProcessPath, SetProcessObject);
         }
 
         private static void SetProcessObject(string key, GameProcess gameProcess)
