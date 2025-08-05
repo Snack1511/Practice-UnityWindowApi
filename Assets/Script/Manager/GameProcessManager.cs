@@ -1,4 +1,5 @@
-﻿using UnityEngine.PlayerLoop;
+﻿using Cysharp.Threading.Tasks;
+using UnityEngine.PlayerLoop;
 
 namespace Manager
 {
@@ -6,16 +7,22 @@ namespace Manager
     {
         public static GameProcess ProcessObject { get; private set; }
 
-        private const string GameProcessPath = "";
+        //TODO : ScriptableObject 로드 처리하기
+        private const string GameProcessPath = "Prefabs/GameProcess.prefab";
         public static void Initialize()
         {
-            Loader<GameProcess> loader = new();
-            loader.Load(GameProcessPath, SetProcessObject);
+            Loader<GameProcess> loader = new()
+            {
+                loadPath =  GameProcessPath,
+                completeCallback = SetProcessObject
+            };
+            loader.AsyncLoad().Forget();
         }
 
         private static void SetProcessObject(string key, GameProcess gameProcess)
         {
-            ProcessObject = gameProcess;
+            GameProcess processObject= UnityEngine.GameObject.Instantiate<GameProcess>(gameProcess);
+            ProcessObject = processObject;
         }
     }
 }

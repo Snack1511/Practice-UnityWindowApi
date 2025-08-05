@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Framework.Extension.Collection;
@@ -9,62 +10,82 @@ using UnityEngine;
 namespace Manager
 {
     using System;
-
+    using pattern;
+    
     public interface ILoader
     {
-        public UniTask RequestLoad(CancellationToken token);
+        public UniTask AsyncLoad();
+        public void Clear();
     }
-
     public class Loader<T> : ILoader  where T : UnityEngine.Object
     {
-        private string key;
-        private string loadPath;
-        private Action<string, T> completeCallback;
-        public void Load(string loadPath, Action<string, T> callback)
-        {
-            key = loadPath;
-            completeCallback = callback;
-            
-            LoadManager.RegistLoadTask(key, this);
-        }
         
-        UniTask ILoader.RequestLoad(CancellationToken token)
-        {
-            return LoadProcess(token);
-        }
+        public string loadPath;
+        public Action<string, T> completeCallback;
+
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         
-        private async UniTask LoadProcess(CancellationToken token)
+        public async UniTask AsyncLoad()
         {
-            ResourceRequest request = Resources.LoadAsync(loadPath);
-            await UniTask.WaitUntil(()=>request.isDone, cancellationToken: token);
+            string dirName = Path.GetDirectoryName(loadPath);
+            string cutOffExt = Path.GetFileNameWithoutExtension(loadPath);
+            string path = Path.Combine(dirName, cutOffExt);
             
-            completeCallback?.Invoke(loadPath, request.asset as T);
+            ResourceRequest request = Resources.LoadAsync(path, typeof(T));
+            await UniTask.WaitUntil(()=>request.isDone, cancellationToken: cancellationTokenSource.Token);
+            
+            completeCallback?.Invoke(path, request.asset as T);
+            completeCallback = null;
+            //LoadManager.RemoveLoad(loadPath);
+            Clear();
+        }
+
+        public void Clear()
+        {
+            if (null == cancellationTokenSource) return;
+            
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            cancellationTokenSource = null;
         }
     }
 
-    public static class LoadManager
-    {
-        private static Dictionary<string, CancellationTokenSource> taskMap;
-        public static void Release()
-        {
-            if (taskMap.IsNullOrEmpty())
-                return;
-            
-            foreach (var cancellationTokenSource in taskMap)
-            {
-                cancellationTokenSource.Value.Cancel();
-                cancellationTokenSource.Value.Dispose();
-            }
-            taskMap.Clear();
-        }
-
-        public static void RegistLoadTask(string key, ILoader task)
-        {
-            taskMap ??= new();
-            taskMap.Add(key, new CancellationTokenSource());
-            task.RequestLoad(taskMap[key].Token).Forget();
-            //TODO : 캔슬토큰은 어디서 관리하냐;;
-        }
-
-    }
+    // public static class LoadManager// : Singleton<LoadManager>
+    // {
+    //     private static Dictionary<string, ILoader> taskMap;
+    //     //private CancellationTokenSource  cancellationTokenSource;
+    //     public static void Initialize()
+    //     {
+    //         taskMap = new();
+    //         //cancellationTokenSource = new CancellationTokenSource();
+    //     }
+    //
+    //     public static void Release()
+    //     {
+    //         if (taskMap.IsNullOrEmpty())
+    //             return;
+    //         
+    //         foreach (var loader in taskMap)
+    //         {
+    //             loader.Value.Clear();
+    //         }
+    //         taskMap.Clear();
+    //     }
+    //
+    //     public static void RequestLoad<T>(Loader<T> loader) where T : UnityEngine.Object
+    //     {
+    //         if (!taskMap.ContainsKey(loader.loadPath))
+    //         {
+    //             taskMap.Add(loader.loadPath, loader);
+    //         }
+    //
+    //         taskMap[loader.loadPath].AsyncLoad().Forget();
+    //     }
+    //
+    //     public static void RemoveLoad(string path)
+    //     {
+    //         if(taskMap.ContainsKey(path))
+    //             taskMap.Remove(path);
+    //     }
+    // }
 }
