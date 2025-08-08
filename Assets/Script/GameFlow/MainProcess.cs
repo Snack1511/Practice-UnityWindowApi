@@ -10,8 +10,16 @@ public static class MainProcess
         
         
         //해상도 설정
+        
+        //스태틱 클래스 매니저 초기화
         Manager.GameProcessManager.Initialize();
         Manager.ResolutionManager.Initialize();
+        
+        //싱글톤 클래스 매니저 초기화
+        
+        //모노 싱글톤 클래스 매니저 초기화
+        Manager.ContentManager.Instance.Initialize();
+        
         //씬 전환 -> StartScene
         
         //프로그램 흐름 등록
