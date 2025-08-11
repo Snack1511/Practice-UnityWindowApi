@@ -20,11 +20,12 @@ namespace Manager
         
         public void Initialize()
         {
-            AddContent(EContentType.EDungeon);
-            AddContent(EContentType.EVillage);
-            AddContent(EContentType.EMine);
+            AddContent(EContentType.EDungeon, new ContentInitInfo());
+            AddContent(EContentType.EVillage, new ContentInitInfo());
+            AddContent(EContentType.EMine, new ContentInitInfo());
         }
         
+        // Scene초기화 타이밍때 호출하면 될듯?
         /// <summary>
         /// 컨텐츠 활성화시 호출
         /// </summary>
@@ -41,7 +42,7 @@ namespace Manager
             contentObject.ActiveContent(active);
         }
 
-        private void AddContent(EContentType contentType)
+        private void AddContent(EContentType contentType, ContentInitInfo contentInitInfo)
         {
             if (contents.ContainsKey(contentType))
             {
@@ -55,7 +56,7 @@ namespace Manager
             
             ContentObject targetComponent = go.AddComponent<ContentObject>();
             contents.Add(contentType, targetComponent);
-            targetComponent.CreateContentController(contentType);
+            targetComponent.CreateContentController(contentType, contentInitInfo);
         }
     }
 }

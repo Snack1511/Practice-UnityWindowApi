@@ -1,13 +1,18 @@
 ﻿namespace Script.GameContent
 {
+    public class ContentInitInfo
+    {
+        
+    }
+
     public abstract class ContentBase
     {
         /// <summary>
         /// 데이터 초기화 및 컨텐츠 초기 설정시 확장 필요
         /// </summary>
-        public virtual void InitalizeContent()
+        public virtual void InitalizeContent(ContentInitInfo  info)
         {
-
+            
         }
         
         /// <summary>
@@ -15,7 +20,7 @@
         /// </summary>
         public virtual void ReleaseContent()
         {
-
+            
         }
 
         /// <summary>

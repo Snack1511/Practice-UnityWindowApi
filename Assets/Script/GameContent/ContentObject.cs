@@ -8,9 +8,9 @@ namespace Script.GameContent
         public EContentType ContentType { get; private set; }
         private ContentBase contentController;
 
-        public void CreateContentController(EContentType eContentType)
+        public void CreateContentController(EContentType eContentType, ContentInitInfo contentInitInfo)
         {
-            ContentType =  eContentType;
+            ContentType = eContentType;
             contentController = (ContentType) switch
             {
                 EContentType.EDungeon => new ContentDungeon(),
@@ -18,13 +18,14 @@ namespace Script.GameContent
                 EContentType.EMine => new ContentMine(),
                 _ => null,
             };
+
+            contentController.InitalizeContent(contentInitInfo);
         }
 
         public void ActiveContent(bool active)
         {
             if (active)
             {
-                contentController.InitalizeContent();
                 contentController.SetupContentUI();
             }
             else
