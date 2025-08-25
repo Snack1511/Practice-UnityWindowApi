@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Script.GameFlow.GameScene;
+using UnityEngine;
 
 public static class MainProcess
 {
@@ -16,11 +17,13 @@ public static class MainProcess
         Manager.ResolutionManager.Initialize();
         
         //싱글톤 클래스 매니저 초기화
+        Manager.SceneManager.Instance.Initialize();
         
         //모노 싱글톤 클래스 매니저 초기화
         Manager.ContentManager.Instance.Initialize();
         
         //씬 전환 -> StartScene
+        Manager.SceneManager.Instance.ChangeScene(ESceneType.StartScene);
         
         //프로그램 흐름 등록
         Application.quitting += OnApplicationQuit;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using pattern;
 using Script.GameFlow.GameScene;
 using UnityEngine;
@@ -23,30 +24,34 @@ namespace Manager
                 Debug.LogError($"Failed to add scene {sceneType}");
         }
 
-        public void ChangeScene(ESceneType SceneType)
+        public void ChangeScene(ESceneType SceneType, Action SceneLoadComplete = null)
         {
             if (scenes.ContainsKey(SceneType))
             {
-                if (prevScene == currentScene) return;
+                if (SceneType == currentScene) return;
                 
                 prevScene = currentScene;
                 currentScene = SceneType;
-                
-                //로딩 씬 활성화 및 로더 등록
-                
-                //리소스 로딩 동안, 로딩UI노출
-                
-                //다음 씬의 리소스 로딩 후 씬 전환
-                
-                //이전 씬의 리소스 정리
-                if(prevScene != ESceneType.None)
-                    scenes[prevScene].Exit();
-                
-                //현재 씬의 리소스 캐싱
-                if(currentScene != ESceneType.None)
-                    scenes[currentScene].Enter();
+                if (scenes.TryGetValue(ESceneType.LoadingScene, out SceneBase loadSceneBase))
+                {
+                    LoadingScene loadScene = loadSceneBase as LoadingScene;
+                    SceneBase curSceneBase = scenes[SceneType];
+                    if (scenes.TryGetValue(prevScene, out SceneBase prevSceneBase))
+                    {
+                        loadScene.LoadScene(prevSceneBase, curSceneBase, SceneLoadComplete);
+                    }
+                    else
+                    {
+                        loadScene.LoadScene(null, curSceneBase, SceneLoadComplete);
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"not found loadScene");
+                }
             }
-            else Debug.Log($"Not found scene: {SceneType}");
+            else 
+                Debug.Log($"Not found scene: {SceneType}");
         }
     }
 }

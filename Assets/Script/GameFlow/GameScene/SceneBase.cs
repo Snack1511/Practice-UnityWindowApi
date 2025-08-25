@@ -1,4 +1,7 @@
-﻿namespace Script.GameFlow.GameScene
+﻿using Cysharp.Threading.Tasks;
+using UnityEngine;
+
+namespace Script.GameFlow.GameScene
 {
     public enum ESceneType
     {
@@ -19,35 +22,28 @@
     public abstract class SceneBase : IState
     {
         public ESceneType SceneType { get; protected set; }
+        protected SceneBase(ESceneType SceneType) { this.SceneType = SceneType; }
 
-        protected SceneBase(ESceneType SceneType)
-        {
-            this.SceneType = SceneType;
-        }
+        public void Enter() { EnterScene(); }
+        public void Exit() { ExitScene(); }
+        public void Update() { UpdateScene(); }
 
-        public void Enter()
-        {
-            EnterScene();
-        }
+        protected virtual void EnterScene() { }
 
-        public void Exit()
-        {
-            ExitScene();
-        }
-
-        public void Update()
-        {
-            UpdateScene();
-        }
-
-        protected virtual void EnterScene()
-        {
-        }
         protected virtual void ExitScene()
         {
+            ReleaseResource();
         }
-        protected virtual void UpdateScene()
+        protected virtual void UpdateScene() { }
+
+        public virtual async UniTask OnLoadResource()
         {
+        }
+        public virtual async UniTask OnLoadComplete() { }
+
+        public virtual void ReleaseResource()
+        {
+            
         }
     }
 }
