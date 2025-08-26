@@ -1,15 +1,26 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using Cysharp.Threading.Tasks;
 using Manager;
+using Script.Define;
 using UnityEngine;
 
 namespace Script.GameFlow.GameScene
 {
     public class TestScene : SceneBase
     {
-        public override async UniTask OnLoadResource()
+        public override async UniTask OnLoadResource(IProgress<LoadingProgressResult> progress)
         {
             Debug.Log("TestScene::LoadResource Start");
-            await UniTask.WaitForSeconds(10.0f);
+            for (int i = 0; i < 1000; ++i)
+            {
+                float duration = 0.001f;
+                float amount = ((float)(i+1) / 1000);
+                progress?.Report(new LoadingProgressResult()
+                {
+                    amount = amount
+                });
+                await UniTask.WaitForSeconds(duration);                
+            }
             Debug.Log("TestScene::LoadResource End");
         }
 

@@ -1,4 +1,6 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using Cysharp.Threading.Tasks;
+using Script.Define;
 using UnityEngine;
 
 namespace Script.GameFlow.GameScene
@@ -33,10 +35,11 @@ namespace Script.GameFlow.GameScene
         protected virtual void ExitScene()
         {
             ReleaseResource();
+            Resources.UnloadUnusedAssets();
         }
         protected virtual void UpdateScene() { }
 
-        public virtual async UniTask OnLoadResource()
+        public virtual async UniTask OnLoadResource(IProgress<LoadingProgressResult> progress)
         {
         }
         public virtual async UniTask OnLoadComplete() { }
