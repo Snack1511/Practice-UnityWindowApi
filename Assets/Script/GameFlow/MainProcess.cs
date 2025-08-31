@@ -7,6 +7,11 @@ public static class MainProcess
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
     public static void OnLoadyBeforeSplashScreen()
     {
+        
+        //프로그램 흐름 등록
+        Application.quitting += OnApplicationQuit;
+        Application.focusChanged += OnApplicationChangedFocus;
+        
         //리소스 프리 로드
         
         
@@ -21,13 +26,12 @@ public static class MainProcess
         
         //모노 싱글톤 클래스 매니저 초기화
         Manager.ContentManager.Instance.Initialize();
-        
-        //씬 전환 -> StartScene
-        Manager.SceneManager.Instance.ChangeScene(ESceneType.StartScene);
-        
-        //프로그램 흐름 등록
-        Application.quitting += OnApplicationQuit;
-        Application.focusChanged += OnApplicationChangedFocus;
+    }
+    
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    public static void OnLoadAfterSceneLoad()
+    {
+        Manager.SceneManager.Instance.OnCallFirstLoadedSceneAfter();
     }
 
     //프로그램 종료점

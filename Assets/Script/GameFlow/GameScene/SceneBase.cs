@@ -14,39 +14,46 @@ namespace Script.GameFlow.GameScene
         TestScene,
     }
 
-    public interface IState
+
+    public interface ISceneInfoContext
     {
-        void Enter();
-        void Exit();
-        void Update();
     }
 
-    public abstract class SceneBase : IState
+    public abstract class SceneBase
     {
         public ESceneType SceneType { get; protected set; }
         protected SceneBase(ESceneType SceneType) { this.SceneType = SceneType; }
+        private bool enterScene = false;
 
-        public void Enter() { EnterScene(); }
-        public void Exit() { ExitScene(); }
-        public void Update() { UpdateScene(); }
-
-        protected virtual void EnterScene() { }
-
-        protected virtual void ExitScene()
+        private ISceneInfoContext sceneInfoContext = null;
+        
+        public virtual void EnterScene(ISceneInfoContext context)
         {
+            enterScene = true;
+            sceneInfoContext = context;
+        }
+
+        public virtual void ExitScene()
+        {
+            sceneInfoContext = null;
+            enterScene = false;
+            
             ReleaseResource();
             Resources.UnloadUnusedAssets();
         }
-        protected virtual void UpdateScene() { }
+        public virtual void UpdateScene() { }
 
-        public virtual async UniTask OnLoadResource(IProgress<LoadingProgressResult> progress)
-        {
-        }
-        public virtual async UniTask OnLoadComplete() { }
-
+        public virtual async UniTask OnLoadResourceAsync(IProgress<LoadingProgressResult> progress) { }
+        public virtual void OnLoadComplete() { }
+        
         public virtual void ReleaseResource()
         {
             
+        }
+
+        public virtual bool IsActiveScene()
+        {
+            return enterScene;
         }
     }
 }

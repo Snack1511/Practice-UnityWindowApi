@@ -8,7 +8,7 @@ namespace Script.GameFlow.GameScene
 {
     public class TestScene : SceneBase
     {
-        public override async UniTask OnLoadResource(IProgress<LoadingProgressResult> progress)
+        public override async UniTask OnLoadResourceAsync(IProgress<LoadingProgressResult> progress)
         {
             Debug.Log("TestScene::LoadResource Start");
             for (int i = 0; i < 1000; ++i)
@@ -24,18 +24,16 @@ namespace Script.GameFlow.GameScene
             Debug.Log("TestScene::LoadResource End");
         }
 
-        public override async UniTask OnLoadComplete()
+        public override void OnLoadComplete()
         {
-            Debug.Log("TestScene::LoadComplete Start");
-            await UniTask.WaitForSeconds(10.0f);
-            Debug.Log("TestScene::LoadComplete End");
+            Debug.Log("TestScene::LoadComplete");
         }
         public TestScene(ESceneType SceneType) : base(SceneType)
         {
         }
-        protected override void EnterScene()
+        public override void EnterScene(ISceneInfoContext context)
         {
-            base.EnterScene();
+            base.EnterScene(context);
             Debug.Log("TestScene::EnterScene Enter");
         }
     }

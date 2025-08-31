@@ -6,9 +6,14 @@ using UnityEngine;
 
 namespace Script.GameFlow.GameScene
 {
+    public class StartSceneInfoContext :  ISceneInfoContext
+    {
+        
+    }
+
     public class StartScene : SceneBase
     {
-        public override async UniTask OnLoadResource(IProgress<LoadingProgressResult> progress)
+        public override async UniTask OnLoadResourceAsync(IProgress<LoadingProgressResult> progress)
         {
             Debug.Log("StartScene::LoadResource Start");
 
@@ -24,22 +29,20 @@ namespace Script.GameFlow.GameScene
             Debug.Log("StartScene::LoadResource End");
         }
 
-        public override async UniTask OnLoadComplete()
+        public override void OnLoadComplete()
         {
-            Debug.Log("StartScene::LoadComplete Start");
-            await UniTask.WaitForSeconds(10.0f);
-            Debug.Log("StartScene::LoadComplete End");
+            Debug.Log("StartScene::LoadComplete");
         }
         
         public StartScene(ESceneType SceneType) : base(SceneType)
         {
         }
 
-        protected override void EnterScene()
+        public override void EnterScene(ISceneInfoContext context)
         {
-            base.EnterScene();
+            base.EnterScene(context);
             Debug.Log("StartScene::EnterScene Enter");
-            SceneManager.Instance.ChangeScene(ESceneType.TestScene);
+            SceneManager.Instance.ChangeScene(ESceneType.TestScene, null, null, true);
         }
     }
 }
