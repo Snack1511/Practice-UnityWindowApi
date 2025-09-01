@@ -82,11 +82,31 @@ namespace Script.GameFlow.GameScene
             UpdateCurrentSceneType();
         }
 
+        public void ChangeSceneSingle(ESceneType SceneType, ISceneInfoContext sceneInfoContext = null,
+            Action SceneLoadComplete = null)
+        {
+            if (currentScene == SceneType) return;
+            
+            if (scenes.TryGetValue(SceneType, out SceneBase targetSceneInstance))
+            {                        
+                nextScene = SceneType;
+                SceneManager.LoadScene(nextScene.ToString(), LoadSceneMode.Single);
+                targetSceneInstance.EnterScene(sceneInfoContext);
+                SceneLoadComplete?.Invoke();
+                UpdateCurrentSceneType();
+            }
+            else
+            {
+                nextScene = ESceneType.None;
+            }
+
+        }
+
         private void UpdateCurrentSceneType()
         {
             if (ESceneType.None != nextScene)
             {
-                currentScene = nextScene;
+                SetCurrentScene(nextScene);
                 nextScene = ESceneType.None;
             }
         }
@@ -134,9 +154,14 @@ namespace Script.GameFlow.GameScene
         {
             if (scenes.TryGetValue(sceneType, out SceneBase targetSceneInstance))
             {
-                currentScene = sceneType;
+                SetCurrentScene(sceneType);
                 targetSceneInstance.EnterScene(sceneInfoContext);
             }
+        }
+
+        public void SetCurrentScene(ESceneType SceneType)
+        {
+            currentScene = SceneType;
         }
     }
 }

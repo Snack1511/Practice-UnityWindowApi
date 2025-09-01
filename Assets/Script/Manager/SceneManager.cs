@@ -30,22 +30,7 @@ namespace Manager
         //첫 씬 로드 이후 호출
         public void OnCallFirstLoadedSceneAfter()
         {
-            Scene curScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-            if (null != curScene)
-            {
-                ESceneType sceneType = Enum.Parse<ESceneType>(curScene.name);
-                if (sceneType == ESceneType.StartScene)
-                {
-                    sceneController.ChangeSceneWithOutLoadSceneObject(sceneType,  new StartSceneInfoContext());
-                }
-                else
-                {
-                    //씬 전환 -> StartScene
-                    Manager.SceneManager.Instance.ChangeScene(ESceneType.StartScene,
-                        new StartSceneInfoContext(), null, true);
-                }
-
-            }
+            sceneController.ChangeSceneSingle(ESceneType.StartScene, new StartSceneInfoContext());
         }
 
         private void RegistScenes()
