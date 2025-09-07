@@ -23,6 +23,8 @@ public static class MainProcess
         
         //싱글톤 클래스 매니저 초기화
         Manager.SceneManager.Instance.Initialize();
+        Manager.ResourcesManager.Instance.Initialize();
+        Manager.TableManager.Instance.Initialize();
         
         //모노 싱글톤 클래스 매니저 초기화
         Manager.ContentManager.Instance.Initialize();

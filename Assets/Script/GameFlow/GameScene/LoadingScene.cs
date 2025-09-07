@@ -51,14 +51,14 @@ namespace Script.GameFlow.GameScene
             uiLoading.ActiveLoadingUI();
             
             //불러올 씬 활성화
-            await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneInstance.SceneType.ToString(), LoadSceneMode.Additive);
+            await SceneManager.LoadSceneAsync(sceneInstance.SceneType.ToString(), LoadSceneMode.Additive);
             await sceneInstance.OnLoadResourceAsync(new Progress<LoadingProgressResult>((result) =>
             {
                 uiLoading.SetLoadingProgress(result);
             }));
             
-            Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneInstance.SceneType.ToString());
-            UnityEngine.SceneManagement.SceneManager.SetActiveScene(scene);
+            Scene scene = SceneManager.GetSceneByName(sceneInstance.SceneType.ToString());
+            SceneManager.SetActiveScene(scene);
             sceneInstance.OnLoadComplete();
             loadComplete?.Invoke();
         }

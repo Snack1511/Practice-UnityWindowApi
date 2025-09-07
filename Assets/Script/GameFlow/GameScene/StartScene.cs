@@ -36,6 +36,7 @@ namespace Script.GameFlow.GameScene
         
         public StartScene(ESceneType SceneType) : base(SceneType)
         {
+            
         }
 
         public override void EnterScene(ISceneInfoContext context)

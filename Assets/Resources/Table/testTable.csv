@@ -1,0 +1,5 @@
+index,name,level,attackRange,skillIDs,skillTags
+1,"Warrior",10,1.5,"101,102,105","Melee,Physical,Stun"
+2,"Mage",12,8.0,"201,202","Magic,Fire,Area"
+3,"Archer",11,10.0,"301,305","Ranged,Physical"
+4,"Healer",9,6.5,"401,401","Support,Heal"
