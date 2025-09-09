@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+﻿using System.Collections.Generic;
 using pattern;
 using Script.GameContent;
 using UnityEngine;
 
-namespace Manager
+namespace Script.Manager.MonoSingleManager
 {
     public enum EContentType
     {

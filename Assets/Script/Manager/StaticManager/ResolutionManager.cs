@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Manager
+﻿namespace Script.Manager.StaticManager
 {
     public static class ResolutionManager
     {

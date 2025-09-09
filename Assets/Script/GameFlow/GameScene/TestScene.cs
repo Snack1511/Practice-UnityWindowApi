@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using Manager;
 using Script.Define;
+using Script.Manager.SingletonManager;
 using UnityEngine;
 
 

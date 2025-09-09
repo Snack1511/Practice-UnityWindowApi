@@ -1,9 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
-using UnityEngine.PlayerLoop;
+using Manager;
+using Script.GameFlow;
 
-namespace Manager
+namespace Script.Manager.StaticManager
 {
-    //이상한대?
     public static class GameProcessManager
     {
         public static GameProcess ProcessObject { get; private set; }

@@ -1,15 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using Cysharp.Threading.Tasks;
+using pattern;
+using UnityEngine;
 
-namespace Manager
+namespace Script.Manager.SingletonManager
 {
-    using pattern;
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using Cysharp.Threading.Tasks;
-    using UnityEngine;
-
     public abstract class TableDataBase
     {
         // CSV의 'index' 컬럼과 매칭됩니다.

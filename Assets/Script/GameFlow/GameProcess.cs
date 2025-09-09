@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GameProcess : MonoBehaviour
+namespace Script.GameFlow
 {
+    //GameProcess에 묶여 있는 UnityObject용 Component
+    public class GameProcess : MonoBehaviour
+    {
     
+    }
 }

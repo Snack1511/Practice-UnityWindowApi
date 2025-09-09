@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using pattern;
 using Script.GameFlow.GameScene;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-namespace Manager
+namespace Script.Manager.SingletonManager
 {
     public class SceneManager : Singleton<SceneManager>
     {

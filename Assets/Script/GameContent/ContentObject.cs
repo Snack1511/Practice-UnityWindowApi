@@ -1,4 +1,5 @@
 ﻿using Manager;
+using Script.Manager.MonoSingleManager;
 using UnityEngine;
 
 namespace Script.GameContent
