@@ -101,7 +101,17 @@ namespace Script.GameFlow.GameScene
         {
             base.UpdateScene();
             
+            //세이브 테스트용 더미 하나 만들고
+            // 저장 해보고
+            // 로드해보고
+            // Model이랑 연결해보고
+            // Notify테스트 해보면 끝날 듯?
+            
             //콘텐츠 매니저에서 콘텐츠 활성화
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                
+            }
         }
         
         

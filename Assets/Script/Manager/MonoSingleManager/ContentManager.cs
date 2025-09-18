@@ -23,6 +23,10 @@ namespace Script.Manager.MonoSingleManager
             AddContent(EContentType.EMine, new ContentInitInfo());
         }
         
+        public void Release()
+        {
+            contents.Clear();
+        }
         // Scene초기화 타이밍때 호출하면 될듯?
         /// <summary>
         /// 컨텐츠 활성화시 호출
@@ -56,5 +60,6 @@ namespace Script.Manager.MonoSingleManager
             contents.Add(contentType, targetComponent);
             targetComponent.CreateContentController(contentType, contentInitInfo);
         }
+
     }
 }

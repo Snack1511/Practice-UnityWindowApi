@@ -20,6 +20,10 @@ namespace Script.Manager.StaticManager
             loader.AsyncLoad().Forget();
         }
 
+        public static void Release()
+        {
+        }
+
         private static void SetProcessObject(string key, GameProcess gameProcess)
         {
             GameProcess processObject= UnityEngine.GameObject.Instantiate<GameProcess>(gameProcess);

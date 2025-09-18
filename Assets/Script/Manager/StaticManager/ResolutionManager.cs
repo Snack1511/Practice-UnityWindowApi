@@ -10,5 +10,9 @@
         string str = WindowNativeManager.SetWindowFrame(0, 0, rWidth , rHeight);
 #endif
         }
+
+        public static void Release()
+        {
+        }
     }
 }

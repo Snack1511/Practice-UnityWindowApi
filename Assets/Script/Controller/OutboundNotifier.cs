@@ -23,14 +23,14 @@ public class OutboundNotifier : MonoBehaviour
     private List<int> unregistList = new();
     private void Awake()
     {
-        NotifyLocator.RegistLocate<OutboundRegister>(RegistBoundCheckTransform);
-        NotifyLocator.RegistLocate<OutboundUnregister>(UnRegistBoundCheckTransform);
+        EventBusLocater.RegistService<OutboundRegister>(RegistBoundCheckTransform);
+        EventBusLocater.RegistService<OutboundUnregister>(UnRegistBoundCheckTransform);
     }
 
     private void OnDestroy()
     {
-        NotifyLocator.UnRegistLocate<OutboundRegister>(RegistBoundCheckTransform);
-        NotifyLocator.UnRegistLocate<OutboundUnregister>(UnRegistBoundCheckTransform);
+        EventBusLocater.UnRegistLocate<OutboundRegister>(RegistBoundCheckTransform);
+        EventBusLocater.UnRegistLocate<OutboundUnregister>(UnRegistBoundCheckTransform);
     }
 
     private void LateUpdate()
