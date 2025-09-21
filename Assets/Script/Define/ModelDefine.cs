@@ -1,4 +1,5 @@
 ﻿using System;
+using Script.Manager.SingletonManager;
 
 namespace Script.Define
 {
@@ -19,12 +20,32 @@ namespace Script.Define
 
     namespace SaveDefine
     {
+        public static class SaveConstructor
+        {
+            public static SaveBase CreateSaveBase(ESaveType saveType)
+            {
+                SaveBase returnData = (saveType) switch
+                {
+                    ESaveType.Test=> new TestSaveData(),
+                    _ => null,
+                };
+                return returnData;
+            }
+        }
+
         public abstract class SaveBase
         {
-            //Notify
-            public virtual SaveBase Clone()
+            
+
+        }
+
+        [Serializable]
+        public class TestSaveData : SaveBase
+        {
+            public string test;
+            public void SetTestString(string text)
             {
-                return null;
+                test = text;
             }
         }
     }

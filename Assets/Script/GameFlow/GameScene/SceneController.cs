@@ -89,15 +89,15 @@ namespace Script.GameFlow.GameScene
             
             if (scenes.TryGetValue(SceneType, out SceneBase targetSceneInstance))
             {                        
-                nextScene = SceneType;
-                SceneManager.LoadScene(nextScene.ToString(), LoadSceneMode.Single);
+                currentScene = SceneType;
+                SceneManager.LoadScene(currentScene.ToString(), LoadSceneMode.Single);
                 targetSceneInstance.EnterScene(sceneInfoContext);
                 SceneLoadComplete?.Invoke();
                 UpdateCurrentSceneType();
             }
             else
             {
-                nextScene = ESceneType.None;
+                currentScene = ESceneType.None;
             }
 
         }

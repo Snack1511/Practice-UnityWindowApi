@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using pattern;
 using Script.Define.ModelDefine;
 using Script.Define.SaveDefine;
-using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 
 namespace Script.Manager.SingletonManager
 {
     public enum ESaveType
     {
+        Test
     }
 
     //컨텐츠 별로
@@ -31,7 +32,10 @@ namespace Script.Manager.SingletonManager
             try
             {
                 SaveBase saveBase = saveDict.GetValueOrDefault(saveType, default);
-                if (null == saveBase) return false;
+                if (null == saveBase)
+                {
+                    return false;
+                }
                 
                 string filePath = GetFilePath(saveType);
                 string folderPath = Path.GetDirectoryName(filePath);
@@ -40,7 +44,7 @@ namespace Script.Manager.SingletonManager
                     Directory.CreateDirectory(folderPath);
                 }
                 
-                string jsonString = JsonConvert.SerializeObject(saveBase, Formatting.Indented);
+                string jsonString = JsonUtility.ToJson(saveBase);
                 File.WriteAllText(filePath, jsonString);
                 return true;
             }
@@ -56,22 +60,22 @@ namespace Script.Manager.SingletonManager
             saveBase = null;
             try
             {
-                if (null == saveBase) return false;
-
                 string filePath = GetFilePath(saveType);
-                string jsonString = File.ReadAllText(filePath);
-                object loadObject = JsonConvert.DeserializeObject(jsonString);
-                if (!saveDict.ContainsKey(saveType))
+                if (File.Exists(filePath))
                 {
-                    saveDict.Add(saveType, loadObject as SaveBase);
+                    string jsonString = File.ReadAllText(filePath);
+                    object loadObject = JsonUtility.FromJson(jsonString, GetSaveType(saveType));
+                    AddSaveData(saveType, loadObject as SaveBase);
+                    saveBase = GetSaveData(saveType);
+                    return true;
                 }
                 else
                 {
-                    saveDict[saveType] = loadObject as SaveBase;
+                    //파일 없으면 신규 데이터 생성
+                    if(TryAddNewSaveData(saveType));
+                        saveBase = GetSaveData(saveType);
+                    return true;
                 }
-
-                saveBase = saveDict[saveType];
-                return true;
             }
             catch (System.Exception ex)
             {
@@ -80,12 +84,21 @@ namespace Script.Manager.SingletonManager
             }
 
         }
-        
+
+        private Type GetSaveType(ESaveType saveType)
+        {
+            Type type = (saveType)switch
+            {
+                ESaveType.Test => typeof(TestSaveData)
+            };
+            return type;
+        }
+
         public async UniTask SaveDataAsync(ESaveType saveType, float delayDuration = 0.0f)
         {
             try
             {
-                SaveBase saveBase = saveDict.GetValueOrDefault(saveType, default);
+                SaveBase saveBase = GetSaveData(saveType);
                 if (null == saveBase) return;
                 
                 string filePath = GetFilePath(saveType);
@@ -96,7 +109,7 @@ namespace Script.Manager.SingletonManager
                     Directory.CreateDirectory(folderPath);
                 }
 
-                string jsonString = JsonConvert.SerializeObject(saveBase, Formatting.Indented);
+                string jsonString = JsonUtility.ToJson(saveBase);
                 await UniTask.WaitForSeconds(delayDuration);
                 await File.WriteAllTextAsync(filePath, jsonString);
             }
@@ -106,27 +119,27 @@ namespace Script.Manager.SingletonManager
             }
         }
         
-        public async UniTask<SaveBase> LoadDataAsync(ESaveType saveType, float delayDuration = 0.0f)
+        public async UniTask<SaveBase> LoadDataAsync(ESaveType saveType)
         {
             try
             {
-                SaveBase saveBase = saveDict.GetValueOrDefault(saveType, default);
-                if (null == saveBase) return null;
-                
-                await UniTask.WaitForSeconds(delayDuration);
+                SaveBase saveBase = null;
                 string filePath = GetFilePath(saveType);
-                string jsonString = await File.ReadAllTextAsync(filePath);
-                object loadObject = JsonConvert.DeserializeObject(jsonString);
-                if (!saveDict.ContainsKey(saveType))
+                if (File.Exists(filePath))
                 {
-                    saveDict.Add(saveType, loadObject as SaveBase);
+                    string jsonString = await File.ReadAllTextAsync(filePath);
+                    object loadObject = JsonUtility.FromJson(jsonString, GetSaveType(saveType));
+                    AddSaveData(saveType, loadObject as SaveBase);
+                    saveBase = GetSaveData(saveType);
                 }
                 else
                 {
-                    saveDict[saveType] = loadObject as SaveBase;
+                    //파일 없으면 신규 데이터 생성
+                    if (TryAddNewSaveData(saveType))
+                        saveBase = GetSaveData(saveType);
                 }
 
-                return saveDict[saveType];
+                return saveBase;
             }
             catch (System.Exception ex)
             {
@@ -142,5 +155,33 @@ namespace Script.Manager.SingletonManager
             path = Path.Combine(path, saveType.ToString());
             return path;
         }
+
+        private SaveBase GetSaveData(ESaveType saveType)
+        {
+            SaveBase saveBase = saveDict.GetValueOrDefault(saveType, default);
+            return saveBase;
+        }
+        
+        private bool TryAddNewSaveData(ESaveType saveType)
+        {
+            SaveBase saveBase = SaveConstructor.CreateSaveBase(saveType);
+            if (null == saveBase) return false;
+            AddSaveData(saveType, saveBase);
+            return true;
+        }
+        
+
+        private void AddSaveData(ESaveType saveType, SaveBase saveBase)
+        {
+            if (!saveDict.ContainsKey(saveType))
+            {
+                saveDict.Add(saveType, saveBase);
+            }
+            else
+            {
+                saveDict[saveType] = saveBase;
+            }
+        }
+
     }
 }

@@ -29,7 +29,10 @@ namespace Script.GameFlow
             //리소스 프리 로드 
             
             //해상도 설정
-        
+            
+            //업데이트 매니저 등록
+            Manager.StaticManager.GameProcessManager.AddUpdate("SceneManager", Manager.SingletonManager.SceneManager.Instance.Update);
+
         }
     
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

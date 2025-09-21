@@ -2,7 +2,9 @@
 using Cysharp.Threading.Tasks;
 using Manager;
 using Script.Define;
+using Script.Define.SaveDefine;
 using Script.Manager.SingletonManager;
+using UnityEditor.Overlays;
 using UnityEngine;
 
 
@@ -107,13 +109,33 @@ namespace Script.GameFlow.GameScene
             // Model이랑 연결해보고
             // Notify테스트 해보면 끝날 듯?
             
+            
+            
             //콘텐츠 매니저에서 콘텐츠 활성화
             if (Input.GetKeyDown(KeyCode.A))
             {
-                
+                DebugTestLoad();
+                DebugTestSave();
+            }
+        }
+
+        private void DebugTestSave()
+        {
+            if (IOManager.Instance.TrySaveData(ESaveType.Test))
+            {
+                Debug.Log("Save Complete");
             }
         }
         
-        
+        private void DebugTestLoad()
+        {
+            if (IOManager.Instance.TryLoadData(ESaveType.Test, out SaveBase data))
+            {
+                TestSaveData testSaveData = data as TestSaveData;
+                testSaveData.SetTestString("hi!");
+                Debug.Log("Load Complete");
+            }
+        }
+
     }
 }

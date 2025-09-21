@@ -49,5 +49,11 @@ namespace Script.Manager.SingletonManager
             if(null != sceneController)
                 sceneController.ChangeScene(SceneType, sceneInfoContext, SceneLoadComplete, isVisitLoadingScene);
         }
+
+        public void Update()
+        {
+            if(null != sceneController)
+                sceneController.UpdateScene();
+        }
     }
 }

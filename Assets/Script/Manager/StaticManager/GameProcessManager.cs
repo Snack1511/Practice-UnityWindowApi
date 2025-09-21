@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using Cysharp.Threading.Tasks;
 using Manager;
 using Script.GameFlow;
 
@@ -28,6 +29,11 @@ namespace Script.Manager.StaticManager
         {
             GameProcess processObject= UnityEngine.GameObject.Instantiate<GameProcess>(gameProcess);
             ProcessObject = processObject;
+        }
+
+        public static void AddUpdate(string key, Action update)
+        {
+            throw new NotImplementedException();
         }
     }
 }
