@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Manager;
 using Script.GameFlow;
 
 namespace Script.Manager.StaticManager
 {
+    
+    
     public static class GameProcessManager
     {
         public static GameProcess ProcessObject { get; private set; }
-
+        
+        private static Dictionary<string, Action> updaters = new Dictionary<string, Action>();
         //TODO : ScriptableObject 로드 처리하기
         private const string GameProcessPath = "Prefabs/GameProcess.prefab";
         public static void Initialize()
@@ -33,7 +37,15 @@ namespace Script.Manager.StaticManager
 
         public static void AddUpdate(string key, Action update)
         {
-            throw new NotImplementedException();
+            updaters.TryAdd(key, update);
+        }
+
+        public static void Update()
+        {
+            foreach (var keyValuePair in updaters)
+            {
+                keyValuePair.Value.Invoke();
+            }
         }
     }
 }
