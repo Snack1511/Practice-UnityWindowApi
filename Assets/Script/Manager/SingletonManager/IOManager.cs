@@ -164,7 +164,7 @@ namespace Script.Manager.SingletonManager
         
         private bool TryAddNewSaveData(ESaveType saveType)
         {
-            SaveBase saveBase = SaveConstructor.CreateSaveBase(saveType);
+            SaveBase saveBase = SaveDataFactory.CreateSaveBase(saveType);
             if (null == saveBase) return false;
             AddSaveData(saveType, saveBase);
             return true;

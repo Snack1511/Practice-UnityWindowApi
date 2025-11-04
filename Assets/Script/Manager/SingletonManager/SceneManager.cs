@@ -28,13 +28,15 @@ namespace Script.Manager.SingletonManager
         //첫 씬 로드 이후 호출
         public void OnCallFirstLoadedSceneAfter()
         {
-            sceneController.ChangeSceneSingle(ESceneType.StartScene, new StartSceneInfoContext());
+            sceneController.ChangeSceneSingle(ESceneType.StartScene, new StartSceneInfo());
         }
 
         private void RegistScenes()
         {
             AddScene(ESceneType.StartScene, new StartScene(ESceneType.StartScene));
             AddScene(ESceneType.LoadingScene, new LoadingScene(ESceneType.LoadingScene));
+            AddScene(ESceneType.LobbyScene, new LobbyScene(ESceneType.LobbyScene));
+            AddScene(ESceneType.MenuScene, new MenuScene(ESceneType.MenuScene));
             AddScene(ESceneType.TestScene, new TestScene(ESceneType.TestScene));
         }
 
@@ -44,10 +46,10 @@ namespace Script.Manager.SingletonManager
                 Debug.LogError($"Failed to add scene {sceneType}");
         }
         
-        public void ChangeScene(ESceneType SceneType, ISceneInfoContext sceneInfoContext, Action SceneLoadComplete = null, bool isVisitLoadingScene = false)
+        public void ChangeScene(ESceneType SceneType, ISceneInfo sceneInfo, Action SceneLoadComplete = null, bool isVisitLoadingScene = false)
         {
             if(null != sceneController)
-                sceneController.ChangeScene(SceneType, sceneInfoContext, SceneLoadComplete, isVisitLoadingScene);
+                sceneController.ChangeScene(SceneType, sceneInfo, SceneLoadComplete, isVisitLoadingScene);
         }
 
         public void Update()

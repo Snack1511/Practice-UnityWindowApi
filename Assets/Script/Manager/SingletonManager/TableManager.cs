@@ -5,16 +5,17 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using pattern;
+using Script.GameFlow.GameScene;
 using UnityEngine;
 
 namespace Script.Manager.SingletonManager
 {
     public abstract class TableDataBase
     {
-        // CSV의 'index' 컬럼과 매칭됩니다.
         public int index;
     }
 
+    //NOTE [11/05] : static화된 테이블 데이터 컨테이너가 필요하지 않을까..?
     public class TableManager : Singleton<TableManager>
     {
         private readonly Dictionary<Type, Dictionary<int, TableDataBase>> _tables = new();
@@ -33,13 +34,15 @@ namespace Script.Manager.SingletonManager
             _tables.Clear();
         }
 
+
+
         const string pattern = @"""[^""]*""|[^,]+";
         /// <summary>
         /// 지정된 경로의 CSV 파일을 로드하고 파싱하여 테이블 데이터를 채웁니다.
         /// </summary>
         /// <typeparam name="T">TableDataBase를 상속하고 new() 제약 조건을 갖는 테이블 데이터 타입</typeparam>
         /// <param name="tablePath">ResourcesManager를 통해 로드할 에셋 경로</param>
-        public async UniTask LoadTableData<T>(string tablePath) where T : TableDataBase, new()
+        public async UniTask LoadTableDataAsync<T>(string tablePath) where T : TableDataBase, new()
         {
             TextAsset textAsset = await ResourcesManager.Instance.LoadAsync<TextAsset>(tablePath);
             if (textAsset == null)
@@ -47,7 +50,24 @@ namespace Script.Manager.SingletonManager
                 Debug.LogError($"[TableManager] Failed to load table asset from path: {tablePath}");
                 return;
             }
+
+            RegistTableData<T>(textAsset, tablePath);
+        }
+
+        public void LoadTableData<T>(string tablePath) where T : TableDataBase, new()
+        {
+            TextAsset textAsset = ResourcesManager.Instance.Load<TextAsset>(tablePath);
+            if (textAsset == null)
+            {
+                Debug.LogError($"[TableManager] Failed to load table asset from path: {tablePath}");
+                return;
+            }
             
+            RegistTableData<T>(textAsset, tablePath);
+        }
+
+        private void RegistTableData<T>(TextAsset textAsset, string tablePath) where T : TableDataBase, new()
+        {
             // --- CSV 파싱 코드 시작 ---
             Type tableType = typeof(T);
             if (!_tables.ContainsKey(tableType))

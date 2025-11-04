@@ -22,7 +22,6 @@ namespace Script.GameFlow.GameScene
             public float attackRange;
             public int[] skillIDs;
             public string[] skillTags;
-            
         }
 
         public override async UniTask OnLoadResourceAsync(IProgress<LoadingProgressResult> progress)
@@ -42,7 +41,7 @@ namespace Script.GameFlow.GameScene
         {
             //필요한 테이블 로딩 잘 되네ㅎ
             string path = "Table/testTable.csv";
-            await TableManager.Instance.LoadTableData<TestTableData>(path);
+            await TableManager.Instance.LoadTableDataAsync<TestTableData>(path);
 
             if (TableManager.TryGetData<TestTableData>(1, out TestTableData data1))
             {
@@ -94,24 +93,20 @@ namespace Script.GameFlow.GameScene
         {
             
         }
-        public override void EnterScene(ISceneInfoContext context)
+        public override void EnterScene(ISceneInfo context)
         {
             base.EnterScene(context);
+        }
+        public override void ExitScene()
+        {
+            base.ExitScene();
         }
 
         public override void UpdateScene()
         {
             base.UpdateScene();
             
-            //세이브 테스트용 더미 하나 만들고
-            // 저장 해보고
-            // 로드해보고
-            // Model이랑 연결해보고
-            // Notify테스트 해보면 끝날 듯?
-            
-            
-            
-            //콘텐츠 매니저에서 콘텐츠 활성화
+            // 저장 불러오기 잘 되네..
             if (Input.GetKeyDown(KeyCode.A))
             {
                 DebugTestLoad();

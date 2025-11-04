@@ -10,12 +10,13 @@ namespace Script.GameFlow.GameScene
         None,
         StartScene,
         LoadingScene,
-        GameScene,
+        LobbyScene,
+        MenuScene,
         TestScene,
     }
 
 
-    public interface ISceneInfoContext
+    public interface ISceneInfo
     {
     }
 
@@ -25,17 +26,17 @@ namespace Script.GameFlow.GameScene
         protected SceneBase(ESceneType SceneType) { this.SceneType = SceneType; }
         private bool enterScene = false;
 
-        private ISceneInfoContext sceneInfoContext = null;
+        private ISceneInfo _sceneInfo = null;
         
-        public virtual void EnterScene(ISceneInfoContext context)
+        public virtual void EnterScene(ISceneInfo context)
         {
             enterScene = true;
-            sceneInfoContext = context;
+            _sceneInfo = context;
         }
 
         public virtual void ExitScene()
         {
-            sceneInfoContext = null;
+            _sceneInfo = null;
             enterScene = false;
             
             ReleaseResource();

@@ -9,9 +9,9 @@ using UnityEngine.SceneManagement;
 
 namespace Script.GameFlow.GameScene
 {
-    public class LoadingSceneInfoContext : ISceneInfoContext
+    public class LoadingSceneInfo : ISceneInfo
     {
-        public ISceneInfoContext targetSceneInfoContext;
+        public ISceneInfo TargetSceneInfo;
         public SceneBase loadingTargetScene;
         public Action LoadComplete;
     }
@@ -63,11 +63,11 @@ namespace Script.GameFlow.GameScene
             loadComplete?.Invoke();
         }
 
-        public override void EnterScene(ISceneInfoContext sceneInfoContext)
+        public override void EnterScene(ISceneInfo sceneInfo)
         {
-            base.EnterScene(sceneInfoContext);
+            base.EnterScene(sceneInfo);
             
-            LoadingSceneInfoContext info = sceneInfoContext as LoadingSceneInfoContext;
+            LoadingSceneInfo info = sceneInfo as LoadingSceneInfo;
             //로딩 씬 활성화 및 로더 등록
             LoadingProcess(info.loadingTargetScene, info.LoadComplete, loadTokenSource.Token).Forget();
         }

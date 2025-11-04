@@ -20,23 +20,27 @@ namespace Script.Define
 
     namespace SaveDefine
     {
-        public static class SaveConstructor
+        public static class SaveDataFactory
         {
             public static SaveBase CreateSaveBase(ESaveType saveType)
             {
                 SaveBase returnData = (saveType) switch
                 {
                     ESaveType.Test=> new TestSaveData(),
-                    _ => null,
+                    _ => throw new System.ArgumentOutOfRangeException(nameof(saveType), $"지원하지 않는 SaveType입니다: {saveType}")
                 };
+                
+                returnData.SetDefaultData();
                 return returnData;
             }
         }
 
+        /// <summary>
+        /// 모든 세이브 데이터의 생성은 SaveDataFactory를 통해서 생성해야함
+        /// </summary>
         public abstract class SaveBase
         {
-            
-
+            public abstract void SetDefaultData();
         }
 
         [Serializable]
@@ -46,6 +50,11 @@ namespace Script.Define
             public void SetTestString(string text)
             {
                 test = text;
+            }
+
+            public override void SetDefaultData()
+            {
+                test = "test";
             }
         }
     }

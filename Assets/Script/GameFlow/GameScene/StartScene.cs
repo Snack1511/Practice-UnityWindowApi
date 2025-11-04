@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Script.GameFlow.GameScene
 {
-    public class StartSceneInfoContext :  ISceneInfoContext
+    public class StartSceneInfo :  ISceneInfo
     {
         
     }
@@ -40,7 +40,7 @@ namespace Script.GameFlow.GameScene
             
         }
 
-        public override void EnterScene(ISceneInfoContext context)
+        public override void EnterScene(ISceneInfo context)
         {
             base.EnterScene(context);
             Debug.Log("StartScene::EnterScene Enter");

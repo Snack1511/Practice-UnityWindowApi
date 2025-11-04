@@ -50,10 +50,39 @@ namespace Script.Manager.SingletonManager
                 }
             }
 
-
             return dictionary[type][assetName] as T;
         }
 
 
+        public T Load<T>(string tablePath) where T : UnityEngine.Object
+        {
+            string filePath = tablePath;
+            Type type = typeof(T);
+            if (!dictionary.ContainsKey(type))
+            {
+                dictionary.Add(type, new Dictionary<string, UnityEngine.Object>());
+            }
+            
+            string ext = Path.GetExtension(filePath);
+            string loadPath = filePath.Replace(ext, "");
+            string assetName = Path.GetFileNameWithoutExtension(filePath);
+            if (!dictionary[type].ContainsKey(assetName))
+            {
+
+                T asset = Resources.Load<T>(loadPath);
+
+                if (null == asset)
+                {
+                    Debug.LogError($"Not found resource by path : {loadPath}");
+                    return null;
+                }
+                else
+                {
+                    dictionary[type].Add(assetName, asset);
+                }
+            }
+            
+            return dictionary[type][assetName] as T;
+        }
     }
 }

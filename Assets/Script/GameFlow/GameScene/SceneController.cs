@@ -28,7 +28,7 @@ namespace Script.GameFlow.GameScene
             scenes = null;
         }
 
-        public void ChangeScene(ESceneType SceneType, ISceneInfoContext sceneInfoContext = null, Action SceneLoadComplete = null, bool isVisitLoadingScene = false)
+        public void ChangeScene(ESceneType SceneType, ISceneInfo sceneInfo = null, Action SceneLoadComplete = null, bool isVisitLoadingScene = false)
         {
             if (currentScene == SceneType) return;
             
@@ -39,9 +39,9 @@ namespace Script.GameFlow.GameScene
             if (isVisitLoadingScene)
             {
                 //로딩할 씬의 정보 등록
-                LoadingSceneInfoContext loadingSceneInfoContext = new LoadingSceneInfoContext()
+                LoadingSceneInfo loadingSceneInfo = new LoadingSceneInfo()
                 {
-                    targetSceneInfoContext = sceneInfoContext,
+                    TargetSceneInfo = sceneInfo,
                     loadingTargetScene = scenes.GetValueOrDefault(nextScene),
                     LoadComplete = () =>
                     {
@@ -53,21 +53,21 @@ namespace Script.GameFlow.GameScene
                             {
                                 UnloadScene(prevSceneType);
                             }
-                            targetSceneInstance.EnterScene(sceneInfoContext);
+                            targetSceneInstance.EnterScene(sceneInfo);
                             SceneLoadComplete?.Invoke();
                         }
                     }
                 };
                 
                 //로딩씬 활성화
-                LoadScene(ESceneType.LoadingScene, loadingSceneInfoContext);
+                LoadScene(ESceneType.LoadingScene, loadingSceneInfo);
             }
             else
             {
                 if (scenes.TryGetValue(nextScene, out SceneBase nextSceneInstance))
                 {
                     //nextSceneInstance.EnterScene(sceneInfoContext);
-                    LoadScene(nextScene, sceneInfoContext, () =>
+                    LoadScene(nextScene, sceneInfo, () =>
                     {
                         //이전씬 비활성화
                         if (scenes.TryGetValue(prevSceneType, out SceneBase prevSceneInstance))
@@ -82,7 +82,7 @@ namespace Script.GameFlow.GameScene
             UpdateCurrentSceneType();
         }
 
-        public void ChangeSceneSingle(ESceneType SceneType, ISceneInfoContext sceneInfoContext = null,
+        public void ChangeSceneSingle(ESceneType SceneType, ISceneInfo sceneInfo = null,
             Action SceneLoadComplete = null)
         {
             if (currentScene == SceneType) return;
@@ -91,7 +91,7 @@ namespace Script.GameFlow.GameScene
             {                        
                 currentScene = SceneType;
                 SceneManager.LoadScene(currentScene.ToString(), LoadSceneMode.Single);
-                targetSceneInstance.EnterScene(sceneInfoContext);
+                targetSceneInstance.EnterScene(sceneInfo);
                 SceneLoadComplete?.Invoke();
                 UpdateCurrentSceneType();
             }
@@ -111,7 +111,7 @@ namespace Script.GameFlow.GameScene
             }
         }
 
-        public void LoadScene(ESceneType SceneType, ISceneInfoContext sceneInfoContext = null, Action SceneLoadComplete = null)
+        public void LoadScene(ESceneType SceneType, ISceneInfo sceneInfo = null, Action SceneLoadComplete = null)
         {
             if (scenes.TryGetValue(SceneType, out SceneBase targetSceneInstance))
             {
@@ -120,7 +120,7 @@ namespace Script.GameFlow.GameScene
                 {
                     asyncOperation.completed += (operation) =>
                     {
-                        targetSceneInstance.EnterScene(sceneInfoContext);
+                        targetSceneInstance.EnterScene(sceneInfo);
                     };
                 }
             }
@@ -143,19 +143,16 @@ namespace Script.GameFlow.GameScene
 
         public void UpdateScene()
         {
-            foreach (var sceneBase in scenes)
-            {
-                if(scenes[currentScene].IsActiveScene())
-                    scenes[currentScene].UpdateScene();
-            }
+            if(scenes.ContainsKey(currentScene))
+                scenes[currentScene].UpdateScene();
         }
 
-        public void ChangeSceneWithOutLoadSceneObject(ESceneType sceneType, ISceneInfoContext sceneInfoContext = null)
+        public void ChangeSceneWithOutLoadSceneObject(ESceneType sceneType, ISceneInfo sceneInfo = null)
         {
             if (scenes.TryGetValue(sceneType, out SceneBase targetSceneInstance))
             {
                 SetCurrentScene(sceneType);
-                targetSceneInstance.EnterScene(sceneInfoContext);
+                targetSceneInstance.EnterScene(sceneInfo);
             }
         }
 
