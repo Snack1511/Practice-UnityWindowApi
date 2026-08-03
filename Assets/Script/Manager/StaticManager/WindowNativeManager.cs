@@ -15,7 +15,7 @@ namespace Script.Manager.StaticManager
 
         [DllImport("User32.dll")] public static extern uint GetWindowLong(IntPtr hWnd, int nIndex);
 
-        [DllImport("User32.dll")] public static extern int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong);
+        [DllImport("User32.dll", SetLastError = true)] public static extern int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong);
 
         [DllImport("User32.dll", EntryPoint = "SetWindowPos", SetLastError = true)] public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 
@@ -134,11 +134,24 @@ namespace Script.Manager.StaticManager
         public static bool IsTransparentClick { get; set; } = false;
         public static void SetTransparentClick(bool flag)
         {
-            IsTransparentClick = flag;
-            uint exFlag = GetWindowLong(hWnd, GWL.EXSTYLE);
-            exFlag |= (WS_EX.TRANSPARENT);
+            // SetWindowFrame 호출 전이면 hWnd 가 비어있다
+            if (hWnd == IntPtr.Zero)
+                hWnd = GetActiveWindow();
 
-            SetWindowLong(hWnd, GWL.EXSTYLE, exFlag);
+            uint exFlag = GetWindowLong(hWnd, GWL.EXSTYLE);
+            if (flag)
+                exFlag |= (WS_EX.TRANSPARENT);
+            else
+                exFlag &= ~(WS_EX.TRANSPARENT);
+
+            // SetWindowLong 은 실패 시 0 을 반환한다 (직전 값이 0 이었을 수도 있어 에러 코드를 같이 본다)
+            if (SetWindowLong(hWnd, GWL.EXSTYLE, exFlag) == 0 && Marshal.GetLastWin32Error() != 0)
+            {
+                UnityEngine.Debug.LogWarning($"SetTransparentClick 실패 : Win32Error {Marshal.GetLastWin32Error()}");
+                return;
+            }
+
+            IsTransparentClick = flag;
         }
 #endif
     }
