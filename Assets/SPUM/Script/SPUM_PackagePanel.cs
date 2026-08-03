@@ -8,8 +8,6 @@ public class SPUM_PackagePanel : MonoBehaviour
     public Text PackageTitle;
     public SPUM_PackageElement spumPackageElement;
 
-    #if UNITY_EDITOR
-
     // 패키지에 있는 클립 정보 생성
     public void CreatePackageUI(SpumPackage packageData, SPUM_AnimationManager manager) 
     {
@@ -54,5 +52,4 @@ public class SPUM_PackagePanel : MonoBehaviour
         var rectTransform = transform.parent.GetComponent<RectTransform>();
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
-    #endif
 }

@@ -20,7 +20,7 @@ public class SPUM_Prefabs : MonoBehaviour
     public bool EditChk;
     public string _code;
     public Animator _anim;
-    private AnimatorOverrideController OverrideController;
+    public AnimatorOverrideController OverrideController;
 
     public string UnitType;
     public List<SpumPackage> spumPackages = new List<SpumPackage>();

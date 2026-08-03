@@ -15,7 +15,6 @@ public class SPUM_AnimationManagerEditor : Editor
 
         SPUM_Manager manager = (SPUM_Manager)target;
 
-
         if (GUILayout.Button("REGENERATE DATA & LOAD PACKAGES"))
         {
             var folders = AssetDatabase.GetSubFolders("Assets/SPUM/Resources/Addons");
@@ -137,6 +136,31 @@ public class SPUM_AnimationManagerEditor : Editor
                     var filteredCondition = !conditionTypes.Contains(sprite.name);
                     sprite.name = sprites.Length.Equals(2) && filteredCondition ? texture.name : sprite.name;
 
+                    // Body/Left/Right 토큰은 아머/옷/팬츠류에만 적용
+                    var tokens = new[] { "Body", "Left", "Right" };
+                    var armorKeywords = new string[] { "armor", "cloth", "pant"};
+                    bool isArmorOrCloth = armorKeywords.Any(k => textureData.PartType.IndexOf(k, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                    if (isArmorOrCloth && textureData.SubType == sprite.name)
+                    {
+                        string matchedToken = tokens.FirstOrDefault(t => sprite.name.IndexOf(t, StringComparison.OrdinalIgnoreCase) >= 0);
+                        if (!string.IsNullOrEmpty(matchedToken))
+                        {
+                            textureData.SubType = matchedToken;
+                            // 매칭된 서브타입 토큰 제거 + 구분자('_' 혹은 '-') 제거 (두 단계: 토큰 주변 제거 후 남은 구분자 제거)
+                            string newName = Regex.Replace(textureData.Name, $"[_-]*{Regex.Escape(matchedToken)}[_-]*", "", RegexOptions.IgnoreCase);
+                            newName = newName.Replace("_", "").Replace("-", "");
+                            textureData.Name = newName;
+                        }
+                        else
+                        {
+                            textureData.SubType = "";
+                        }
+                    }
+                    else
+                    {
+                        textureData.SubType = sprite.name;
+                    }
                     Debug.Log(sprite.name + "/" + pathArray.Length);
                     textureData.PartSubType = pathArray.Length.Equals(7) ? Regex.Replace(pathArray[5], @"[^a-zA-Z가-힣\s]", "") : "";
                     textureData.Path = Regex.Replace(SpritePath, @"\..*", "");

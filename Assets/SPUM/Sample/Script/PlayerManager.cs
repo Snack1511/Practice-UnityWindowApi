@@ -129,8 +129,10 @@ public class PlayerManager : MonoBehaviour
         var saveArray = Resources.LoadAll<SPUM_Prefabs>("");
         foreach (var unit in saveArray)
         {
-            if(unit.ImageElement.Count > 0) {
+            if (unit.ImageElement.Count > 0)
+            {
                 _savedUnitList.Add(unit);
+                unit.PopulateAnimationLists();
             }
         }
 

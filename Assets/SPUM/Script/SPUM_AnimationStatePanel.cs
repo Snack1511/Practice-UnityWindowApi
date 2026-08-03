@@ -14,7 +14,6 @@ public class SPUM_AnimationStatePanel : MonoBehaviour
     public Transform parent;
     public SPUM_AnimationStateElement StateElementPrefab;
     
-    #if UNITY_EDITOR
     public void CreateStateButton(SPUM_AnimationManager manager) 
     {
         List<SpumPackage> spumPackages = manager.unit.spumPackages;
@@ -73,5 +72,4 @@ public class SPUM_AnimationStatePanel : MonoBehaviour
 
         manager.ScrollContentReset();
     }
-    #endif
 }

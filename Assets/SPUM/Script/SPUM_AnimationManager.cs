@@ -23,7 +23,7 @@ public class SPUM_AnimationManager : MonoBehaviour
     public Button StateButtonPrefab;
 
     public string SelectedType;
-    private AnimatorOverrideController animatorOverrideController;
+    //private AnimatorOverrideController animatorOverrideController;
     public SPUM_AnimationControllerPanel AnimationControllerPanel;
     public SPUM_AnimationStatePanel spumAnimationStatePanel;
     public SPUM_AnimationPackagePanel spumAnimationPackagePanel;
@@ -40,16 +40,17 @@ public class SPUM_AnimationManager : MonoBehaviour
     public Dropdown presetDropdown;
     [Header("Manager")]
     public SPUM_Manager SPUM_Manager;
-
-    #if UNITY_EDITOR
     public void ScrollContentReset(){
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
     public void PlayAnimation(SpumAnimationClip currentPlayClip){
         Animator animator = unit._anim;
+        AnimatorOverrideController animatorOverrideController = animator.runtimeAnimatorController as AnimatorOverrideController;
+
         var PlayState = $"{currentPlayClip.StateType}";
         animator.Rebind();
         animator.Update(0f);
+        
         animatorOverrideController[PlayState] = LoadAnimationClip(currentPlayClip.ClipPath);
 
         animator.SetBool("1_Move", PlayState.Contains("MOVE"));
@@ -77,19 +78,23 @@ public class SPUM_AnimationManager : MonoBehaviour
     
     void InitAnimator()
     {
-        Animator animator = unit._anim;
-        animatorOverrideController = new AnimatorOverrideController();
-        animatorOverrideController.runtimeAnimatorController= animator.runtimeAnimatorController;
-
-        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-
-        foreach (AnimationClip clip in clips)
+        foreach (var anim in unit.GetComponentsInChildren<Animator>(true))
         {
-            animatorOverrideController[clip.name] = clip;
-        }
+            Animator animator = anim; //unit._anim;
+            var animatorOverrideController = new AnimatorOverrideController();
+            animatorOverrideController.runtimeAnimatorController= animator.runtimeAnimatorController;
 
-        animator.runtimeAnimatorController= animatorOverrideController;
+            AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+
+            foreach (AnimationClip clip in clips)
+            {
+                animatorOverrideController[clip.name] = clip;
+            }
+
+            animator.runtimeAnimatorController = animatorOverrideController;
+        }
     }
+
     public void InitializeDropdown()
     {
         presetDropdown.ClearOptions();
@@ -192,13 +197,11 @@ public class SPUM_AnimationManager : MonoBehaviour
     }
     public void SavePresetData(SPUM_Preset presetData)
     {
-        #if UNITY_EDITOR
         SPUM_PresetData.Presets.Add(presetData);
-        EditorUtility.SetDirty(SPUM_PresetData);
-        AssetDatabase.SaveAssets();
+        // EditorUtility.SetDirty(SPUM_PresetData);
+        // AssetDatabase.SaveAssets();
         LoadPresetLst();
         Debug.Log("Preset saved: " + presetData.PresetName);
-        #endif
     }
     public void DeletePresetData(string name)
     {
@@ -339,5 +342,4 @@ foreach (var package in UnitPackagesData)
         filteredClips[swapTargetIndex].index = currentIndex;
         RefreshStatePanel();
     }
-    #endif
 }

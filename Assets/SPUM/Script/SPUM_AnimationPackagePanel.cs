@@ -11,7 +11,6 @@ public class SPUM_AnimationPackagePanel : MonoBehaviour
     public Button CloseButton;
     public Transform parent;
     public SPUM_PackagePanel spumPackagePanel;
-    #if UNITY_EDITOR
 
     // 모든 패키지 생성하기
     public void CreateSpumAnimationPackagePanel(SPUM_AnimationManager manager)
@@ -29,5 +28,4 @@ public class SPUM_AnimationPackagePanel : MonoBehaviour
             PackagePanel.CreatePackageUI(Package, manager);
         }
     }
-    #endif
 }

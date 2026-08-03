@@ -2,9 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections;
 using UnityEditor;
-public class SPUM_PaginationManager : MonoBehaviour
+public partial class SPUM_PaginationManager : MonoBehaviour
 {
     public GameObject itemPrefab;
     public Transform contentParent;
@@ -24,8 +23,6 @@ public class SPUM_PaginationManager : MonoBehaviour
     private int currentPage = 1;
     private int itemsPerPage = 10;
     public GameObject PreviewPanel;
-
-    #if UNITY_EDITOR
     void Start()
     {
         LoadPrefabs();
@@ -50,12 +47,12 @@ public class SPUM_PaginationManager : MonoBehaviour
             Debug.Log(savedPrefab._code + " " + savedPrefab.EditChk);
             if(!savedPrefab.EditChk) continue;
             bool needsConversion = savedPrefab._version < SPUM_Manager._version || 
-                                !SPUM_Manager.ValidateSpumFile(savedPrefab).Item2.Count.Equals(0) || savedPrefab.EditChk;
+                                !SPUM_Manager.fileHandler.ValidateSpumFile(savedPrefab, SPUM_Manager).Item2.Count.Equals(0) || savedPrefab.EditChk;
 
             if (needsConversion)
             {
                 SPUM_Manager.MissingPackageNames.Clear();
-                var tuple = SPUM_Manager.ValidateSpumFile(savedPrefab);
+                var tuple = SPUM_Manager.fileHandler.ValidateSpumFile(savedPrefab, SPUM_Manager);
                 SPUM_Manager.DebugList.Clear();
 
                 switch (tuple.Item1)
@@ -73,9 +70,10 @@ public class SPUM_PaginationManager : MonoBehaviour
                 {
                     var UnitType = savedPrefab.UnitType.Equals("") ? "Unit" : savedPrefab.UnitType;
                     SPUM_Manager.SetUnitConverter(UnitType);
+                    savedPrefab.PopulateAnimationLists();
                     var newPrefab = SPUM_Manager.SaveConvertPrefabs(savedPrefab);
                     
-                    SPUM_Manager.MoveOldPrefabBackup(savedPrefab);
+                    //SPUM_Manager.MoveOldPrefabBackup(savedPrefab);
                     convertedPrefabs.Add(newPrefab);
                     indicesToRemove.Add(prefabIndex);
                 }
@@ -116,7 +114,7 @@ public class SPUM_PaginationManager : MonoBehaviour
     {
         List<SPUM_Prefabs> updatedPrefabs = new List<SPUM_Prefabs>();
         List<int> indicesToRemove = new List<int>();
-        #if UNITY_EDITOR
+
         foreach (var kvp in sortedItems)
         {
             int prefabIndex = kvp.Key;
@@ -137,12 +135,9 @@ public class SPUM_PaginationManager : MonoBehaviour
             // updatedPrefabs.Add(newPrefab);
             // indicesToRemove.Add(prefabIndex);
             Debug.Log(savedPrefab._code);
-            
-            EditorUtility.SetDirty(savedPrefab);
+            //EditorUtility.SetDirty(savedPrefab);
         }
-            AssetDatabase.SaveAssets();
-
-            #endif
+            //AssetDatabase.SaveAssets();
  
         // 이전 프리팹 제거 및 새 프리팹 추가
         // foreach (int index in indicesToRemove)
@@ -171,7 +166,7 @@ public class SPUM_PaginationManager : MonoBehaviour
         sortedItems.Clear();
         deletedIndexes.Clear();
         nextAvailableIndex = 0;
-        var SavedPrefabs = Resources.LoadAll<SPUM_Prefabs>("");
+        var SavedPrefabs = SPUM_Manager.fileHandler.Load(); // Resources.LoadAll<SPUM_Prefabs>("");
         foreach (var prefab in SavedPrefabs)
         {
             AddItemToSortedDictionary(prefab);
@@ -201,6 +196,7 @@ public class SPUM_PaginationManager : MonoBehaviour
         {
             deletedIndexes.Enqueue(index);
         }
+        SPUM_Manager.DeleteUnit(prefab);
     }
     void DisplayPage()
     {
@@ -235,7 +231,12 @@ public class SPUM_PaginationManager : MonoBehaviour
             }
             var anim = PreviewData.GetComponentInChildren<Animator>();
             PreviewData._anim = anim;
-   
+
+            PreviewData.UnitType = UnitType;
+            PreviewData.PopulateAnimationLists();
+            PreviewData.OverrideControllerInit();
+            if(contentParent.gameObject.activeInHierarchy) PreviewData.PlayAnimation(PlayerState.IDLE, 0);
+
             var matchingTables = PreviewElement.GetComponentsInChildren<SPUM_MatchingList>();
             bool isInvalidPath = false;
             var allMatchingElements = matchingTables.SelectMany(mt => mt.matchingTables).ToList();
@@ -249,18 +250,22 @@ public class SPUM_PaginationManager : MonoBehaviour
                 && (ie.Structure == matchingElement.Structure) 
                 && ie.PartSubType == matchingElement.PartSubType
                 );
-                //Debug.Log(matchingTypeElement != null);
-                if (matchingTypeElement != null)
+                if (matchingTypeElement != null && !string.IsNullOrEmpty(matchingTypeElement.ItemPath))
                 {
-                    var LoadSprite = SPUM_Manager.LoadSpriteFromMultiple(matchingTypeElement.ItemPath , matchingTypeElement.Structure);
-                    isInvalidPath = LoadSprite == null;
-                    matchingElement.renderer.sprite = LoadSprite;
-                    matchingElement.renderer.maskInteraction = (SpriteMaskInteraction)matchingTypeElement.MaskIndex;
-                    matchingElement.renderer.color = matchingTypeElement.Color; 
-                    matchingElement.ItemPath = matchingTypeElement.ItemPath;
-                    matchingElement.MaskIndex = matchingTypeElement.MaskIndex;
-                    matchingElement.Color = matchingTypeElement.Color;
+                    matchingTypeElement.ItemPath = matchingTypeElement.ItemPath.Replace("/Unit/", "/0_Unit/");
                 }
+                //Debug.Log(matchingTypeElement != null);
+                    if (matchingTypeElement != null)
+                    {
+                        var LoadSprite = SPUM_Manager.LoadSpriteFromMultiple(matchingTypeElement.ItemPath, matchingTypeElement.Structure);
+                        isInvalidPath = LoadSprite == null;
+                        matchingElement.renderer.sprite = LoadSprite;
+                        matchingElement.renderer.maskInteraction = (SpriteMaskInteraction)matchingTypeElement.MaskIndex;
+                        matchingElement.renderer.color = matchingTypeElement.Color;
+                        matchingElement.ItemPath = matchingTypeElement.ItemPath;
+                        matchingElement.MaskIndex = matchingTypeElement.MaskIndex;
+                        matchingElement.Color = matchingTypeElement.Color;
+                    }
             }
             var ButtonPanel = PreviewElement.GetComponentInChildren<SPUM_LoadPrefabPanel>();
             ButtonPanel.UnitCodeText.text = SavedPrefab._code;
@@ -294,10 +299,10 @@ public class SPUM_PaginationManager : MonoBehaviour
             {
                 SPUM_Manager.EditPrefab = SavedPrefab;
                 SPUM_Manager.UIManager.LoadButtonSet(true);
-                SPUM_Manager.ItemLoadButtonActive(SavedPrefab.ImageElement);
                 SPUM_Manager.ItemResetAll();
-                SPUM_Manager.SetSprite(SavedPrefab.ImageElement);
+                SPUM_Manager.ItemLoadButtonActive(SavedPrefab.ImageElement);
                 SPUM_Manager.SetType(SavedPrefab.UnitType);
+                SPUM_Manager.SetSprite(SavedPrefab.ImageElement);
                 SPUM_Manager.PreviewPrefab.spumPackages = SavedPrefab.spumPackages;
                 
                 SPUM_Manager.PreviewPrefab._version = SavedPrefab._version;
@@ -309,28 +314,33 @@ public class SPUM_PaginationManager : MonoBehaviour
 
             ButtonPanel.DeleteButton.onClick.AddListener(()=> {
                 DeleteUnit(prefabIndex, SavedPrefab);
-                SPUM_Manager.DeleteUnit(SavedPrefab);
                 DisplayPage();
             });
-            bool isOldVersion =  SavedPrefab._version < SPUM_Manager._version;
+            bool isOldVersion = SavedPrefab._version < 170; // SavedPrefab._version < SPUM_Manager._version &&
             
             bool isInvalidClipPath = false;
             var ClipList = SavedPrefab.spumPackages.SelectMany(package => package.SpumAnimationData).ToList();
-            
+            ClipList.ForEach(clip =>
+            {
+                if (!string.IsNullOrEmpty(clip.ClipPath) && clip.ClipPath.Contains("/Unit/"))
+                {
+                    clip.ClipPath = clip.ClipPath.Replace("/Unit/", "/0_Unit/");
+                }
+            }); 
             foreach (var clip in ClipList)
             {
                 isInvalidClipPath = SPUM_Manager.ValidateAnimationClips(clip);
                 if(!isInvalidClipPath) break;
             }
 
-            bool IsActive = isOldVersion || isInvalidPath || !isInvalidClipPath;
+            bool IsActive = isOldVersion;// || isInvalidPath || !isInvalidClipPath;
             ButtonPanel.ConvertButton.transform.parent.gameObject.SetActive(IsActive);
             ButtonPanel.SelectButton.image.enabled = !IsActive;
 
 
             ButtonPanel.ConvertButton.onClick.AddListener(()=> {
                 SPUM_Manager.MissingPackageNames.Clear();
-                var tupple = SPUM_Manager.ValidateSpumFile(SavedPrefab);
+                var tupple = SPUM_Manager.fileHandler.ValidateSpumFile(SavedPrefab, SPUM_Manager);
                 SPUM_Manager.DebugList.Clear();
                 SPUM_Manager.UIManager.ConvertView.PrefabVersion.text = $"Prefab Version {SavedPrefab._version}";
 
@@ -359,10 +369,9 @@ public class SPUM_PaginationManager : MonoBehaviour
 
                 SPUM_Manager.UIManager.ConvertView.Convert.onClick.AddListener(()=>{
                     var newPrefab = SPUM_Manager.SaveConvertPrefabs(SavedPrefab);
-                    SPUM_Manager.MoveOldPrefabBackup(SavedPrefab);
-                    //Debug.Log();
+                    //SPUM_Manager.MoveOldPrefabBackup(SavedPrefab);
+       
                     DeleteUnit(prefabIndex, SavedPrefab);
-                    Debug.Log(newPrefab);
                     AddNewPrefab(newPrefab);
                     DisplayPage();
                     });
@@ -400,5 +409,4 @@ public class SPUM_PaginationManager : MonoBehaviour
             DisplayPage();
         }
     }
-    #endif
 }

@@ -22,6 +22,10 @@ public class SPUM_Sync : Editor
             {
                 SPB.RemoveSprite();
             }
+            if (GUILayout.Button("Reset Pivot",GUILayout.Height(50))) 
+            {
+                SPB.ResetPivot();
+            }
         }
     }
 }

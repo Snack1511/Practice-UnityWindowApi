@@ -2,7 +2,7 @@
     "Name": "Ver300",
     "Path": "Assets/SPUM/Resources/Addons",
     "Version": "",
-    "CreationDate": "2024-09-20 16:37:48",
+    "CreationDate": "2025-11-20 17:51:03",
     "SpumAnimationData": [
         {
             "index": 0,
@@ -212,7 +212,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/2_Hair/New_Hair_20"
         },
         {
-            "Name": "New_Cloth_01",
+            "Name": "NewCloth01",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -220,7 +220,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_01"
         },
         {
-            "Name": "New_Cloth_01",
+            "Name": "NewCloth01",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -228,7 +228,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_01"
         },
         {
-            "Name": "New_Cloth_01",
+            "Name": "NewCloth01",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -236,7 +236,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_01"
         },
         {
-            "Name": "New_Cloth_02",
+            "Name": "NewCloth02",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -244,7 +244,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_02"
         },
         {
-            "Name": "New_Cloth_02",
+            "Name": "NewCloth02",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -252,7 +252,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_02"
         },
         {
-            "Name": "New_Cloth_02",
+            "Name": "NewCloth02",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -260,7 +260,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_02"
         },
         {
-            "Name": "New_Cloth_03",
+            "Name": "NewCloth03",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -268,7 +268,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_03"
         },
         {
-            "Name": "New_Cloth_03",
+            "Name": "NewCloth03",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -276,7 +276,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_03"
         },
         {
-            "Name": "New_Cloth_03",
+            "Name": "NewCloth03",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -284,7 +284,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_03"
         },
         {
-            "Name": "New_Cloth_04",
+            "Name": "NewCloth04",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -292,7 +292,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_04"
         },
         {
-            "Name": "New_Cloth_05",
+            "Name": "NewCloth05",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -300,7 +300,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_05"
         },
         {
-            "Name": "New_Cloth_05",
+            "Name": "NewCloth05",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -308,7 +308,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_05"
         },
         {
-            "Name": "New_Cloth_05",
+            "Name": "NewCloth05",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -316,7 +316,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_05"
         },
         {
-            "Name": "New_Cloth_06",
+            "Name": "NewCloth06",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -324,7 +324,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_06"
         },
         {
-            "Name": "New_Cloth_06",
+            "Name": "NewCloth06",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -332,7 +332,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_06"
         },
         {
-            "Name": "New_Cloth_06",
+            "Name": "NewCloth06",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -340,7 +340,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_06"
         },
         {
-            "Name": "New_Cloth_07",
+            "Name": "NewCloth07",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -348,7 +348,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_07"
         },
         {
-            "Name": "New_Cloth_07",
+            "Name": "NewCloth07",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -356,7 +356,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_07"
         },
         {
-            "Name": "New_Cloth_07",
+            "Name": "NewCloth07",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -364,7 +364,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_07"
         },
         {
-            "Name": "New_Cloth_08",
+            "Name": "NewCloth08",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -372,7 +372,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_08"
         },
         {
-            "Name": "New_Cloth_08",
+            "Name": "NewCloth08",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -380,7 +380,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_08"
         },
         {
-            "Name": "New_Cloth_08",
+            "Name": "NewCloth08",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -388,7 +388,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_08"
         },
         {
-            "Name": "New_Cloth_09",
+            "Name": "NewCloth09",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -396,7 +396,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_09"
         },
         {
-            "Name": "New_Cloth_09",
+            "Name": "NewCloth09",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -404,7 +404,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_09"
         },
         {
-            "Name": "New_Cloth_09",
+            "Name": "NewCloth09",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -412,7 +412,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_09"
         },
         {
-            "Name": "New_Cloth_10",
+            "Name": "NewCloth10",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -420,7 +420,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_10"
         },
         {
-            "Name": "New_Cloth_10",
+            "Name": "NewCloth10",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -428,7 +428,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_10"
         },
         {
-            "Name": "New_Cloth_10",
+            "Name": "NewCloth10",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -436,7 +436,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_10"
         },
         {
-            "Name": "New_Cloth_11",
+            "Name": "NewCloth11",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -444,7 +444,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_11"
         },
         {
-            "Name": "New_Cloth_11",
+            "Name": "NewCloth11",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -452,7 +452,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_11"
         },
         {
-            "Name": "New_Cloth_11",
+            "Name": "NewCloth11",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -460,7 +460,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_11"
         },
         {
-            "Name": "New_Cloth_12",
+            "Name": "NewCloth12",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -468,7 +468,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_12"
         },
         {
-            "Name": "New_Cloth_12",
+            "Name": "NewCloth12",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -476,7 +476,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Cloth/New_Cloth_12"
         },
         {
-            "Name": "New_Cloth_12",
+            "Name": "NewCloth12",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -564,7 +564,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/4_Helmet/New_Helmet_10"
         },
         {
-            "Name": "New_Pant_01",
+            "Name": "NewPant01",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -572,7 +572,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_01"
         },
         {
-            "Name": "New_Pant_01",
+            "Name": "NewPant01",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -580,7 +580,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_01"
         },
         {
-            "Name": "New_Pant_02",
+            "Name": "NewPant02",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -588,7 +588,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_02"
         },
         {
-            "Name": "New_Pant_02",
+            "Name": "NewPant02",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -596,7 +596,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_02"
         },
         {
-            "Name": "New_Pant_03",
+            "Name": "NewPant03",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -604,7 +604,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_03"
         },
         {
-            "Name": "New_Pant_03",
+            "Name": "NewPant03",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -612,7 +612,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_03"
         },
         {
-            "Name": "New_Pant_04",
+            "Name": "NewPant04",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -620,7 +620,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_04"
         },
         {
-            "Name": "New_Pant_04",
+            "Name": "NewPant04",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -628,7 +628,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_04"
         },
         {
-            "Name": "New_Pant_05",
+            "Name": "NewPant05",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -636,7 +636,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_05"
         },
         {
-            "Name": "New_Pant_05",
+            "Name": "NewPant05",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -644,7 +644,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_05"
         },
         {
-            "Name": "New_Pant_06",
+            "Name": "NewPant06",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -652,7 +652,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_06"
         },
         {
-            "Name": "New_Pant_06",
+            "Name": "NewPant06",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -660,7 +660,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_06"
         },
         {
-            "Name": "New_Pant_07",
+            "Name": "NewPant07",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -668,7 +668,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_07"
         },
         {
-            "Name": "New_Pant_07",
+            "Name": "NewPant07",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -676,7 +676,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_07"
         },
         {
-            "Name": "New_Pant_08",
+            "Name": "NewPant08",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -684,7 +684,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_08"
         },
         {
-            "Name": "New_Pant_08",
+            "Name": "NewPant08",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -692,7 +692,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_08"
         },
         {
-            "Name": "New_Pant_09",
+            "Name": "NewPant09",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -700,7 +700,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_09"
         },
         {
-            "Name": "New_Pant_09",
+            "Name": "NewPant09",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -708,7 +708,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_09"
         },
         {
-            "Name": "New_Pant_10",
+            "Name": "NewPant10",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -716,7 +716,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_10"
         },
         {
-            "Name": "New_Pant_10",
+            "Name": "NewPant10",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -724,7 +724,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_10"
         },
         {
-            "Name": "New_Pant_11",
+            "Name": "NewPant11",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -732,7 +732,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_11"
         },
         {
-            "Name": "New_Pant_11",
+            "Name": "NewPant11",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -740,7 +740,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_11"
         },
         {
-            "Name": "New_Pant_12",
+            "Name": "NewPant12",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Left",
@@ -748,7 +748,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_12"
         },
         {
-            "Name": "New_Pant_12",
+            "Name": "NewPant12",
             "UnitType": "Unit",
             "PartType": "Pant",
             "SubType": "Right",
@@ -756,7 +756,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/5_Pant/New_Pant_12"
         },
         {
-            "Name": "New_Armor_01",
+            "Name": "NewArmor01",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -764,7 +764,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_01"
         },
         {
-            "Name": "New_Armor_01",
+            "Name": "NewArmor01",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -772,7 +772,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_01"
         },
         {
-            "Name": "New_Armor_01",
+            "Name": "NewArmor01",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
@@ -780,7 +780,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_01"
         },
         {
-            "Name": "New_Armor_02",
+            "Name": "NewArmor02",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -788,7 +788,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_02"
         },
         {
-            "Name": "New_Armor_02",
+            "Name": "NewArmor02",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -796,7 +796,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_02"
         },
         {
-            "Name": "New_Armor_02",
+            "Name": "NewArmor02",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
@@ -804,7 +804,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_02"
         },
         {
-            "Name": "New_Armor_03",
+            "Name": "NewArmor03",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -812,7 +812,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_03"
         },
         {
-            "Name": "New_Armor_04",
+            "Name": "NewArmor04",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -820,7 +820,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_04"
         },
         {
-            "Name": "New_Armor_04",
+            "Name": "NewArmor04",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -828,7 +828,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_04"
         },
         {
-            "Name": "New_Armor_05",
+            "Name": "NewArmor05",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -836,7 +836,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_05"
         },
         {
-            "Name": "New_Armor_05",
+            "Name": "NewArmor05",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -844,7 +844,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_05"
         },
         {
-            "Name": "New_Armor_05",
+            "Name": "NewArmor05",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
@@ -852,7 +852,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_05"
         },
         {
-            "Name": "New_Armor_06",
+            "Name": "NewArmor06",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -860,7 +860,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_06"
         },
         {
-            "Name": "New_Armor_06",
+            "Name": "NewArmor06",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -868,7 +868,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_06"
         },
         {
-            "Name": "New_Armor_06",
+            "Name": "NewArmor06",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
@@ -876,7 +876,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_06"
         },
         {
-            "Name": "New_Armor_07",
+            "Name": "NewArmor07",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -884,7 +884,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_07"
         },
         {
-            "Name": "New_Armor_07",
+            "Name": "NewArmor07",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -892,7 +892,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_07"
         },
         {
-            "Name": "New_Armor_07",
+            "Name": "NewArmor07",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
@@ -900,7 +900,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_07"
         },
         {
-            "Name": "New_Armor_08",
+            "Name": "NewArmor08",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -908,7 +908,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_08"
         },
         {
-            "Name": "New_Armor_08",
+            "Name": "NewArmor08",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -916,7 +916,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_08"
         },
         {
-            "Name": "New_Armor_08",
+            "Name": "NewArmor08",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
@@ -924,7 +924,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_08"
         },
         {
-            "Name": "New_Armor_09",
+            "Name": "NewArmor09",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -932,7 +932,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_09"
         },
         {
-            "Name": "New_Armor_09",
+            "Name": "NewArmor09",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -940,7 +940,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_09"
         },
         {
-            "Name": "New_Armor_09",
+            "Name": "NewArmor09",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
@@ -948,7 +948,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_09"
         },
         {
-            "Name": "New_Armor_10",
+            "Name": "NewArmor10",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -956,7 +956,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_10"
         },
         {
-            "Name": "New_Armor_10",
+            "Name": "NewArmor10",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -964,7 +964,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_10"
         },
         {
-            "Name": "New_Armor_10",
+            "Name": "NewArmor10",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
@@ -972,7 +972,7 @@
             "Path": "Addons/Ver300/0_Unit/0_Sprite/7_Armor/New_Armor_10"
         },
         {
-            "Name": "New_Armor_12",
+            "Name": "NewArmor12",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",

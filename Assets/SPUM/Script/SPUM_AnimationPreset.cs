@@ -20,8 +20,6 @@ public class SPUM_AnimationPreset : MonoBehaviour
     public SPUM_Preset animPreset;
 
     public SPUM_AnimationManager animationManager;
-
-    #if UNITY_EDITOR
     public void Init(SPUM_Preset preset, SPUM_AnimationManager manager)
     {
         animationManager = manager;
@@ -47,7 +45,6 @@ public class SPUM_AnimationPreset : MonoBehaviour
             {
                 manager.EditPresetData(Name, inputName.text);
             }
-            
         });
         ApplyPreset.onClick.AddListener(() => {
             Debug.Log("ApplyPreset " + animPreset.PresetName);
@@ -86,5 +83,4 @@ public class SPUM_AnimationPreset : MonoBehaviour
         OK.onClick.RemoveAllListeners();
         ApplyPreset.onClick.RemoveAllListeners();
     }
-    #endif
 }

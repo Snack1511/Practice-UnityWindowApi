@@ -11,8 +11,6 @@ public class SPUM_PackageButton : MonoBehaviour
     public Text _title; // 패키지의 이름
     public Toggle PackageToggleButton;
     public SPUM_UIManager _Manager;
-
-    #if UNITY_EDITOR
     void Start()
     {
         PackageToggleButton.GetComponent<SPUM_PackageButton>();
@@ -32,5 +30,4 @@ public class SPUM_PackageButton : MonoBehaviour
             }
         });
     }
-    #endif
 }

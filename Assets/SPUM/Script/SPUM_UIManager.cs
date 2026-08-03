@@ -87,8 +87,6 @@ public class SPUM_UIManager : MonoBehaviour
         _hexColorText.text = ColorUtility.ToHtmlStringRGB(color);
         NowSelectedButton.PartSpriteColor = color;
     }   
-
-    #if UNITY_EDITOR
     void Start()
     {
         
@@ -374,5 +372,4 @@ public class SPUM_UIManager : MonoBehaviour
         ToastOn("Copied Color Code");
     }
     #endregion
-    #endif
 }

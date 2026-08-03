@@ -64,5 +64,12 @@ public class SpriteSync : MonoBehaviour
         _mySprite.sprite = null;
         _nowSprite = null;
     }
+    public void ResetPivot()
+    {
+        if(_mySprite.sprite!=null)
+        {
+            _manager.ResetPivot(_mySprite);
+        }
+    }
     #endif
 }

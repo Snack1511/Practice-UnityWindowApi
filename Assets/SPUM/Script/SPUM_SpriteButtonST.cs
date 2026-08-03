@@ -22,6 +22,7 @@ public class SPUM_SpriteButtonST : MonoBehaviour
     public Button ChangeRandomButton;
     public Button ResetSpriteButton;
     public Button LockButton;
+    public Toggle MaskToggle;
     public SPUM_SpriteButtonST ToggleTarget;
     public string Direction;
     public string UnitType;
@@ -31,16 +32,13 @@ public class SPUM_SpriteButtonST : MonoBehaviour
     public string DefaultTextureName;
     public List<string> ignoreColorPart = new ();
     public SpriteMaskInteraction SpriteMask = SpriteMaskInteraction.None;
-    
     public bool IsActive 
     {
         get { return isActive; }
         set
         {
             isActive = value;
-            #if UNITY_EDITOR
             SetActiveColor(value);
-            #endif
         }
     }
 
@@ -50,13 +48,9 @@ public class SPUM_SpriteButtonST : MonoBehaviour
         set
         {
             partSpriteColor = value;
-            #if UNITY_EDITOR
             SetSpriteColor(value);
-            #endif
         }
     }
-    
-    #if UNITY_EDITOR
     void Awake(){
         partSpriteColor = InitColor;
         UnitType = string.IsNullOrEmpty(UnitType) ? "Unit" : UnitType;
@@ -111,7 +105,10 @@ public class SPUM_SpriteButtonST : MonoBehaviour
             _Manager.UIManager.ToastOn(this.name + " is Locked " + IsSpriteFixed);
         });
 
-
+        MaskToggle?.onValueChanged.AddListener((On) => {
+                SpriteMask = On ? SpriteMaskInteraction.VisibleInsideMask : SpriteMaskInteraction.None;
+                _Manager.SetSpriteVisualMaskIndex(this);
+        });
     }
 
     public void SetSpriteColor(Color color)
@@ -127,6 +124,7 @@ public class SPUM_SpriteButtonST : MonoBehaviour
             if(ToggleTarget) {
                 ToggleTarget.SpriteMask = SpriteMaskInteraction.VisibleInsideMask;
                 _Manager.SetSpriteVisualMaskIndex(ToggleTarget);
+                
             }//_Manager.SetSpriteVisualMaskIndex(ToggleTarget, SpriteMaskInteraction.VisibleInsideMask);
         }
         else
@@ -139,6 +137,7 @@ public class SPUM_SpriteButtonST : MonoBehaviour
                 _Manager.SetSpriteVisualMaskIndex(ToggleTarget);
             } //_Manager.SetSpriteVisualMaskIndex(ToggleTarget, SpriteMaskInteraction.None);
         }
+        ToggleTarget?.MaskToggle?.SetIsOnWithoutNotify(value);
     }
     public void DrawItem()
     {
@@ -178,6 +177,7 @@ public class SPUM_SpriteButtonST : MonoBehaviour
         if(IsSpriteFixed) return;
         IsActive = false;
         _Manager.RemoveSprite(this);
+        MaskToggle?.SetIsOnWithoutNotify(false);
     }
     public void ChangeLock()
     {
@@ -197,5 +197,4 @@ public class SPUM_SpriteButtonST : MonoBehaviour
     // {
     //     ToggleTarget?.RemoveSprite();
     // }
-    #endif
 }

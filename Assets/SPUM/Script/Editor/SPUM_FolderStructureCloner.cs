@@ -9,7 +9,7 @@ public class SPUM_FolderStructureCloner : EditorWindow
     private string newFolderPath = "Assets/SPUM/Resources/Addons/";
     private string selectedPath = "";
     private Vector2 scrollPosition;
-    private List<FolderNode> folderStructure = new List<FolderNode>();
+    private List<SPUMFolderNode> folderStructure = new List<SPUMFolderNode>();
 
     [MenuItem("SPUM/Create Addon Folder Structure")]
     public static void ShowWindow()
@@ -123,7 +123,7 @@ public class SPUM_FolderStructureCloner : EditorWindow
         }
         // if (GUILayout.Button("Add New Folder"))
         // {
-        //     folderStructure.Add(new FolderNode { Name = "New Folder", IsExpanded = true });
+        //     folderStructure.Add(new SPUMFolderNode { Name = "New Folder", IsExpanded = true });
         // }
         if (folderStructure.Any())
         {
@@ -141,11 +141,11 @@ public class SPUM_FolderStructureCloner : EditorWindow
         }
 
     }
-    public List<FolderNode> ParseFolderStructure(string input, char separator = '|', char indentChar = '-')
+    public List<SPUMFolderNode> ParseFolderStructure(string input, char separator = '|', char indentChar = '-')
     {
         var lines = input.Split('\n');
-        var rootNodes = new List<FolderNode>();
-        var stack = new Stack<FolderNode>();
+        var rootNodes = new List<SPUMFolderNode>();
+        var stack = new Stack<SPUMFolderNode>();
 
         foreach (var line in lines)
         {
@@ -156,11 +156,11 @@ public class SPUM_FolderStructureCloner : EditorWindow
             var trimmedLine = line.Substring(indent);
             var parts = trimmedLine.Split(separator);
 
-            var node = new FolderNode
+            var node = new SPUMFolderNode
             {
                 Name = parts[0].TrimStart(),
                 IsExpanded = parts.Length > 1 && bool.TryParse(parts[1], out bool isExpanded) && isExpanded,
-                Children = new List<FolderNode>()  // 명시적으로 Children 리스트 초기화
+                Children = new List<SPUMFolderNode>()  // 명시적으로 Children 리스트 초기화
             };
 
             while (stack.Count > 0 && stack.Count > indent)
@@ -183,11 +183,11 @@ public class SPUM_FolderStructureCloner : EditorWindow
         return rootNodes;
     }
 
-    private void DrawFolderStructure(List<FolderNode> nodes, int indent)
+    private void DrawFolderStructure(List<SPUMFolderNode> nodes, int indent)
     {
         for (int i = 0; i < nodes.Count; i++)
         {
-            FolderNode node = nodes[i];
+            SPUMFolderNode node = nodes[i];
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(indent * 20);
 
@@ -196,7 +196,7 @@ public class SPUM_FolderStructureCloner : EditorWindow
 
             if (GUILayout.Button("+", GUILayout.Width(20)))
             {
-                node.Children.Add(new FolderNode { Name = "New Folder", IsExpanded = true });
+                node.Children.Add(new SPUMFolderNode { Name = "New Folder", IsExpanded = true });
             }
 
             if (GUILayout.Button("-", GUILayout.Width(20)))
@@ -214,11 +214,11 @@ public class SPUM_FolderStructureCloner : EditorWindow
         }
     }
 
-    private List<FolderNode> GetFolderStructure(string path)
+    private List<SPUMFolderNode> GetFolderStructure(string path)
     {
-        List<FolderNode> nodes = new List<FolderNode>();
+        List<SPUMFolderNode> nodes = new List<SPUMFolderNode>();
         string folderName = Path.GetFileName(path);
-        FolderNode node = new FolderNode { Name = folderName, IsExpanded = true };
+        SPUMFolderNode node = new SPUMFolderNode { Name = folderName, IsExpanded = true };
 
         foreach (string subDir in Directory.GetDirectories(path))
         {
@@ -236,7 +236,7 @@ public class SPUM_FolderStructureCloner : EditorWindow
         EditorUtility.DisplayDialog("Success", "Folder structure cloned successfully!", "OK");
     }
 
-    private void CreateFolderStructure(List<FolderNode> nodes, string parentPath)
+    private void CreateFolderStructure(List<SPUMFolderNode> nodes, string parentPath)
     {
         foreach (var node in nodes)
         {
@@ -312,9 +312,9 @@ public class SPUM_FolderStructureCloner : EditorWindow
     }
 }
 
-public class FolderNode
+public class SPUMFolderNode
 {
     public string Name { get; set; }
     public bool IsExpanded { get; set; }
-    public List<FolderNode> Children { get; set; } = new List<FolderNode>();
+    public List<SPUMFolderNode> Children { get; set; } = new List<SPUMFolderNode>();
 }

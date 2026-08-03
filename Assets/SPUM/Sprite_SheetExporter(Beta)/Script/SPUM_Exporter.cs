@@ -29,8 +29,6 @@ public class SPUM_Exporter : MonoBehaviour
 	public List<ListItem> items = new List<ListItem>();
     // Start is called before the first frame update
 
-	#if UNITY_EDITOR
-
     public void CheckObjNow()
     {
         _objectNow = null;
@@ -323,7 +321,10 @@ public class SPUM_Exporter : MonoBehaviour
 			string filename = string.Format("{0}/SPUM/ScreenShots/{1}_{2}.png", Application.dataPath,tName,i);
 			System.IO.File.WriteAllBytes(filename, bytes);
 			Debug.Log(@"<a href=\file:///"+filename+">"+filename+"</a>");
+			
+    		#if UNITY_EDITOR
 			UnityEditor.AssetDatabase.Refresh();
+			#endif
 		}
 	
 		//takeHiResShot = false;
@@ -429,5 +430,5 @@ public class SPUM_Exporter : MonoBehaviour
 		tex2D.SetPixels32(fillPixels);
 		return tex2D;
 	}
-	#endif
+
 }

@@ -6,7 +6,6 @@ public class ColorSelect : MonoBehaviour
     public int index;
     public Image _savedColor;
 
-    #if UNITY_EDITOR
     public void SetColorSave()
     {
         SoonsoonData.Instance._spumManager.UIManager._nowSelectColorNum = index; // 인덱스 전달
@@ -31,5 +30,4 @@ public class ColorSelect : MonoBehaviour
             SoonsoonData.Instance.SaveData();
         }
     }
-    #endif
 }

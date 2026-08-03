@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 10
+  serializedVersion: 9
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -43,6 +43,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 12
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -65,6 +66,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -281,10 +285,46 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 481595588419605009, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 481595588419605009, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 481595588419605009, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2805380862094096055, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
       propertyPath: m_Name
       value: SpriteEditorPrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 4613899289502228052, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4613899289502228052, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4613899289502228052, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4613899289502228052, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6342757119685639620, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: _manager
+      value: 
+      objectReference: {fileID: 1513135268}
+    - target: {fileID: 6342757119685639620, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
+      propertyPath: _nowSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9700114f3ccb3458e8e151f449085f62, type: 3}
     - target: {fileID: 6806626994823495086, guid: e4a230169a75d304397f392e28b8f10e, type: 3}
       propertyPath: _manager
       value: 

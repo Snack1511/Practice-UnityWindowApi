@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class SPUM_PreviewItem : MonoBehaviour
 {
-    #if UNITY_EDITOR
     public Image _emptyImage;
     public Image _basicImage;
     public List<SpumPackage> spumPackages = new List<SpumPackage>();
@@ -32,5 +31,4 @@ public class SPUM_PreviewItem : MonoBehaviour
         Debug.Log("Delete");
         //_managerST.DeleteUnit(_index);
     }
-    #endif
 }

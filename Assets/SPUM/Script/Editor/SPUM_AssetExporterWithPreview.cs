@@ -3,6 +3,8 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System;
+using System.Text.RegularExpressions;
 
 public class SPUM_AssetExporterWithPreview : EditorWindow
 {
@@ -102,29 +104,45 @@ public class SPUM_AssetExporterWithPreview : EditorWindow
         {
             ExportPackage();
         }
-    }
-void SetDefaultAsset(){
-    DefaultExport.Clear();
-    string[] array = new string[] {
-        "Assets/SPUM/Resources/Addons/Legacy", 
-        "Assets/SPUM/Basic_Resources/Animator",
-        "Assets/SPUM/Basic_Resources/Materials",
-        "Assets/SPUM/Basic_Resources/Ect",
-        "Assets/SPUM/Script/Data",
-        "Assets/SPUM/Sample"
-    };
-    DefaultExport.AddRange(array);
-    
-    foreach (string asset in array)
-    {
-        if (!DefualtAssetStates.ContainsKey(asset))
+        if (GUILayout.Button("Export Clean Install Package"))
         {
-            DefualtAssetStates[asset] = true;
+            ExportCleanInstallPackage();
+            AssetDatabase.Refresh();
+            float version = GameObject.Find("SPUM_Manager").GetComponent<SPUM_Manager>()._version;
+            
+            
+            ExportPackage("Assets/SPUM/Package/SPUM"+version+".unitypackage");
+            AssetDatabase.Refresh();
+            ExportPackage("Assets/SPUM/Package/SPUM"+version+".unitypackage");
+        }
+        if (GUILayout.Button("README File Path"))
+        {
+            ReadMeFilePath();
         }
     }
-    
-    UpdateAssetsToExport();
-}
+    void SetDefaultAsset(){
+        DefaultExport.Clear();
+        DefualtAssetStates.Clear();
+        string[] array = new string[] {
+            "Assets/SPUM/Resources/Addons/Legacy", 
+            "Assets/SPUM/Core/Basic_Resources/Animator",
+            "Assets/SPUM/Core/Basic_Resources/Materials",
+            "Assets/SPUM/Core/Basic_Resources/Ect",
+            "Assets/SPUM/Core/Script/Data",
+            "Assets/SPUM/Sample"
+        };
+        DefaultExport.AddRange(array);
+        
+        foreach (string asset in array)
+        {
+            if (!DefualtAssetStates.ContainsKey(asset))
+            {
+                DefualtAssetStates[asset] = true;
+            }
+        }
+        
+        UpdateAssetsToExport();
+    }
     void RefreshSelectedAssets()
     {
         assetsToExport.Clear();
@@ -204,7 +222,7 @@ void SetDefaultAsset(){
         }
         return assets;
     }
-    void ExportPackage()
+    void ExportPackage(string Path = null)
     {
         // 선택된 폴더들의 Name 정보를 수집
         List<string> selectedNames = new List<string>();
@@ -225,13 +243,15 @@ void SetDefaultAsset(){
         {
             packageName = "SPUM_ExportedPackage"; // 기본 이름
         }
-
-        string packagePath = EditorUtility.SaveFilePanel(
-            "Export Package",
-            "",
-            packageName,
-            "unitypackage"
-        );
+        string packagePath = Path;
+        if(Path == null) {
+            packagePath = EditorUtility.SaveFilePanel(
+                        "Export Package",
+                        "",
+                        packageName,
+                        "unitypackage"
+            );
+        }
 
         if (string.IsNullOrEmpty(packagePath))
         {
@@ -245,5 +265,89 @@ void SetDefaultAsset(){
         );
 
         Debug.Log("Package exported successfully: " + packagePath);
+    }
+
+    void ExportCleanInstallPackage()
+    {
+        DeleteFilesWithExtension("Assets/SPUM/Package", ".unitypackage");
+        
+        DefaultExport.Clear();
+        DefualtAssetStates.Clear();
+        string ReadMePath = ReadMeFilePath();
+        string[] array = new string[] {
+            "Assets/SPUM/Resources/Addons/Legacy", 
+            "Assets/SPUM/Resources/Addons/Ver121", 
+            "Assets/SPUM/Resources/Addons/Ver300", 
+            "Assets/SPUM/Package", 
+            "Assets/SPUM/Core",
+            "Assets/SPUM/Scene",
+            "Assets/SPUM/Script",
+            "Assets/SPUM/Sprite_SheetExporter(Beta)",
+            "Assets/SPUM/Sprite_Editor(Beta)",
+            "Assets/SPUM/Sample",
+            ReadMePath
+            
+        };
+        DefaultExport.AddRange(array);
+
+        foreach (string asset in array)
+        {
+            if (!DefualtAssetStates.ContainsKey(asset))
+            {
+                DefualtAssetStates[asset] = true;
+            }
+        }
+        
+        UpdateAssetsToExport();
+    }
+    string ReadMeFilePath()
+    {
+        string specificPath = "Assets/SPUM"; 
+        string[] files = Directory.GetFiles(specificPath, "*ReadMe*", SearchOption.AllDirectories);
+
+        string highestVersionFile = null;
+        int highestVersion = -1;
+        Regex versionPattern = new Regex(@"\d{1,3}"); // 최대 세 자리 숫자에 매칭되는 정규 표현식
+
+        foreach (string file in files)
+        {
+            string fileNameWithoutSpacesAndSpecialChars = Regex.Replace(Path.GetFileName(file), @"[\s\W_]+", "");
+            Match match = versionPattern.Match(fileNameWithoutSpacesAndSpecialChars);
+            if (match.Success)
+            {
+                int version = int.Parse(match.Value);
+                if (version > highestVersion)
+                {
+                    highestVersion = version;
+                    highestVersionFile = file;
+                }
+            }
+        }
+
+        if (highestVersionFile != null)
+        {
+            Debug.Log("ReadMe path: " + highestVersionFile);
+        }
+        else
+        {
+           Debug.Log("ReadMe file not found");
+        }
+        return highestVersionFile;
+    }
+    void DeleteFilesWithExtension(string directory, string extension)
+    {
+        Debug.Log(directory + $"*{extension}");
+        // 지정된 디렉터리에서 확장자에 맞는 파일 삭제
+        foreach (string file in Directory.GetFiles(directory, $"*{extension}"))
+        {
+            File.Delete(file);
+            File.Delete(file+".meta");
+        }
+
+        // 하위 디렉터리도 재귀적으로 처리
+        // foreach (string subDirectory in Directory.GetDirectories(directory))
+        // {
+        //     DeleteFilesWithExtension(subDirectory, extension);
+        // }
     }
 }

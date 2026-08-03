@@ -2,14 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-using System.IO;
 using System.Linq;
 using System;
 using System.Globalization;
+using UnityEngine.SceneManagement;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -29,8 +25,6 @@ public class SPUM_Manager : MonoBehaviour
     public SPUM_Animator[] SPUM_Animator; 
     public Dictionary<string, RuntimeAnimatorController> SPUM_AnimatorDic = new();
     public Toggle RandomColorButton;
-    //public List<SPUM_PackageButton> _packageButtonList = new List<SPUM_PackageButton>(); // 스펌 생성된 패키지 버튼 리스트
-    //public Dictionary<string, bool> SpritePackagesFilterList = new Dictionary<string, bool>(); //보여질 패키지 상태 관리
     public List<SpumPackage> spumPackages;
     public List<string> StateList = new ();
     public List<string> UnitTypeList = new();
@@ -39,8 +33,8 @@ public class SPUM_Manager : MonoBehaviour
     [SerializeField] public SPUM_AnimationManager animationManager;
     [SerializeField] public SPUM_UIManager UIManager;
     [SerializeField] public SPUM_PaginationManager paginationManager;
+    public IFileHandler fileHandler => GetComponent<IFileHandler>();
 
-#if UNITY_EDITOR
 #region Unity Function
     void Awake()
     {
@@ -75,12 +69,12 @@ public class SPUM_Manager : MonoBehaviour
     }
     void Start()
     {
-       
         SPUM_AnimatorDic = SPUM_Animator.ToDictionary(item => item.Type, item => item.RuntimeAnimator);
         
         StartCoroutine(StartProcess());
         SetType("Unit");
         ItemResetAll();
+        Setup();
     }
     [ContextMenu("Setup")]
     public void Setup(){
@@ -90,32 +84,12 @@ public class SPUM_Manager : MonoBehaviour
     }
 #endregion
 
-
-    // public void SetPackageActiveStateList(){{
-    //     SpritePackagesFilterList = animationManager.SpritePackageNameList.ToDictionary(name => name, name => true);
-    // }}
-    // 타입을 설정 유닛 / 말
     public IEnumerator StartProcess()
     {
         Debug.Log("Data Load processing..");
 
         // 버전 체크 및 패키지 데이터 체크
         yield return StartCoroutine(SoonsoonData.Instance.LoadData());
-        
-
-        // bool dirChk = Directory.Exists("Assets/Resources/SPUM/SPUM_Sprites/Items");
-        // if(!dirChk)
-        //     UIManager.OnNotice("[Empty body image source]\n\nYou need setup first\nPlease Sprite images locate to Resource Folder\nPlease Read Readme.txt file",1,1);
-        //     yield return null;
-
-        //     //yield return StartCoroutine(GetPrefabList());
-        //     //프리팹 연동
-        //     ShowNowUnitNumber(); //프리팹 숫자 연동
-
-        //     SetInit();
-        //     //기본 색 연동
-        //     //UI연동.
-
 
         // 작업 색상 정보 로드
         if( SoonsoonData.Instance._soonData2._savedColorList == null ||  SoonsoonData.Instance._soonData2._savedColorList.Count.Equals(0))
@@ -214,11 +188,15 @@ public class SPUM_Manager : MonoBehaviour
         // 필터된 패키지 아이템 순환
         foreach (var package in groupedPackageData) 
         {
-            
             // 프리뷰 아이템 버튼 생성
             var PreviewItem = UIManager.CreatePreviewItem();
             var previewButton = PreviewItem.GetComponent<SPUM_PreviewItem>();
             previewButton.name = package.Key.Name;
+            
+            // 관련 패키지 데이터 주입
+            var relatedPackages = package.Items.Select(item => item.Package).Distinct().ToList();
+            previewButton.spumPackages = relatedPackages;
+            
             // Hide Other Element
             foreach (Transform tr in previewButton.transform)
             {
@@ -306,7 +284,7 @@ public class SPUM_Manager : MonoBehaviour
         }
         var anim = PreviewUnit.GetComponentInChildren<Animator>();
         PreviewPrefab._anim = anim;
-
+        if(PreviewUnit.UnitType.Equals(Type)) return;
         if(Type.Equals("Unit"))
         {
             var ElementList = PreviewUnit.ImageElement;
@@ -314,7 +292,6 @@ public class SPUM_Manager : MonoBehaviour
         }else{
             SetDefultSet(Type, "Body", Type+"1", Color.white);
         }
-        
     }
     public void SetDefultSet(string UnitType, string PartType, string TextureName, Color color)
     {
@@ -702,13 +679,15 @@ public class SPUM_Manager : MonoBehaviour
     }
     
     public void SetPrefabToPreviewPackageData(List<SpumPackage> packages){
-        if(packages.Count.Equals(0)){
+        if(packages == null || packages.Count == 0){
             PreviewPrefab.spumPackages = GetSpumLegacyData();
-        }else{
-            PreviewPrefab.spumPackages = packages;
+            Debug.Log($"Using Legacy Data - Loaded { PreviewPrefab.spumPackages.Count } packages / Total Available { spumPackages.Count }");
         }
-        // 패키지 체크
-        Debug.Log($"Prefab Package { packages.Count } / Total Package { spumPackages.Count }");
+        // else
+        // {
+        //     PreviewPrefab.spumPackages = packages;
+        //     Debug.Log($"Using Provided Data - Loaded {packages.Count} packages / Total Available {spumPackages.Count}");
+        // }
         animationManager.PlayFirstAnimation();
     }
     
@@ -801,38 +780,11 @@ public class SPUM_Manager : MonoBehaviour
 
         SpumPreviewUnit._code = prefabName;
         //SpumPreviewUnit.EditChk = false;
-        
-        GameObject prefabs = Instantiate(SpumPreviewUnit.gameObject);
-        SPUM_Prefabs SpumUnitData = prefabs.GetComponent<SPUM_Prefabs>();
-        SpumUnitData.ImageElement = SpumPreviewUnit.ImageElement;
-        SpumUnitData.spumPackages = SpumPreviewUnit.spumPackages;
-        // 비활성화된 오브젝트 삭제하기
-        var inactiveObjects = prefabs.transform.Cast<Transform>()
-            .Where(child => !child.gameObject.activeInHierarchy)
-            .Select(child => child.gameObject)
-            .ToList();
-
-        inactiveObjects.ForEach(DestroyImmediate);
-        
-        prefabs.transform.localScale = Vector3.one;
-        SpumUnitData._anim = prefabs.GetComponentInChildren<Animator>();
-        SpumUnitData._anim.runtimeAnimatorController = SPUM_AnimatorDic[SpumPreviewUnit.UnitType];
-        SpumUnitData._version = _version;
-        SpumUnitData.PopulateAnimationLists();
-        if (!Directory.Exists(unitPath))
-        {
-            Directory.CreateDirectory(unitPath);
-            AssetDatabase.Refresh();
-            Debug.Log("Folder created at: " + unitPath);
-        }  
-        GameObject SavePrefab = PrefabUtility.SaveAsPrefabAsset(prefabs,unitPath+prefabName+".prefab");
-        DestroyImmediate(prefabs);
+        var Prefab = fileHandler.Save(SpumPreviewUnit, this);
         
         UIManager.ToastOn("Saved Unit Object " + prefabName);
-        //초기화
-        var Prefab = SavePrefab.GetComponent<SPUM_Prefabs>();
-        //Prefab.PopulateAnimationLists();
-        paginationManager.AddNewPrefab(Prefab);
+        
+        //paginationManager.AddNewPrefab(Prefab);
         SpumPreviewUnit._code = "";
         UIManager.ResetUniqueID();
         //SpumPreviewUnit.EditChk = true;
@@ -848,47 +800,10 @@ public class SPUM_Manager : MonoBehaviour
 
         string prefabCode = SpumPreviewUnit._code;
 
-        SPUM_Prefabs PreviewUnit = SpumPreviewUnit.GetComponent<SPUM_Prefabs>();
+        var Prefab = fileHandler.Edit(SpumPreviewUnit, this);
 
-        //SpumPreviewUnit._code = prefabName;
-        SpumPreviewUnit._version = _version;
-        //SpumPreviewUnit.EditChk = false;
-
-        GameObject prefabs = Instantiate(SpumPreviewUnit.gameObject);
-        SPUM_Prefabs SpumUnitData = prefabs.GetComponent<SPUM_Prefabs>();
-        SpumUnitData.ImageElement = SpumPreviewUnit.ImageElement;
-        SpumUnitData.spumPackages = SpumPreviewUnit.spumPackages;
-
-        // 비활성화된 오브젝트 삭제하기
-        var inactiveObjects = prefabs.transform.Cast<Transform>()
-            .Where(child => !child.gameObject.activeInHierarchy)
-            .Select(child => child.gameObject)
-            .ToList();
-
-        inactiveObjects.ForEach(DestroyImmediate);
-
-        prefabs.transform.localScale = Vector3.one;
-        SpumUnitData._anim = prefabs.GetComponentInChildren<Animator>();
-        SpumUnitData._anim.runtimeAnimatorController = SPUM_AnimatorDic[SpumPreviewUnit.UnitType];
-
-        var sourcePath = AssetDatabase.GetAssetPath(EditPrefab);
-        Debug.Log(sourcePath);
-        if(string.IsNullOrWhiteSpace(sourcePath)) 
-        {
-            sourcePath = Path.Combine(unitPath,SpumUnitData._code );
-        }
-        var FileName = sourcePath.Split("/");
-        var path = isSaveSamePath ? sourcePath.Replace(FileName[FileName.Length-1], "") : unitPath;
-        SpumUnitData.PopulateAnimationLists();
-        GameObject SavePrefab = PrefabUtility.SaveAsPrefabAsset(prefabs,path+SpumUnitData._code+".prefab");
-        // //GameObject SavePrefab = PrefabUtility.SaveAsPrefabAsset( prefabs, unitPath + prefabCode + ".prefab" );
-        // var Prefab = SavePrefab.GetComponent<SPUM_Prefabs>();
-        // Prefab.PopulateAnimationLists();
-        DestroyImmediate(prefabs);
-
-        PreviewUnit._code = "";
+        SpumPreviewUnit._code = "";
         UIManager.ResetUniqueID();
-        //PreviewUnit.EditChk = true;
 
         UIManager.ToastOn("Edited Unit Object Unit" + prefabCode);
 
@@ -913,9 +828,9 @@ public class SPUM_Manager : MonoBehaviour
         animationManager.CloseAnimationPanels();
         animationManager.InitializeDropdown();
         // 로드 오브젝트 캔버스 활성화
-        paginationManager.LoadPrefabs();
 
         UIManager.SetActiveLoadPanel(true);
+        paginationManager.LoadPrefabs();
     }
     public List<PreviewMatchingElement> DebugList = new List<PreviewMatchingElement>();
     public List<string> MissingPackageNames = new List<string>();
@@ -1045,14 +960,6 @@ public class SPUM_Manager : MonoBehaviour
     public bool ValidateAnimationClips(SpumAnimationClip clipData)
     {
         bool clipPathExists = true;
-        // #if UNITY_EDITOR
-        // var asset = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipData.ClipPath.Replace(".anim", ""));
-        // if (asset == null)
-        // {
-        //     Debug.LogWarning($"Failed to load animation clip '{clipData.ClipPath}'.");
-        //     clipPathExists = false;
-        // }
-        // #else
         
         AnimationClip LoadClip = Resources.Load<AnimationClip>(clipData.ClipPath.Replace(".anim", ""));
         
@@ -1064,54 +971,10 @@ public class SPUM_Manager : MonoBehaviour
         return clipPathExists;
     }
     
-    public SPUM_Prefabs SaveConvertPrefabs(UnityEngine.Object asset)
+    public SPUM_Prefabs SaveConvertPrefabs(SPUM_Prefabs asset)
     {
-        var SpumPreviewUnit = PreviewPrefab;
-        string prefabName = UIManager._unitCode.text;
-
-        SpumPreviewUnit._code = prefabName;
-        //SpumPreviewUnit.EditChk = false;
-        
-        GameObject prefabs = Instantiate(previewUnit.gameObject);
-        SPUM_Prefabs SpumUnitData = prefabs.GetComponent<SPUM_Prefabs>();
-        SpumUnitData.ImageElement = DebugList;
-        SpumUnitData.spumPackages = SpumPreviewUnit.spumPackages;
-        // 비활성화된 오브젝트 삭제하기
-        
-        prefabs.transform.localScale = Vector3.one;
-        prefabs.transform.position = Vector3.zero;
-        SpumUnitData._version = _version;
-        var UniqueID = System.DateTime.Now.ToString("yyyyMMddHHmmssfff");
-        SpumUnitData._code = "SPUM" + "_" + UniqueID;
-        SpumUnitData._anim.Rebind();
-        var sourcePath = AssetDatabase.GetAssetPath(asset);
-        var FileName = sourcePath.Split("/");
-        var path = isSaveSamePath ? sourcePath.Replace(FileName[FileName.Length-1], "") : unitPath;
-        Debug.Log(sourcePath.Replace(asset.name+".prefab", "").Replace(asset.name+".Prefab", "")  );
-        GameObject SavePrefab = PrefabUtility.SaveAsPrefabAsset(prefabs,path+SpumUnitData._code+".prefab");
-        DestroyImmediate(prefabs);
-        AssetDatabase.Refresh();
-        UIManager.ToastOn("Saved Unit Object " + prefabName);
-        //초기화
-        SpumPreviewUnit._code = "";
-        DebugList.Clear();
-        var Prefab = SavePrefab.GetComponent<SPUM_Prefabs>();
-        Prefab.PopulateAnimationLists();
-        return Prefab;
-        
-    }
-    public void MoveOldPrefabBackup(UnityEngine.Object asset)
-    {
-        var sourcePath = AssetDatabase.GetAssetPath(asset);
-        if (!Directory.Exists(unitBackUpPath))
-        {
-            Directory.CreateDirectory(unitBackUpPath);
-            AssetDatabase.Refresh();
-            Debug.Log("Folder created at: " + unitBackUpPath);
-        }  
-        var destinationPath = unitBackUpPath+asset.name+"_Backup.Prefab";
-        AssetDatabase.MoveAsset(sourcePath, destinationPath);
-        AssetDatabase.Refresh();
+        return fileHandler.SaveConvertPrefabs(asset, this);
+        // 코어의 수정 작업
     }
     public List<PreviewMatchingElement> SetLegacyHorseData(){
         string PackageName = "Legacy";
@@ -1150,171 +1013,7 @@ public class SPUM_Manager : MonoBehaviour
         }
         return ListElement;
     }
-    public (int, List<PreviewMatchingElement>) ValidateSpumFile(SPUM_Prefabs PrefabObject)
-    {
-        var SpumPrefab = PrefabObject;
-        var version = SpumPrefab._version;
-        var UnitType =  SpumPrefab.UnitType;
-        var MatchingList = SpumPrefab.GetComponentsInChildren<SPUM_MatchingList>();
-        bool isMatchingListExist = MatchingList != null || MatchingList.Length > 0; // 2.0 시스템
-        bool isVersionSame = SpumPrefab._version == version;
-        var NewDataListElement = new List<PreviewMatchingElement>();
-        var OldData = SpumPrefab.GetComponentInChildren<SPUM_SpriteList>(); // 1.0 시스템
-        if(OldData == null) {
-            //DebugList.AddRange(PrefabObject.ImageElement);
-            return (2, PrefabObject.ImageElement);
-        }
-        var horseString = OldData._spHorseString;
 
-        var path = AssetDatabase.GetAssetPath(PrefabObject);
-        Debug.Log(path);
-        bool HorseExist = !string.IsNullOrWhiteSpace(horseString);
-        // var horseList = OldData._spHorseSPList._spList;
-        // var HorseBodySet = new List<PreviewMatchingElement>();
-        // foreach (var renderer in horseList)
-        // {
-        //     HorseBodySet.AddRange(StringToSpumElementList("Horse", (horseString, renderer)));
-        // }
-        // NewDataListElement.AddRange(HorseBodySet);
-        if(HorseExist){
-            var horseReset = SetLegacyHorseData();
-            NewDataListElement.AddRange(horseReset);
-        }
-
-        string Unitype = "Unit";
-
-        // 메인 바디 
-        
-
-
-        var hairString = OldData._hairListString;
-        var hairList = OldData._hairList;
-        var TuppleHair = CreateTupleList(hairString, hairList);
-        //LoopStringColor(TuppleHair);
-        var MaskSet = new List<PreviewMatchingElement>();
-        foreach (var tuple in TuppleHair)
-        {
-            // 투구 및 헤어
-            MaskSet.AddRange(StringToSpumElementList(Unitype, tuple));
-        }
-        //Debug.Log("count " + MaskSet.Count);
-        List<string> requiredPartTypes = new List<string> { "Hair", "Helmet"};
-        bool result = requiredPartTypes.All(partType => MaskSet.Any(element => element.PartType == partType));
-        if(result) 
-        {
-            foreach (var item in MaskSet)
-            {
-                if(item.PartType.Equals("Hair")) item.MaskIndex = 1;
-            }
-        }
-
-        NewDataListElement.AddRange(MaskSet);
-        var clothString = OldData._clothListString;
-        var clothList = OldData._clothList;
-        var TuppleCloth = CreateTupleList(clothString, clothList);
-        foreach (var tuple in TuppleCloth)
-        {
-            NewDataListElement.AddRange(StringToSpumElementList(Unitype, tuple));
-        }
-
-        var armorString = OldData._armorListString;
-        var armorList = OldData._armorList;
-        var TuppleArmor = CreateTupleList(armorString, armorList);
-        foreach (var tuple in TuppleArmor)
-        {
-            NewDataListElement.AddRange(StringToSpumElementList(Unitype, tuple));
-        }
-
-        var pantString = OldData._pantListString;
-        var pantList = OldData._pantList;
-        var TupplePant = CreateTupleList(pantString, pantList);
-        foreach (var tuple in TupplePant)
-        {
-            NewDataListElement.AddRange(StringToSpumElementList(Unitype, tuple));
-        }
-
-        var weaponString = OldData._weaponListString;
-        var weaponList = OldData._weaponList;
-        var TuppleWeapon = CreateTupleList(weaponString, weaponList);
-        foreach (var tuple in TuppleWeapon)
-        {
-            // 예외 케이스 설정 / 왼쪽 오른쪽
-            var WeaponsData = StringToSpumElementList(Unitype, tuple);
-            NewDataListElement.AddRange(WeaponsData);
-        }
-
-        var backString = OldData._backListString;
-        var backList = OldData._backList;
-        var TuppleBack = CreateTupleList(backString, backList);
-        foreach (var tuple in TuppleBack)
-        {
-            NewDataListElement.AddRange(StringToSpumElementList(Unitype, tuple));
-        }
-
-
-
-        var bodyString = OldData._bodyString;
-        var bodyList = OldData._bodyList;
-        var BodySet = new List<PreviewMatchingElement>();
-        foreach (var renderer in bodyList)
-        {
-            BodySet.AddRange(StringToSpumElementList(Unitype, (bodyString, renderer)));
-        }
-        // if(!BodySet.Count.Equals(6))
-        // {
-        //     BodySet.AddRange(DefaultData("Unit", "Body", "Human_1", Color.white));
-        // }
-        // UIManager.ConvertView.WarningText.SetActive(BodySet.Count < 6);
-        //Debug.Log(BodySet.Count + " ======= Body Count");
-        NewDataListElement.AddRange(BodySet);
-
-        //DefaultData("Unit", "Eye", "Eye0", new Color32(71, 26,26, 255));
-        var eyeString = "";
-        var eyeList = OldData._eyeList; 
-        var EyeColorSet = new List<PreviewMatchingElement>();
-        foreach (var renderer in eyeList)
-        {
-            EyeColorSet.AddRange(StringToSpumElementList(Unitype, (eyeString, renderer)));
-        }
-    
-        var EyeDistict = EyeColorSet.Distinct().GroupBy(x => new { x.Structure }).Select(g => g.First()).ToList();
-        //Debug.Log(EyeDistict.Count + " ======= EyeDistict Count");
-        // UIManager.ConvertView.WarningEyeText.SetActive(EyeDistict.Count.Equals(0));
-        // if(EyeDistict.Count.Equals(0)){
-        //     EyeDistict.AddRange(DefaultData("Unit", "Eye", "Eye0", new Color32(71, 26,26, 255)));
-        // }
-        foreach (var item in EyeDistict)
-        {
-            foreach (var sprite in eyeList)
-            {
-                if(sprite.name.Equals(item.Structure)) 
-                { 
-                    item.Color = sprite.color; 
-                }
-            }
-        }
-        // foreach (var item in EyeDistict)
-        // {
-        //     if(item.PartType.Equals("Eye")) Debug.Log(item.Color);
-        // }
-        NewDataListElement.AddRange(EyeDistict);
-        //Debug.Log("Unit? " + string.IsNullOrWhiteSpace(horseString));
-        
-        var distinct = NewDataListElement.Distinct()
-        .GroupBy(x => new { x.UnitType, x.PartType, x.Structure, x.Dir })
-            .Select(g => g.First())
-            .ToList();
-        //Debug.Log( " distinct.Count " + distinct.Count);
-        //DebugList.AddRange(distinct);
-        return (1, distinct);
-        // 버전이 다르거나, 구조가 다르거나, 컴포넌트가 없거나 
-        // 체크 유닛 타입
-        // 체크 패키지 버전
-        // 재구축
-        //GameObject prefabs = Instantiate(SpumPreviewUnit.gameObject);
-        // GameObject tObj = PrefabUtility.SaveAsPrefabAsset(prefabs,unitPath+prefabName+".prefab");
-        // DestroyImmediate(prefabs);
-    }
     public List<PreviewMatchingElement> DefaultData(string UnitType, string PartType, string TextureName, Color color)
     {
         string PackageName ="Legacy";
@@ -1345,119 +1044,6 @@ public class SPUM_Manager : MonoBehaviour
             part.Structure = item.Texture.SubType.Equals(item.Texture.Name) ? PartType : item.Texture.SubType; // item.Texture.SubType.Equals(item.Texture.Name) ? PartType : item.Texture.SubType;
             part.MaskIndex = 0;
             part.Color = color;
-
-            ListElement.Add(part);
-        }
-        return ListElement;
-    }
-    public List<PreviewMatchingElement> StringToSpumElementList(string UnitType, (string, SpriteRenderer) Tuple)
-    {
-        var PartPath = Tuple.Item1;
-        string unitType = UnitType;
-        //bool isPackage = PartPath.Contains("Packages");
-        string PackageName = "Legacy";
-        string pattern = @"Packages\/([^\/]+)\/";
-        // 패키지는 없지만 이미지 이름은 있는 경우
-        bool isPackage = false;
-        
-        System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(PartPath, pattern);
-        if (match.Success)
-        {
-            PackageName = match.Groups[1].Value;
-            isPackage = true;
-        }
-        if(PackageName.Equals("Heroes")) PackageName = "RetroHeroes";
-        bool missingPackage = isPackage && !SpritePackageNameList.Contains(PackageName);
-        if(missingPackage)
-        {
-            //예외 처리
-            
-            //Debug.Log("MissingPackage");
-            MissingPackageNames.Add(PackageName);
-        }
-
-        // 경로가 없지만 이미지 리소스는 있는경우 , 패키지 이름은 매칭되지만 패키지 리스트에 없는 경우
-        if( ((PartPath == "") && (Tuple.Item2.sprite != null)) || missingPackage){
-            var path = AssetDatabase.GetAssetPath(Tuple.Item2.sprite);
-            //Assets/SPUM/Resources/Elf/0_Unit/0_Sprite/0_Body/New_Elf_1.png
-            PartPath = path;
-            //Debug.Log(path);
-            string pattern2 = @"Addons\/(.*?)\/0_Unit";
-
-            // 등록된 이미지 리소스 경로로 매칭 시작
-            System.Text.RegularExpressions.Match match2 = System.Text.RegularExpressions.Regex.Match(PartPath, pattern2);
-            if (match2.Success)
-            {
-                PackageName = match2.Groups[1].Value;
-            }
-            
-
-        }
-        if(string.IsNullOrWhiteSpace(PartPath)) return new List<PreviewMatchingElement>();
-        //var SpriteRendererData = Tuple.Item2;
-        
-
-
-        var PathArray =  PartPath.Split("/");
-        string PartType = System.Text.RegularExpressions.Regex.Replace(PathArray[PathArray.Length-2],@"[^a-zA-Z가-힣\s]", "");
-        // if(Tuple.Item1 != "") {
-        //     Debug.Log("=====================" +Tuple.Item1);
-        //     var PathArray2 = Tuple.Item1.Split('/');
-        //     PartType = System.Text.RegularExpressions.Regex.Replace(PathArray2[PathArray2.Length-2],@"[^a-zA-Z가-힣\s]", "");
-        //     Debug.Log("=====================" +PartType);
-        // }
-        string NoNamePackagePartType = System.Text.RegularExpressions.Regex.Replace(PathArray[PathArray.Length-3],@"[^a-zA-Z가-힣\s]", "");
-        PartType = PartPath.Contains("BodySource") ? "Body" : NoNamePackagePartType.Equals("Weapons") ? "Weapons" : PartType; // 구 바디 예외
-
-        // string NoNamePackagePartType = System.Text.RegularExpressions.Regex.Replace(PathArray[PathArray.Length-2],@"[^a-zA-Z가-힣\s]", "");
-        // PartType = PartPath.Contains("BodySource") ? "Body" :  PartType; // 구 바디 예외
-        string PartName = System.Text.RegularExpressions.Regex.Replace(PathArray[PathArray.Length-1], @"\..*", "");
-        //Debug.Log(PackageName+"/"+unitType +"/"+ PartType+"/"+PartName + "/" + NoNamePackagePartType);
-        if(NoNamePackagePartType.Equals("BasicResources")) 
-        {
-            PartType = PartType.Replace("Backup", "");
-        }
-        var dir = "";
-        bool isHide = false;
-        if(PartType.Equals("Helmet"))
-        {
-            if(Tuple.Item2.name == "12_Helmet2") { dir = "Front"; isHide = Tuple.Item1 == ""; }
-            if(Tuple.Item2.name == "11_Helmet1") { dir = "Front"; isHide = Tuple.Item1 == ""; }
-        }
-
-
-        if(PartType.Equals("Weapons"))
-        {
-            if(Tuple.Item2.name == "R_Weapon") { dir = "Right"; isHide = Tuple.Item1 == ""; }
-            if(Tuple.Item2.name == "R_Shield") { dir = "Right"; isHide = Tuple.Item1 == ""; }
-            if(Tuple.Item2.name == "L_Weapon") { dir = "Left";  isHide = Tuple.Item1 == ""; }
-            if(Tuple.Item2.name == "L_Shield") { dir = "Left";  isHide = Tuple.Item1 == ""; }
-            // r weapon
-            // r shield
-            // l weapon
-            // l shield
-            //Debug.Log(PartName + "/" +dir);
-        }
-        //Debug.Log(PackageName + " : " + unitType+ " : " + PartType+ " : " + PartName);
-        //패키지 구룹화
-        var ExtractList = ExtractTextureData(PackageName, unitType, PartType, PartName);
-        
-        var ListElement = new List<PreviewMatchingElement>();
-        foreach (var item in ExtractList)
-        {
-            //PartColor = Tuple.Item2.color.Equals(Color.white) ? PartColor : Tuple.Item2.color;
-            //Debug.Log($"{ item.Name } { item.UnitType } { item.PartType } { item.PartSubType }");
-            //Debug.Log($"Path: {PartType}, SubType: { item.SubType}");
-            var part = new PreviewMatchingElement();
-            part.UnitType = UnitType;
-            part.PartType = PartType;
-            part.PartSubType = item.PartSubType;
-            part.Dir = dir;//ButtonData.Direction;
-            part.ItemPath =  isHide ? "" : item.Path;
-            part.Structure = item.SubType.Equals(item.Name) ? PartType : item.SubType;
-            part.MaskIndex = 0;//(int)ButtonData.SpriteMask;
-            part.Color = Tuple.Item2.color;//ButtonData.PartSpriteColor;
-            //Debug.Log(PartType + "/" +Tuple.Item2.color.ToString());
 
             ListElement.Add(part);
         }
@@ -1504,16 +1090,6 @@ public class SPUM_Manager : MonoBehaviour
         return ModifiyList;
     }
 
-    List<(string, SpriteRenderer)> CreateTupleList(List<string> stringList, List<SpriteRenderer> spriteRendererList)
-    {
-        // 두 리스트의 길이가 다를 경우 짧은 쪽에 맞춥니다.
-        int minLength = Mathf.Min(stringList.Count, spriteRendererList.Count);
-
-        // LINQ를 사용하여 튜플 리스트 생성
-        return stringList.Take(minLength)
-                         .Zip(spriteRendererList.Take(minLength), (s, sr) => (s, sr))
-                         .ToList();
-    }
     public List<SpumTextureData> ExtractTextureData(string packageName, string unitType, string partType, string textureName)
     {
         var query = spumPackages.AsEnumerable();
@@ -1550,11 +1126,9 @@ public class SPUM_Manager : MonoBehaviour
     }
 
     //Unit Delete
-    public void DeleteUnit(UnityEngine.Object prefab)
+    public void DeleteUnit(SPUM_Prefabs prefab)
     {
-        string pathToDelete = AssetDatabase.GetAssetPath(prefab);
-        Debug.Log(pathToDelete); 
-        AssetDatabase.DeleteAsset(pathToDelete);
+        fileHandler.Delete(prefab);
 
         UIManager.ShowNowUnitNumber();
         UIManager.SetActiveLoadPanel(false);
@@ -1577,15 +1151,38 @@ public class SPUM_Manager : MonoBehaviour
         // 일치하는 spriteName이 없으면 첫 번째 항목 반환
         return foundSprite != null ? foundSprite : sprites[0];
     }
-    //Resolve
-    public void CheckVesionFile()
+
+
+#region Scene Move
+
+    #if UNITY_EDITOR
+    public UnityEditor.SceneAsset ExportScene;
+    #endif
+    public string sceneName;
+
+    public void LoadExportScene()
     {
-        if(File.Exists("Assets/SPUM/Script/SPUM_TexutreList.cs"))
+        #if UNITY_EDITOR
+        if (ExportScene != null)
         {
-            Debug.Log("Filex Exits, will delete it");
-            FileUtil.DeleteFileOrDirectory("Assets/SPUM/Script/SPUM_TexutreList.cs");
+            string scenePath = UnityEditor.AssetDatabase.GetAssetPath(ExportScene);
+            sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+        }
+        else
+        {
+            Debug.LogWarning("ExportScene is not assigned.");
+        }
+        #endif
+
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        }
+        else
+        {
+            Debug.LogWarning("Scene name is not assigned.");
         }
     }
-    #endif
-    //Package 
+
+#endregion
 }

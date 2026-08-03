@@ -30,18 +30,13 @@ public class SPUM_AssetHelper : AssetPostprocessor
     {
         HelpWindow.ShowWindow(assetName);
     }
-    // static bool ContainsPattern(string fileName)
-    // {
-    //     string pattern = @"SPUM\d+\.unitypackage$";
-    //     return Regex.IsMatch(fileName, pattern);
-    // }
 
 }
 
 public class HelpWindow : EditorWindow
 {
     public string scenePath = "Assets/SPUM/Scenes/SPUM_Scene.unity";
-    private string packagePath = "Assets/SPUM/Basic_Resources/Package/SPUM170.unitypackage";
+    private string packagePath => GetPackageFilePath();
     private string rootPath = "Assets/SPUM";
     private List<(string text, string url, int startIndex, int endIndex)> links = new List<(string, string, int, int)>();
     // 제외할 파일 및 디렉토리 목록
@@ -52,7 +47,9 @@ public class HelpWindow : EditorWindow
  
     private List<string> excludedDirectories = new List<string>
     {
-        "Assets/SPUM/Basic_Resources/Package/",  // 삭제하지 않을 디렉토리
+        //"Assets/SPUM/Core/Basic_Resources/Package", // 1.7.7 버전 
+        "Assets/SPUM/Package/",  // 1.8.0 이후 유지
+        "Assets/SPUM/Preset/",
         "Assets/SPUM/Resources/",
         "Assets/SPUM/Backup/"
     };
@@ -63,10 +60,11 @@ public class HelpWindow : EditorWindow
     private Rect contentRect;
     public static void ShowWindow(string assetName)
     {
+        
         HelpWindow window = GetWindow<HelpWindow>("SPUM PIXEL UNIT MAKER");
         
         window.assetName = assetName;
-        window.helpImage = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/SPUM//Basic_Resources/Package/Image/HelpImage.png");
+        window.helpImage = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/SPUM/Package/Image/HelpImage.png");
         if (window.helpImage != null)
         {
             window.minSize = new Vector2(window.helpImage.width, 600); // 이미지 너비에 맞게 고정
@@ -87,8 +85,9 @@ public class HelpWindow : EditorWindow
         {
             window.readmeContent = "README file not found.";
         }
+        window.RenameFolderUsingFileUtil("Assets/SPUM/Resources/Addons/Legacy/1_Horse/0_Spite", "0_Sprite");
         window.Show();
-
+        
     }
     string ParseMarkdown(string markdown)
     {
@@ -185,13 +184,18 @@ public class HelpWindow : EditorWindow
         {
             this.Close();
         }
-        packagePath = EditorGUILayout.TextField("Package Path", packagePath);
+   
+        EditorGUILayout.TextField("Package Path", packagePath);
         rootPath = EditorGUILayout.TextField("Root Path", rootPath);
         var styles = new GUIStyle(GUI.skin.button);
         styles.normal.textColor = Color.blue;
         styles.fontSize = 20;
         if (GUILayout.Button("Clean Install LocalPath Package ", styles, GUILayout.Height(60)))
         {
+            if(packagePath == null || packagePath == "") {
+                Debug.Log("No packagePath exists.");
+                return;
+            }
             if(EditorUtility.DisplayDialog("Warrning",  "All Spum paths except for the one below will be deleted. \n" + 
             excludedDirectories[0] + "\n"
             + excludedDirectories[1] + "\n"
@@ -200,6 +204,8 @@ public class HelpWindow : EditorWindow
             {
                 if(EditorUtility.DisplayDialog("Warrning",   "Are you sure you want to proceed?", "Yes","No"))
                 {
+                    MovePackageToMainPath();
+                    RenameFolderUsingFileUtil("Assets/SPUM/Resources/Addons/Legacy/1_Horse/0_Spite", "0_Sprite");
                     DeleteAllExceptExcluded();
                     ImportNewPackage();
                     DeleteEmptyCSFiles();
@@ -208,6 +214,10 @@ public class HelpWindow : EditorWindow
             }
 
         }
+        // if (GUILayout.Button("package Path", styles, GUILayout.Height(60)))
+        // {
+        //     GetPackageFilePath();
+        // }
         // if (GUILayout.Button("Clean Install AssetStorePath package ", styles, GUILayout.Height(60)))
         // {
         //     if(EditorUtility.DisplayDialog("Warrning",  "All Spum paths except for the one below will be deleted. \n" + 
@@ -312,53 +322,200 @@ public class HelpWindow : EditorWindow
 
         return isExcludedFile || isExcludedDirectory;
     }
+    string GetPackageFilePath()
+    {
+        // 검색할 경로들 정의
+        string[] searchPaths = new string[]
+        {
+            "Assets/SPUM/Package/",
+            "Assets/SPUM/Basic_Resources/Package"  // 두 번째 경로 (원하는 경로로 변경)
+        };
+
+        string highestVersionFile = null;
+        int highestVersion = -1;
+        Regex versionPattern = new Regex(@"\d{1,3}");
+
+        // 각 경로에서 파일 검색
+        foreach (string path in searchPaths)
+        {
+            if (!Directory.Exists(path))
+                continue;
+
+            string[] files = Directory.GetFiles(path, "SPUM*.unitypackage", SearchOption.AllDirectories);
+
+            foreach (string file in files)
+            {
+                string fileNameWithoutSpacesAndSpecialChars = Regex.Replace(Path.GetFileName(file), @"[\s\W_]+", "");
+                Match match = versionPattern.Match(fileNameWithoutSpacesAndSpecialChars);
+                if (match.Success)
+                {
+                    int version = int.Parse(match.Value);
+                    if (version > highestVersion)
+                    {
+                        highestVersion = version;
+                        highestVersionFile = file;
+                    }
+                }
+            }
+        }
+
+        if (highestVersionFile != null)
+        {
+            Debug.Log("Package Path: " + highestVersionFile);
+        }
+        else
+        {
+            Debug.Log("Package Not Found in any search paths");
+        }
+        return highestVersionFile;
+    }
+    
+    public void MovePackageToMainPath()
+    {
+        string mainPath = "Assets/SPUM/Package/";
+        string packageFilePath = GetPackageFilePath();
+        
+        if (string.IsNullOrEmpty(packageFilePath))
+        {
+            Debug.LogError("No package file found to move.");
+            return;
+        }
+        
+        // 이미 메인 경로에 있는 경우
+        if (packageFilePath.StartsWith(mainPath))
+        {
+            Debug.Log("Package file is already in the main path.");
+            return;
+        }
+        
+        // 메인 경로가 없으면 생성
+        if (!Directory.Exists(mainPath))
+        {
+            Directory.CreateDirectory(mainPath);
+            Debug.Log($"Created directory: {mainPath}");
+        }
+        
+        string fileName = Path.GetFileName(packageFilePath);
+        string destinationPath = Path.Combine(mainPath, fileName);
+        
+        try
+        {
+            // 대상 파일이 이미 존재하는 경우 처리
+            if (File.Exists(destinationPath))
+            {
+                if (EditorUtility.DisplayDialog("File Exists", 
+                    $"File {fileName} already exists in {mainPath}. Overwrite?", 
+                    "Yes", "No"))
+                {
+                    FileUtil.DeleteFileOrDirectory(destinationPath);
+                }
+                else
+                {
+                    Debug.Log("Move operation cancelled by user.");
+                    return;
+                }
+            }
+            
+            // 파일 이동
+            FileUtil.MoveFileOrDirectory(packageFilePath, destinationPath);
+            
+            // .meta 파일도 함께 이동
+            string metaSource = packageFilePath + ".meta";
+            string metaDest = destinationPath + ".meta";
+            if (File.Exists(metaSource))
+            {
+                FileUtil.MoveFileOrDirectory(metaSource, metaDest);
+            }
+            
+            AssetDatabase.Refresh();
+            Debug.Log($"Successfully moved package to: {destinationPath}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to move package file: {e.Message}");
+        }
+    }
+    public void RenameFolderUsingFileUtil(string oldPath, string newName)
+    {
+        if (!Directory.Exists(oldPath))
+        {
+            Debug.Log($"Directory not found: {oldPath}");
+            return;
+        }
+
+        string parentPath = Path.GetDirectoryName(oldPath);
+        string newPath = Path.Combine(parentPath, newName);
+
+        try
+        {
+            // FileUtil을 사용한 이동
+            FileUtil.MoveFileOrDirectory(oldPath, newPath);
+
+            // .meta 파일도 함께 처리
+            string oldMetaPath = oldPath + ".meta";
+            string newMetaPath = newPath + ".meta";
+
+            if (File.Exists(oldMetaPath))
+            {
+                FileUtil.MoveFileOrDirectory(oldMetaPath, newMetaPath);
+            }
+
+            AssetDatabase.Refresh();
+            Debug.Log($"Successfully renamed folder from {oldPath} to {newPath}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to rename folder: {e.Message}");
+        }
+    }
     [MenuItem("SPUM/Clean Install")]
-    public static void ShowPackage(){
-string directoryPath = @"Assets/SPUM/";
-
-string pattern = @"ReadMe\s*[-\s]*([\d\.]+)\.txt$";
-
-var files = Directory.GetFiles(directoryPath, "ReadMe*.txt");
-foreach (var item in files )
-{
-    Debug.Log(item);
-}
-var matchedFiles = files
-    .Select(file => new
+    public static void ShowPackage()
     {
-        FileName = file,
-        Match = Regex.Match(Path.GetFileName(file), pattern)
-    })
-    .Where(x => x.Match.Success)
-    .Select(x => new
-    {
-        FileName = x.FileName,
-        Version = new System.Version(x.Match.Groups[1].Value.Trim())  
-    })
-    .ToList();
+        string directoryPath = @"Assets/SPUM/";
 
-foreach (var file in matchedFiles)
-{
-    Debug.Log($"Matched File: {file.FileName}, Version: {file.Version}");
-}
+        string pattern = @"ReadMe\s*[-\s]*([\d\.]+)\.txt$";
 
-var maxVersionFile = matchedFiles
-    .OrderByDescending(x => x.Version)
-    .FirstOrDefault();
+        var files = Directory.GetFiles(directoryPath, "ReadMe*.txt");
+        foreach (var item in files )
+        {
+            Debug.Log(item);
+        }
+        var matchedFiles = files
+            .Select(file => new
+            {
+                FileName = file,
+                Match = Regex.Match(Path.GetFileName(file), pattern)
+            })
+            .Where(x => x.Match.Success)
+            .Select(x => new
+            {
+                FileName = x.FileName,
+                Version = new System.Version(x.Match.Groups[1].Value.Trim())  
+            })
+            .ToList();
 
-if (maxVersionFile != null)
-{
-    Debug.Log($"Highest Version File: {maxVersionFile.FileName}");
-    ShowWindow(maxVersionFile.FileName);
-}
-else
-{
-    Debug.Log("No matching ReadMe files found.");
-}
+        foreach (var file in matchedFiles)
+        {
+            Debug.Log($"Matched File: {file.FileName}, Version: {file.Version}");
+        }
+
+        var maxVersionFile = matchedFiles
+            .OrderByDescending(x => x.Version)
+            .FirstOrDefault();
+
+        if (maxVersionFile != null)
+        {
+            Debug.Log($"Highest Version File: {maxVersionFile.FileName}");
+            ShowWindow(maxVersionFile.FileName);
+        }
+        else
+        {
+            Debug.Log("No matching ReadMe files found.");
+        }
     }
     private void ImportNewPackage()
     {
-        string directoryPath = @"Assets/SPUM/Basic_Resources/Package/";
+        string directoryPath = @"Assets/SPUM/Package/";
         string pattern = @"SPUM(\d+)\.unitypackage$";
         var files = Directory.GetFiles(directoryPath);
 

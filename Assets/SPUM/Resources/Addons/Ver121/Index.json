@@ -2,7 +2,7 @@
     "Name": "Ver121",
     "Path": "Assets/SPUM/Resources/Addons",
     "Version": "",
-    "CreationDate": "2024-09-20 16:37:48",
+    "CreationDate": "2025-11-20 17:51:03",
     "SpumAnimationData": [],
     "SpumTextureData": [
         {
@@ -126,7 +126,7 @@
             "Path": "Addons/Ver121/0_Unit/0_Sprite/1_FaceHair/Normal_Mustache2"
         },
         {
-            "Name": "Normal_Cloth1",
+            "Name": "NormalCloth1",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Body",
@@ -134,7 +134,7 @@
             "Path": "Addons/Ver121/0_Unit/0_Sprite/2_Cloth/Normal_Cloth1"
         },
         {
-            "Name": "Normal_Cloth1",
+            "Name": "NormalCloth1",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Left",
@@ -142,7 +142,7 @@
             "Path": "Addons/Ver121/0_Unit/0_Sprite/2_Cloth/Normal_Cloth1"
         },
         {
-            "Name": "Normal_Cloth1",
+            "Name": "NormalCloth1",
             "UnitType": "Unit",
             "PartType": "Cloth",
             "SubType": "Right",
@@ -174,7 +174,7 @@
             "Path": "Addons/Ver121/0_Unit/0_Sprite/4_Helmet/Normal_Helmet3"
         },
         {
-            "Name": "Normal_Armor1",
+            "Name": "NormalArmor1",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Body",
@@ -182,7 +182,7 @@
             "Path": "Addons/Ver121/0_Unit/0_Sprite/5_Armor/Normal_Armor1"
         },
         {
-            "Name": "Normal_Armor1",
+            "Name": "NormalArmor1",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Left",
@@ -190,7 +190,7 @@
             "Path": "Addons/Ver121/0_Unit/0_Sprite/5_Armor/Normal_Armor1"
         },
         {
-            "Name": "Normal_Armor1",
+            "Name": "NormalArmor1",
             "UnitType": "Unit",
             "PartType": "Armor",
             "SubType": "Right",
