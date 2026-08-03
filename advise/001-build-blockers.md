@@ -85,22 +85,28 @@ namespace Script
 
 ---
 
-## 1-3. `LobbyScene`이 Build Settings에 없다 — 첫 화면 이후 진행 불가
+## ~~1-3. `LobbyScene`이 Build Settings에 없다 — 첫 화면 이후 진행 불가~~
 
-> ⚠️ **부분 해결** — 검사기는 들어갔으나(`f49d92e`) **등록 자체는 아직 안 됐다.**
-> 아래 권장 2번(`SceneRegistryValidator`)이 `Assets/Editor/SceneRegistryValidator.cs`로 구현됐고,
-> 에디터 재컴파일마다 자동 실행된다. 현재 실제 출력:
->
-> ```
-> [SceneRegistryValidator] ESceneType.LobbyScene 이 Build Settings 에 없습니다. ← Error
-> [SceneRegistryValidator] ESceneType.MenuScene 이 Build Settings 에 없습니다.  ← Error
-> [SceneRegistryValidator] Build Settings 의 'GameScene' 에 대응하는 항목 없음   ← Warning
-> ```
->
-> **이제 조용히 지나가지 않는다.** 남은 것은 에디터에서 Build Profiles에 두 씬을 추가하는 일이다.
-> 그 전까지 부팅은 로딩 씬에서 멈춘다.
+✅ **해결** — 검사기 `f49d92e`, 씬 등록 `b8f969f`.
 
-**근거**
+아래 권장 1번(등록)과 2번(정합성 검사기)이 모두 처리됐다.
+
+- `Assets/Editor/SceneRegistryValidator.cs` — `ESceneType` ↔ Build Settings 양방향 대조.
+  `[InitializeOnLoad]`로 에디터 재컴파일마다 자동 실행되고, `Tools > Validate Scene Registry`로 수동 실행도 된다.
+- `LobbyScene` · `MenuScene`을 Build Settings에 등록. **검사기의 Error 두 건이 사라졌다.**
+
+Windows 스탠드얼론 빌드로 씬 6개가 전부 포함되는 것을 확인했다
+(`StartScene` / `LoadingScene` / `LobbyScene` / `MenuScene` / `TestScene` / `GameScene`).
+
+> ⚠️ **남은 Warning 1건** — `GameScene`이 등록되어 있으나 `ESceneType`에 대응 항목이 없다.
+> 코드에서 접근할 수 없는 죽은 등록이라 빌드 용량만 차지한다.
+> **쓸 계획이 없으면 Build Settings에서 제거**하고, 쓸 거면 `ESceneType`에 항목을 추가한다.
+> 빌드를 막지는 않으므로 P0가 아니다.
+
+> ⚠️ **실행 흐름은 미검증이다.** 등록으로 로드 실패 원인은 제거됐지만,
+> `StartScene → LoadingScene → LobbyScene`이 실제로 이어지는지는 사람이 실행해서 봐야 한다.
+
+**근거 (해결 전 기록)**
 
 `ProjectSettings/EditorBuildSettings.asset` 등록 목록:
 ```
@@ -276,6 +282,7 @@ grep -rln "using UnityEditor" --include=*.cs Assets/ | grep -v "/Editor/"
 - [x] 서드파티 `UnityEditor` 참조 정리 — `8bff262` (SPUM 제거)
 - [x] `ESceneType` ↔ Build Settings 정합성 검사기 — `f49d92e`
 - [x] **실제 Windows 스탠드얼론 빌드로 확인** — `Build Finished, Result: Success`
-- [ ] **Build Settings에 `LobbyScene` / `MenuScene` 등록, `GameScene` 정리** ← 에디터 작업, 남은 P0
-- [ ] `BlitPass` src/dst 분리 또는 **패스 스택 삭제** — 치트 패널로 판별 후 결정
-- [ ] 실행 확인 — 투명 배경, 클릭 통과 전환, 창 위치. **자동 검증 불가, 사람이 봐야 한다**
+- [x] Build Settings에 `LobbyScene` / `MenuScene` 등록 — `b8f969f` (검사기 Error 0건)
+- [ ] `GameScene` 정리 — 죽은 등록 Warning 1건. 빌드를 막지 않아 P0 아님
+- [ ] `BlitPass` src/dst 분리 또는 **패스 스택 삭제** — 치트 패널로 판별 후 결정 ← **남은 P0**
+- [ ] 실행 확인 — 투명 배경, 클릭 통과 전환, 창 위치, 씬 흐름. **자동 검증 불가, 사람이 봐야 한다**
