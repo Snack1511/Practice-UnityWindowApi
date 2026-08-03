@@ -1,0 +1,35 @@
+/* 런타임 치트 패널. 좌상단 고정, 세로 스크롤. */
+
+.cheat-root {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    width: 320px;
+    height: 420px;
+    padding: 12px;
+    background-color: rgba(18, 20, 26, 0.94);
+    border-width: 2px;
+    border-color: rgb(226, 230, 240);
+}
+
+.cheat-title {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(226, 230, 240);
+    margin-bottom: 10px;
+}
+
+/* ScrollView 가 남은 높이를 전부 차지해야 스크롤바가 패널 우측 끝에 붙는다. */
+.cheat-list {
+    flex-grow: 1;
+}
+
+.cheat-toggle {
+    margin-bottom: 8px;
+}
+
+/* 기본 런타임 테마는 밝은 배경을 가정하므로 라벨 색을 직접 지정한다. */
+.cheat-toggle Label {
+    font-size: 14px;
+    color: rgb(214, 218, 228);
+}
