@@ -28,6 +28,7 @@ namespace Script.GameFlow.GameScene
 
         public override async UniTask OnLoadResourceAsync(IProgress<LoadingProgressResult> progress)
         {
+            await base.OnLoadResourceAsync(progress);
             
         }
         public override void OnLoadComplete()

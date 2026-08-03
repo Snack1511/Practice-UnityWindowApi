@@ -44,7 +44,7 @@ namespace Script.GameFlow.GameScene
         {
             base.EnterScene(context);
             Debug.Log("StartScene::EnterScene Enter");
-            SceneManager.Instance.ChangeScene(ESceneType.TestScene, null, null, true);
+            SceneManager.Instance.ChangeScene(ESceneType.LobbyScene, null, null, true);
         }
     }
 }
