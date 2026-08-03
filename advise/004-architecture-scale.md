@@ -145,8 +145,46 @@ public static void Notify(INotifiedValue notifiedValue)
 | `IState` 구현체 없음 | `Pattern/State.cs` | 씬/콘텐츠 상태 머신에 실제로 쓰거나([002-2](002-scene-system.md)) 삭제. 인터페이스만 떠 있는 상태를 유지하지 않는다 |
 | `ModelBase` 빈 추상 클래스 | `Define/ModelDefine.cs:15` | [003-8](003-data-layer.md#3-8-model-계층-설계-시-미리-정해둘-것)의 4개 결정 후 착수 |
 | `MonoSingleton`이 씬의 기존 인스턴스를 찾지 않음 | `Pattern/Singleton.cs:22-34` | 인스펙터 배치와 병행할 계획이면 `FindFirstObjectByType<T>()` 폴백 추가. 아니면 "코드 생성 전용"임을 주석으로 명시 |
-| `GameProcessManager`에 `RemoveUpdate` 없음 | `StaticManager/GameProcessManager.cs:38` | 동적 등록이 생기면 필요. 지금은 불필요 — **필요해질 때 추가** |
+| **`GameProcessManager`에 `RemoveUpdate` 없음 — 필요해졌다** | `StaticManager/GameProcessManager.cs:38` | 아래 참조. **더 이상 "필요해질 때"가 아니다** |
 | `updaters` 순회 중 수정 위험 | `GameProcessManager.cs:45` — Update 안에서 `AddUpdate`가 호출되면 `InvalidOperationException` | `RemoveUpdate` 도입 시 함께 스냅샷 순회로 변경 |
+
+### `RemoveUpdate` — 판정 갱신 (2026-08-04)
+
+기존 판정은 "동적 등록이 생기면 필요. 지금은 불필요"였다. **생겼다.**
+
+`GameContent/UI/CheatPanel.cs`(`395b743`)가 `AddUpdate("CheatPanel", ...)`로 등록하는데,
+파기 시 해제할 수단이 없다. 콜백 안에서 `this == null`을 검사해 우회했다:
+
+```csharp
+// GameProcessManager 에 RemoveUpdate 가 없어서, 파기된 뒤에도 호출될 수 있다.
+private void OnUpdate()
+{
+    if (this == null || root == null)
+        return;
+    ...
+}
+```
+
+**문제**
+- 델리게이트가 `updaters`에 영구히 남아 **파기된 MonoBehaviour를 캡처한 클로저가 살아 있다.** 씬 전환마다 누적된다.
+- 우회 코드가 등록하는 쪽마다 복제된다. 등록 지점이 늘어날수록 빠뜨리기 쉽고, 빠뜨리면 NRE다.
+- `this == null`은 Unity의 fake-null 연산자 오버로드에 의존한다. 등록 주체가 MonoBehaviour가 아니면 이 방어가 통하지 않는다.
+
+**권장**
+
+```csharp
+public static void RemoveUpdate(string key)
+{
+    updaters.Remove(key);
+}
+```
+
+한 줄이다. 동시에 위 표의 `updaters` 순회 문제도 같이 처리한다 — `Update()`에서
+`updaters.Values`를 직접 순회하면 콜백 안의 `AddUpdate`/`RemoveUpdate`가
+`InvalidOperationException`을 낸다. 스냅샷 순회로 바꾼다.
+
+도입하면 `CheatPanel.OnUpdate`의 null 가드를 지우고 `OnDestroy`에서
+`RemoveUpdate(UpdateKey)`를 부르는 형태로 정리할 수 있다.
 
 ---
 

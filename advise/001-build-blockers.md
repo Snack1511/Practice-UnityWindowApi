@@ -3,9 +3,20 @@
 에디터에서는 드러나지 않고 **빌드하거나 실제 흐름을 태우는 순간 터지는** 항목만 모았다.
 프레임워크 골격이 계속 커지기 전에 여기부터 막아야 한다.
 
+> **현재 상태 (2026-08-04 갱신)** — Unity `6000.2.10f1` Windows 스탠드얼론 빌드가 **처음으로 통과했다**
+> (`Build Finished, Result: Success`, 컴파일 에러 0). 빌드 차단 항목은 전부 해소됐다.
+> 남은 것은 **1-3의 Build Settings 등록(에디터 작업)** 과 **1-5의 판별 실험**이다.
+>
+> **최초 감사의 범위 한계** — 이 문서의 최초 조사는 `Assets/Script/`(프로젝트 코드 39개)만 봤다.
+> 그래서 서드파티 에셋에 있던 [1-6](#1-6-서드파티-에셋의-unityeditor-참조--빌드-컴파일-실패)을 놓쳤고,
+> **실제로는 최초 커밋부터 플레이어 빌드가 불가능한 상태였다.**
+> 다음 감사부터는 `Assets/` 전체를 대상으로 한다.
+
 ---
 
-## 1-1. 런타임 스크립트가 `UnityEditor` 네임스페이스를 참조한다 — 빌드 컴파일 실패
+## ~~1-1. 런타임 스크립트가 `UnityEditor` 네임스페이스를 참조한다 — 빌드 컴파일 실패~~
+
+✅ **해결** (`f49d92e`) — `using UnityEditor.Overlays;` 삭제. 사용처가 없어 삭제만으로 끝났다.
 
 **근거** — `Assets/Script/GameFlow/GameScene/TestScene.cs:7`
 
@@ -22,9 +33,16 @@ using UnityEditor.Overlays;
 
 ---
 
-## 1-2. Windows 빌드 전용 블록의 심볼 미해결 — 빌드 컴파일 실패
+## ~~1-2. Windows 빌드 전용 블록의 심볼 미해결 — 빌드 컴파일 실패~~
 
-플랫폼 조건부 블록은 **에디터에서 컴파일되지 않으므로 IDE도 검증해주지 않는다.** 현재 두 곳이 깨져 있다.
+✅ **해결** (`f49d92e`) — `ResolutionManager.cs`에 `using UnityEngine;`,
+`DebuggingComponent.cs`에 `using Script.Manager.StaticManager;` 추가.
+
+**이 두 건은 실제 Windows 빌드로만 검증 가능했고, 그렇게 검증했다.**
+에디터 배치 컴파일은 통과해도 이 블록을 건드리지 않는다 — 검증 절차는
+[CLAUDE.md](../CLAUDE.md)의 `코드 수정 후 확인 절차` 참조.
+
+플랫폼 조건부 블록은 **에디터에서 컴파일되지 않으므로 IDE도 검증해주지 않는다.** 두 곳이 깨져 있었다.
 
 ### (a) `ResolutionManager` — `UnityEngine` using 없음
 
@@ -68,6 +86,19 @@ namespace Script
 ---
 
 ## 1-3. `LobbyScene`이 Build Settings에 없다 — 첫 화면 이후 진행 불가
+
+> ⚠️ **부분 해결** — 검사기는 들어갔으나(`f49d92e`) **등록 자체는 아직 안 됐다.**
+> 아래 권장 2번(`SceneRegistryValidator`)이 `Assets/Editor/SceneRegistryValidator.cs`로 구현됐고,
+> 에디터 재컴파일마다 자동 실행된다. 현재 실제 출력:
+>
+> ```
+> [SceneRegistryValidator] ESceneType.LobbyScene 이 Build Settings 에 없습니다. ← Error
+> [SceneRegistryValidator] ESceneType.MenuScene 이 Build Settings 에 없습니다.  ← Error
+> [SceneRegistryValidator] Build Settings 의 'GameScene' 에 대응하는 항목 없음   ← Warning
+> ```
+>
+> **이제 조용히 지나가지 않는다.** 남은 것은 에디터에서 Build Profiles에 두 씬을 추가하는 일이다.
+> 그 전까지 부팅은 로딩 씬에서 멈춘다.
 
 **근거**
 
@@ -117,7 +148,14 @@ static class SceneRegistryValidator
 
 ---
 
-## 1-4. `SetTransparentClick(false)`가 동작하지 않는다
+## ~~1-4. `SetTransparentClick(false)`가 동작하지 않는다~~
+
+✅ **코드 해결** (`f49d92e`) — 아래 권장안대로 `flag` 분기, `hWnd == IntPtr.Zero` 방어,
+실패 시 경고 후 성공 경로에서만 상태 기록. 에러 코드를 신뢰하기 위해 `SetWindowLong`
+P/Invoke 선언에 `SetLastError = true`를 추가했다.
+
+> ⚠️ **실동작은 미검증이다.** 컴파일까지만 확인했다. 실제로 클릭 통과가 꺼지는지는
+> 사람이 실행해서 봐야 한다. 치트 패널의 `Set TransparentClick` 토글이 그 용도다([1-5](#1-5-blitpass가-같은-텍스처를-소스이자-대상으로-사용한다) 참조).
 
 **근거** — `Assets/Script/Manager/StaticManager/WindowNativeManager.cs:135-142`
 
@@ -184,14 +222,60 @@ Blitter.BlitTexture(CommandBuffer, data.src, data.src, data.material, 0);
 **판별 방법** — 빈 씬 + `BlitFeature`를 Renderer에서 해제 + Windows 빌드.
 투명이 나오면 blit 스택은 불필요하고, 안 나오면 원인은 설정/엔진 버전 쪽이다. 이 실험 한 번이면 위 선택지가 갈린다.
 
+> **판별 도구 추가됨** (`395b743`) — 위 방법은 빌드 두 개를 비교해야 해서 변인이 둘이다.
+> `Assets/Script/GameContent/UI/CheatPanel.cs`(UI Toolkit)의 `Set BitBlitPass` 토글로
+> **한 빌드 안에서 런타임에 켜고 끌 수 있다.** `ScriptableRendererFeature.SetActive`를 쓴다.
+>
+> 사용 조건 — **Development Build 체크 필수**(`#if DEVELOPMENT_BUILD || UNITY_EDITOR`),
+> 인스펙터에 `Assets/Settings/PC_Renderer.asset` 연결, 씬에 컴포넌트 배치.
+> 같은 패널의 `Set TransparentClick` 토글로 [1-4](#1-4-settransparentclickfalse가-동작하지-않는다)의 실동작도 같이 확인된다.
+>
+> ⚠️ 에디터에서 토글하면 `PC_Renderer.asset`이 **실제로 변경되어 플레이 모드를 나가도 유지된다.**
+> `OnDestroy`에서 복구하지만, 비정상 종료 시에는 남을 수 있다.
+
+---
+
+## ~~1-6. 서드파티 에셋의 `UnityEditor` 참조 — 빌드 컴파일 실패~~
+
+✅ **해결** (`8bff262`) — SPUM 패키지를 제거하면서 함께 사라졌다.
+
+**근거** — `Assets/SPUM/Sprite_Editor(Beta)/Script/SPUM_SpriteEditManager.cs:6`
+
+```csharp
+#if UNITY_2023_1_OR_NEWER          // ← UNITY_EDITOR 가 빠졌다
+using UnityEditor.U2D.Sprites;     // ← UnityEditor.U2D 는 플레이어 빌드에 없음
+#endif
+```
+
+**영향**
+[1-1](#1-1-런타임-스크립트가-unityeditor-네임스페이스를-참조한다--빌드-컴파일-실패)과 **정확히 같은 원인**이다.
+`Editor` 폴더 밖에 있어 플레이어 빌드에 포함되고, `CS0234`로 빌드가 실패했다.
+클래스 본문은 `#if UNITY_EDITOR`로 감싸여 있었는데 `using` 하나만 빠져 있었다.
+
+**왜 최초 감사에서 안 잡혔나**
+조사 범위가 `Assets/Script/`였다. 이 항목 때문에 **최초 커밋(`46d9bd0`)부터 플레이어 빌드가
+불가능했는데도** 문서에는 원인이 하나 덜 적혀 있었다.
+
+**교훈** — 빌드 차단은 프로젝트 코드에만 있지 않다. 다음 감사는 `Assets/` 전체를 본다:
+
+```bash
+grep -rln "using UnityEditor" --include=*.cs Assets/ | grep -v "/Editor/"
+```
+
+`Editor` 폴더 밖에서 `UnityEditor`를 참조하는 파일이 나오면 전부 확인 대상이다.
+구조적 방어는 [004-1의 asmdef 도입](004-architecture-scale.md#4-1-asmdef-도입)이다.
+
 ---
 
 ## 처리 체크리스트
 
-- [ ] `TestScene.cs:7` `using UnityEditor.Overlays;` 삭제
-- [ ] `ResolutionManager.cs` `using UnityEngine;` 추가
-- [ ] `DebuggingComponent.cs` `using Script.Manager.StaticManager;` 추가
-- [ ] Build Settings에 `LobbyScene` / `MenuScene` 등록, `GameScene` 정리
-- [ ] `SetTransparentClick` 해제 경로 구현
-- [ ] `BlitPass` src/dst 분리 또는 **패스 스택 삭제** ([reference 문서](../docs/reference/desktop-overlay-unity6.md) 확인 후 결정)
-- [ ] **위 수정 후 실제 Windows 스탠드얼론 빌드를 한 번 돌려 확인** ← 이 항목이 검증의 전부다
+- [x] `TestScene.cs:7` `using UnityEditor.Overlays;` 삭제 — `f49d92e`
+- [x] `ResolutionManager.cs` `using UnityEngine;` 추가 — `f49d92e`
+- [x] `DebuggingComponent.cs` `using Script.Manager.StaticManager;` 추가 — `f49d92e`
+- [x] `SetTransparentClick` 해제 경로 구현 — `f49d92e` (실동작은 미검증)
+- [x] 서드파티 `UnityEditor` 참조 정리 — `8bff262` (SPUM 제거)
+- [x] `ESceneType` ↔ Build Settings 정합성 검사기 — `f49d92e`
+- [x] **실제 Windows 스탠드얼론 빌드로 확인** — `Build Finished, Result: Success`
+- [ ] **Build Settings에 `LobbyScene` / `MenuScene` 등록, `GameScene` 정리** ← 에디터 작업, 남은 P0
+- [ ] `BlitPass` src/dst 분리 또는 **패스 스택 삭제** — 치트 패널로 판별 후 결정
+- [ ] 실행 확인 — 투명 배경, 클릭 통과 전환, 창 위치. **자동 검증 불가, 사람이 봐야 한다**
