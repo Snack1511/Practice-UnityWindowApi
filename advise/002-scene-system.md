@@ -228,3 +228,60 @@ public abstract class SceneBase<TInfo> : SceneBase where TInfo : class, ISceneIn
 | `SceneController.Release()` (`:26`) | 정의만 있고 `SceneManager.Release()`가 호출하지 않음 (`SceneManager.cs:24` 본문 비어 있음) | 종료 경로 연결 또는 삭제 — 둘 중 하나로 결정 |
 | `MenuScene` | "로비 안에서 메뉴를 띄우자"는 재검토 주석 (`MenuScene.cs:14-17`) | 방향이 정해졌으면 씬을 지우고 UI로 전환. 미결이면 결정 시점을 문서에 남긴다 |
 | `Assets/Resources/Scenes/GameScene.unity` | Build Settings 등록 O, `ESceneType` X | 사용 여부 확정 후 등록 해제 또는 enum 추가 |
+
+---
+
+## 2-8. `EventSystem`이 씬마다 있어 전환 후 UI 입력이 죽는다
+
+**근거** — 씬별 `EventSystem` 보유 현황
+
+```
+LoadingScene   있음
+LobbyScene     있음
+MenuScene      있음
+StartScene     없음
+```
+
+실행 로그 (`Player.log`):
+```
+There can be only one active Event System.
+  ↳ UIElementsRuntimeUtility.RegisterEventSystem
+  ↳ UIToolkitInteroperabilityBridge.OnEnable
+  ↳ EventSystem.OnEnable
+```
+
+**증상**
+
+```
+LoadingScene 로드    → EventSystem 활성 (첫 번째)
+LobbyScene  로드     → 두 번째 → 경고 발생, 로비 것이 비활성화됨
+LoadingScene 언로드  → 활성 EventSystem 파기
+                      로비 것은 비활성 상태 그대로 (Unity 가 자동 복구하지 않는다)
+결과                 → 활성 EventSystem 0개 → 로비의 모든 UI 클릭이 무반응
+```
+
+**영향**
+로비 진입 후 **화면은 정상적으로 그려지는데 클릭만 안 먹는다.** 렌더링은 `EventSystem` 없이 동작하고 입력만 죽기 때문에, 증상이 "UI가 고장났다"가 아니라 "특정 기능이 안 된다"로 보인다. 원인 추적이 오래 걸리는 유형이다.
+
+실제로 치트 패널의 토글 두 개가 무반응이라 기능 결함으로 오인됐고, 로그의 경고 한 줄을 찾고서야 원인이 드러났다. `UILobbyPanel`·`GoldHUD` 등 로비의 다른 UI도 같은 상태였다.
+
+**즉시 조치** — `LoadingScene`의 `EventSystem` 제거 (`이 커밋`).
+로딩 화면은 클릭을 받지 않으므로 없어도 무방하고, 로비 것이 유일해져 경고도 사라진다.
+
+**구조적 권장** — 씬마다 두지 말고 **부팅 시 하나만 만들어 `DontDestroyOnLoad`** 로 유지한다.
+`GameProcess`(`GameFlow/GameProcess.cs:12`)가 이미 같은 방식을 쓰고 있어 패턴이 일관된다.
+
+```csharp
+// 부팅 시 1회
+if (EventSystem.current == null)
+{
+    GameObject go = new GameObject("EventSystem");
+    go.AddComponent<EventSystem>();
+    go.AddComponent<InputSystemUIInputModule>();
+    Object.DontDestroyOnLoad(go);
+}
+```
+
+씬에서 전부 제거하면 **씬이 늘어도 재발하지 않는다.** 즉시 조치는 로딩씬 하나만 막은 것이라, `MenuScene`이 로비와 함께 뜨는 순간 같은 문제가 다시 난다.
+
+**검증 방법** — 실행 로그에 `There can be only one active Event System` 이 나오면 중복이다. 없어야 정상이다.

@@ -199,6 +199,19 @@ public static void SetTransparentClick(bool flag)
 
 ## 1-5. `BlitPass`가 같은 텍스처를 소스이자 대상으로 사용한다
 
+> ✅ **판별 완료 (2026-08-10) — 답: 스택 삭제.**
+>
+> 치트 패널의 `Set BitBlitPass` 토글로 런타임에 `BlitFeature` 를 끄고 실측했다.
+> **끈 상태에서도 투명 배경이 그대로 유지된다.** 아래 "권장" 의 첫 번째 선택지가 맞았다.
+>
+> 즉 `src`/`dst` 분리를 구현할 필요가 없다. **패스 스택 자체가 불필요하다.**
+>
+> 판별 당시 화면 전체가 파랗게 물드는 증상이 있어 처음에는 blit 이 원인으로 보였으나,
+> 실제 원인은 **카메라 배경색 RGB** 였다([CHANGELOG](../docs/CHANGELOG.md) 3항).
+> blit 을 껐다 켜도 틴트가 변하지 않는다는 관찰이 그 오해를 갈랐다.
+>
+> **삭제 범위와 순서는 아래 "삭제 체크리스트" 참조.**
+
 **근거** — `Assets/Script/Shader/BlitPass.cs:79`
 
 ```csharp
@@ -238,6 +251,23 @@ Blitter.BlitTexture(CommandBuffer, data.src, data.src, data.material, 0);
 >
 > ⚠️ 에디터에서 토글하면 `PC_Renderer.asset`이 **실제로 변경되어 플레이 모드를 나가도 유지된다.**
 > `OnDestroy`에서 복구하지만, 비정상 종료 시에는 남을 수 있다.
+
+### 삭제 체크리스트
+
+실측으로 불필요가 확인됐으므로 아래 순서로 제거한다. **순서가 중요하다** — 에셋 참조를 먼저 끊지 않고 스크립트를 지우면 `PC_Renderer.asset` 에 missing script 항목이 남는다.
+
+- [ ] **`PC_Renderer.asset` 의 `Renderer Features` 목록에서 `BlitFeature` 제거** ← 반드시 먼저. 에디터 인스펙터 작업이다
+- [ ] `Assets/Script/Shader/BlitFeature.cs` 삭제
+- [ ] `Assets/Script/Shader/BlitPass.cs` 삭제
+- [ ] blit 전용 머티리얼·셰이더가 다른 곳에서 안 쓰이면 함께 삭제 (`PC_Renderer.asset` 의 `blitMaterial` 이 가리키던 것)
+- [ ] `CheatPanel.RegisterCheats` 의 `Set BitBlitPass` 토글 제거 — 대상이 사라지면 `FindFeature<BlitFeature>()` 가 경고만 남긴다
+- [ ] **Windows 스탠드얼론 빌드 후 투명 배경 육안 확인** ← 이 항목이 검증의 전부다
+
+부수 정리 (같이 처리 가능):
+- `BlitPass.cs:6` — `using static Unity.Burst.Intrinsics.X86.Avx;` 의미 없는 using
+- `BlitFeature.cs:20` — `settings.blitMaterial` 이 null 이어도 패스를 등록하는 문제
+
+> **되돌릴 수 있게 남길 것** — 삭제 커밋을 독립적으로 끊어두면, 나중에 "화면 전체 반투명" 같은 다른 요구가 생겼을 때 `git revert` 로 복원할 수 있다. 두 방식은 결과가 다르므로([아래 선택지](#1-5-blitpass가-같은-텍스처를-소스이자-대상으로-사용한다)) 이력을 남겨두는 편이 낫다.
 
 ---
 
@@ -284,5 +314,5 @@ grep -rln "using UnityEditor" --include=*.cs Assets/ | grep -v "/Editor/"
 - [x] **실제 Windows 스탠드얼론 빌드로 확인** — `Build Finished, Result: Success`
 - [x] Build Settings에 `LobbyScene` / `MenuScene` 등록 — `b8f969f` (검사기 Error 0건)
 - [ ] `GameScene` 정리 — 죽은 등록 Warning 1건. 빌드를 막지 않아 P0 아님
-- [ ] `BlitPass` src/dst 분리 또는 **패스 스택 삭제** — 치트 패널로 판별 후 결정 ← **남은 P0**
+- [x] `BlitPass` 판별 완료 — **스택 삭제가 답** (실측). 삭제 작업은 미완, 위 체크리스트 참조
 - [ ] 실행 확인 — 투명 배경, 클릭 통과 전환, 창 위치, 씬 흐름. **자동 검증 불가, 사람이 봐야 한다**
