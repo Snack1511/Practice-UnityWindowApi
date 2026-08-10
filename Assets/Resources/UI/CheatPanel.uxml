@@ -1,6 +1,19 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:VisualElement name="cheat-root" class="cheat-root">
-        <ui:Label text="Runtime Cheat" class="cheat-title" />
-        <ui:ScrollView name="cheat-list" mode="Vertical" class="cheat-list" />
+    <!-- 치트 패널 : 드래그로 이동 가능한 플로팅 패널 -->
+    <ui:VisualElement name="cheat-root" class="panel cheat-root">
+        <ui:VisualElement name="cheat-header" class="panel-header">
+            <ui:Label name="cheat-title" text="Runtime Cheat" class="panel-title" />
+            <ui:Label name="cheat-fold" text="—" class="panel-fold" />
+        </ui:VisualElement>
+        <ui:ScrollView name="cheat-list" mode="Vertical" class="panel-body cheat-list" />
+    </ui:VisualElement>
+
+    <!-- 콘솔 패널 : 화면 하단. 독립적으로 접히고 이동한다 -->
+    <ui:VisualElement name="console-root" class="panel console-root">
+        <ui:VisualElement name="console-header" class="panel-header console-header">
+            <ui:Label name="console-title" text="Console" class="panel-title console-title" />
+            <ui:Label name="console-fold" text="—" class="panel-fold console-fold" />
+        </ui:VisualElement>
+        <ui:ScrollView name="console-list" mode="Vertical" class="panel-body console-list" />
     </ui:VisualElement>
 </ui:UXML>

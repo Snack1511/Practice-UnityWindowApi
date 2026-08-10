@@ -1,35 +1,109 @@
-/* 런타임 치트 패널. 좌상단 고정, 세로 스크롤. */
+/* 런타임 치트 패널 + 콘솔.
+   투명 창 위에 뜨므로 배경은 반드시 불투명(알파 1)이어야 한다.
+   알파를 낮추면 preserveFramebufferAlpha 때문에 창까지 뚫려 글자를 못 읽는다. */
 
-.cheat-root {
+.panel {
+    position: absolute;
+    border-width: 1px;
+    border-color: rgb(110, 110, 110);
+}
+
+.panel-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background-color: rgb(168, 168, 168);
+}
+
+.panel-title {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(24, 26, 32);
+}
+
+/* 접기 버튼. 헤더 우측 끝에 붙는다. */
+.panel-fold {
+    font-size: 14px;
+    -unity-font-style: bold;
+    padding: 0 6px;
+    color: rgb(24, 26, 32);
+}
+
+.panel-body {
+    flex-grow: 1;
+}
+
+/* 접혔을 때 본문만 숨기고 헤더는 남긴다. */
+.panel--folded .panel-body {
+    display: none;
+}
+
+/* ---- 치트 패널 : 좌상단, 드래그 이동 ---- */
+
+/* position 과 크기를 한 규칙에 함께 둔다.
+   다른 규칙에 흩어 놓으면 적용 순서에 따라 크기만 누락돼 0x0 이 되고,
+   그러면 배경이 그려질 면적이 없어 자식 글자만 떠 보인다. */
+.panel.cheat-root {
     position: absolute;
     left: 16px;
     top: 16px;
     width: 320px;
-    height: 420px;
-    padding: 12px;
-    background-color: rgba(18, 20, 26, 0.94);
-    border-width: 2px;
-    border-color: rgb(226, 230, 240);
+    height: 360px;
+    background-color: rgb(195, 195, 195);
 }
 
-.cheat-title {
-    font-size: 18px;
-    -unity-font-style: bold;
-    color: rgb(226, 230, 240);
-    margin-bottom: 10px;
+.panel.cheat-root.panel--folded {
+    height: auto;
 }
 
-/* ScrollView 가 남은 높이를 전부 차지해야 스크롤바가 패널 우측 끝에 붙는다. */
 .cheat-list {
-    flex-grow: 1;
+    padding: 10px;
 }
 
 .cheat-toggle {
     margin-bottom: 8px;
 }
 
-/* 기본 런타임 테마는 밝은 배경을 가정하므로 라벨 색을 직접 지정한다. */
 .cheat-toggle Label {
     font-size: 14px;
-    color: rgb(214, 218, 228);
+    color: rgb(24, 26, 32);
+}
+
+/* ---- 콘솔 패널 : 화면 하단 ---- */
+
+.panel.console-root {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 240px;
+    background-color: rgb(195, 195, 195);
+}
+
+.panel.console-root.panel--folded {
+    height: auto;
+}
+
+.console-list {
+    padding: 6px 10px;
+}
+
+/* 긴 줄은 잘리지 않고 접히게 한다. 로그는 읽히는 게 목적이다. */
+.console-line {
+    font-size: 12px;
+    white-space: normal;
+    margin-bottom: 2px;
+}
+
+.console-log {
+    color: rgb(18, 20, 26);
+}
+
+.console-warning {
+    color: rgb(150, 105, 0);
+}
+
+.console-error {
+    color: rgb(186, 24, 36);
 }
