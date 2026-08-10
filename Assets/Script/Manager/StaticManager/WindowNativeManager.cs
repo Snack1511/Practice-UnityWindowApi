@@ -21,6 +21,8 @@ namespace Script.Manager.StaticManager
 
         [DllImport("Dwmapi.dll")] public static extern uint DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS margins);
 
+        [DllImport("User32.dll", SetLastError = true)] public static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, uint dwFlags);
+
         [DllImport("user32.dll", SetLastError = true)] private static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder lpString, int nMaxCount);
         #endregion
 
@@ -138,11 +140,15 @@ namespace Script.Manager.StaticManager
             if (hWnd == IntPtr.Zero)
                 hWnd = GetActiveWindow();
 
-            uint exFlag = GetWindowLong(hWnd, GWL.EXSTYLE);
+            uint before = GetWindowLong(hWnd, GWL.EXSTYLE);
+
+            // WS_EX_TRANSPARENT 만으로는 히트 테스트가 통과되지 않는다.
+            // 레이어드 윈도우일 때만 마우스가 아래 창으로 넘어간다.
+            uint exFlag = before;
             if (flag)
-                exFlag |= (WS_EX.TRANSPARENT);
+                exFlag |= (WS_EX.LAYERED | WS_EX.TRANSPARENT);
             else
-                exFlag &= ~(WS_EX.TRANSPARENT);
+                exFlag &= ~(WS_EX.LAYERED | WS_EX.TRANSPARENT);
 
             // SetWindowLong 은 실패 시 0 을 반환한다 (직전 값이 0 이었을 수도 있어 에러 코드를 같이 본다)
             if (SetWindowLong(hWnd, GWL.EXSTYLE, exFlag) == 0 && Marshal.GetLastWin32Error() != 0)
@@ -150,6 +156,20 @@ namespace Script.Manager.StaticManager
                 UnityEngine.Debug.LogWarning($"SetTransparentClick 실패 : Win32Error {Marshal.GetLastWin32Error()}");
                 return;
             }
+
+            // 레이어드 윈도우는 표시 방식을 지정해야 그려진다. 알파 255 = 전체 불투명이라
+            // DWM 의 픽셀 단위 알파(투명 배경)는 그대로 유지된다.
+            if (flag)
+                SetLayeredWindowAttributes(hWnd, 0, 255, LWA.ALPHA);
+
+            // 확장 스타일 변경은 SetWindowPos 로 커밋해야 창에 반영된다.
+            // SetWindowLong 만으로는 값만 바뀌고 히트 테스트 동작이 갱신되지 않는다.
+            SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0,
+                SWP.NOMOVE | SWP.NOSIZE | SWP.NOOWNERZORDER | SWP.NOACTIVATE | SWP.FRAMECHANGED);
+
+            uint after = GetWindowLong(hWnd, GWL.EXSTYLE);
+            UnityEngine.Debug.Log($"[WindowNative] SetTransparentClick({flag}) hWnd=0x{hWnd.ToInt64():X} " +
+                                  $"exStyle 0x{before:X} -> 0x{after:X}, LAYERED={(after & WS_EX.LAYERED) != 0}, TRANSPARENT={(after & WS_EX.TRANSPARENT) != 0}");
 
             IsTransparentClick = flag;
         }
