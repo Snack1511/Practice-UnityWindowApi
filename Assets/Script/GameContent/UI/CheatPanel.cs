@@ -1,25 +1,20 @@
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Cysharp.Threading.Tasks;
 using Script.Manager.SingletonManager;
 using Script.Manager.StaticManager;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
 namespace Script.GameContent.UI
 {
     /// <summary>
     /// 런타임 치트 패널 + 콘솔.
-    /// advise/001 의 1-5(BlitPass 스택이 필요한지)와 1-4(클릭 통과 해제가 되는지)를
-    /// 빌드 하나에서 켜고 끄며 비교하기 위한 개발용 도구다.
+    /// 빌드에서 기능을 켜고 끄며 비교하기 위한 개발용 도구다.
     /// DEVELOPMENT_BUILD 또는 에디터에서만 컴파일된다 — 릴리즈 빌드에는 들어가지 않는다.
     ///
     /// 씬에 배치하지 않고 <see cref="CreateAsync"/> 로 런타임에 만든다.
-    /// 인스펙터가 없으므로 렌더러 데이터는 파이프라인 에셋에서 직접 찾는다.
     /// </summary>
     public class CheatPanel : MonoBehaviour
     {
@@ -44,7 +39,6 @@ namespace Script.GameContent.UI
         private VisualElement consoleRoot;
         private ScrollView list;
         private ScrollView consoleList;
-        private ScriptableRendererData ownerRendererData;
 
         private bool visible;
 
@@ -56,9 +50,6 @@ namespace Script.GameContent.UI
         // 커서가 패널 위에 있으면 일시적으로 해제하기 때문이다.
         private bool clickThroughRequested;
         private bool clickThroughApplied;
-
-        private readonly Dictionary<ScriptableRendererFeature, bool> featureOriginalState =
-            new Dictionary<ScriptableRendererFeature, bool>();
 
         /// <summary>GameObject 를 만들고 초기화까지 마친 뒤 반환한다. 실패하면 null.</summary>
         public static async UniTask<CheatPanel> CreateAsync()
@@ -101,7 +92,6 @@ namespace Script.GameContent.UI
         private void OnDestroy()
         {
             Application.logMessageReceived -= OnLogMessageReceived;
-            RestoreFeatures();
         }
 
         private async UniTask<bool> BuildDocumentAsync()
@@ -213,21 +203,6 @@ namespace Script.GameContent.UI
 
         private void RegisterCheats()
         {
-            BlitFeature blit = FindFeature<BlitFeature>();
-            if (blit != null)
-            {
-                featureOriginalState[blit] = blit.isActive;
-
-                AddToggle("Set BitBlitPass", blit.isActive, value =>
-                {
-                    blit.SetActive(value);
-                    if (ownerRendererData != null)
-                        ownerRendererData.SetDirty();
-
-                    Debug.Log($"[CheatPanel] BlitFeature.isActive = {blit.isActive}");
-                });
-            }
-
 #if !UNITY_EDITOR
             // 에디터에서 켜면 에디터 창 자체가 클릭 통과 상태가 되어 조작이 불가능해진다. 빌드에서만 노출한다.
             AddToggle("Set TransparentClick", WindowNativeManager.IsTransparentClick, value =>
@@ -249,42 +224,6 @@ namespace Script.GameContent.UI
 
             list.Add(toggle);
             toggles.Add(toggle);
-        }
-
-        private T FindFeature<T>() where T : ScriptableRendererFeature
-        {
-            if (GraphicsSettings.currentRenderPipeline is not UniversalRenderPipelineAsset pipeline)
-            {
-                Debug.LogError("[CheatPanel] 현재 렌더 파이프라인이 URP 가 아닙니다.");
-                return null;
-            }
-
-            FieldInfo field = typeof(UniversalRenderPipelineAsset)
-                .GetField("m_RendererDataList", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (field?.GetValue(pipeline) is not ScriptableRendererData[] dataList)
-            {
-                Debug.LogError("[CheatPanel] 렌더러 데이터 목록을 찾지 못했습니다. URP 내부 필드명이 바뀌었을 수 있습니다.");
-                return null;
-            }
-
-            foreach (ScriptableRendererData data in dataList)
-            {
-                if (data == null)
-                    continue;
-
-                foreach (ScriptableRendererFeature feature in data.rendererFeatures)
-                {
-                    if (feature is not T typed)
-                        continue;
-
-                    ownerRendererData = data;
-                    return typed;
-                }
-            }
-
-            Debug.LogWarning($"[CheatPanel] {typeof(T).Name} 를 찾지 못했습니다.");
-            return null;
         }
 
         private void OnUpdate()
@@ -403,21 +342,6 @@ namespace Script.GameContent.UI
                 default:
                     return "console-log";
             }
-        }
-
-        private void RestoreFeatures()
-        {
-            if (featureOriginalState.Count == 0)
-                return;
-
-            foreach (KeyValuePair<ScriptableRendererFeature, bool> pair in featureOriginalState)
-            {
-                if (pair.Key != null)
-                    pair.Key.SetActive(pair.Value);
-            }
-
-            if (ownerRendererData != null)
-                ownerRendererData.SetDirty();
         }
     }
 }
