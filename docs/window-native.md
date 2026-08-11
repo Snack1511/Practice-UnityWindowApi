@@ -79,38 +79,26 @@ return GetWindowText(...);   // 창 제목 반환
 `MainProcess.OnCallBeforeSplashScreen`에서 호출된다.
 `- 49`는 Windows 작업 표시줄 높이를 가정한 매직 넘버 — DPI 배율/작업 표시줄 위치·자동 숨김에 따라 어긋난다.
 
-## 3. URP 투명 렌더링 파이프라인
+## 3. URP 투명 렌더링 — 렌더 피처 없이 설정만으로 성립한다
 
-창을 뚫었어도 유니티가 그리는 화면은 불투명하다. 알파를 강제로 낮춰 데스크톱이 비치게 하는 것이 이 파스의 역할.
+창을 뚫었어도 유니티가 그리는 화면은 기본적으로 불투명하다.
+투명은 **커스텀 렌더 패스가 아니라 프로젝트 설정 다섯 개의 조합**으로 나온다. 하나라도 어긋나면 나머지가 무의미하다.
 
-```
-PC_Renderer.asset (m_RendererFeatures에 등록됨)
-└─ BlitFeature : ScriptableRendererFeature      Script/Shader/BlitFeature.cs
-   │  settings.blitMaterial : Material          ← Resources/Material/Custom_MakeTransparent.mat
-   │  settings.passEvent    : RenderPassEvent   ← 기본 AfterRendering
-   └─ BlitPass : ScriptableRenderPass           Script/Shader/BlitPass.cs
-      └─ RecordRenderGraph()                    RenderGraph API (Unity 6)
-         ├ resourceData.activeColorTexture 를 src로 확보
-         ├ builder.UseTexture(src, ReadWrite) / AllowPassCulling(false)
-         └ Blitter.BlitTexture(cmd, src, src, material, 0)
-```
+| 항목 | 값 | 어디서 | 왜 |
+|---|---|---|---|
+| `preserveFramebufferAlpha` | `1` | `ProjectSettings.asset` | 꺼져 있으면 Unity 가 최종 프레임버퍼 알파를 1 로 밀어버린다. **다른 걸 다 맞춰도 투명이 원천 불가능** |
+| 그래픽 API | **D3D11 단독** | Player Settings | D3D12 는 배경 투명 자체가 불가능 |
+| URP HDR | off | `PC_RPAsset.asset` | HDR 버퍼는 알파 처리가 다르다 |
+| 카메라 `clearFlags` | `SolidColor` | 씬 카메라 | 스카이박스는 불투명, `Nothing` 은 이전 프레임 잔상 |
+| 카메라 배경색 | `(0, 0, 0, 0)` | 씬 카메라 | RGB 도 검정이어야 한다 — 아래 참조 |
 
-셰이더 `Assets/Resources/Shader/MakeTransparent.shader` — `Custom/MakeTransparent_URP`
+**알파만 0 으로 맞추는 것으로는 부족하다.** DWM 은 미리 곱해진 알파(premultiplied)로 합성하는데 Unity 는 스트레이트 알파로 쓴다.
+그래서 알파가 0 이어도 RGB 가 남아 있으면 그 색이 그대로 화면 전체에 더해진다 — Unity 기본 배경색으로 두면 전체가 파랗게 물든다.
 
-```hlsl
-half4 frag(Varyings i) : SV_Target
-{
-    float4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
-    color.a = _TransparencyFactor;   // 알파를 상수로 덮어씀 (기본 0.01)
-    return color;
-}
-```
-
-`ZWrite Off`, `Blend SrcAlpha OneMinusSrcAlpha`, `Cull Off`, `Queue = Transparent`.
-
-> `BlitTexture(cmd, src, src, ...)` — **소스와 목적지가 같은 텍스처다.** 동일 RT를 동시에 읽고 쓰는 것은 GPU/드라이버에 따라 결과가 달라진다. 코드에 임시 RT(`passData.tmp`)를 만들려던 흔적이 주석으로 남아 있다. → [advise/001](../advise/001-build-blockers.md)
-
-> **대안 접근** — 카메라 배경 알파 0 + HDR off + DXGI Flip Model off + D3D11 조합만으로 blit 패스 없이 픽셀 단위 투명을 얻는 방법이 있다. 현 프로젝트는 그 조건을 **이미 전부 충족하고 있어** blit 스택 자체가 불필요할 수 있다. 설정 대조표와 검증 순서: [reference/desktop-overlay-unity6.md](reference/desktop-overlay-unity6.md)
+> **삭제된 것** — `BlitFeature` / `BlitPass` / `MakeTransparent.shader` 로 화면 전체 알파를 상수로 덮어쓰던 스택이 있었다.
+> 치트 패널로 런타임에 껐을 때 투명이 그대로 유지되는 것을 확인하고 **2026-08-12 에 제거했다**([CHANGELOG](CHANGELOG.md)).
+> 두 방식은 결과가 다르다 — 지금은 "오브젝트만 또렷 + 배경 투명", blit 이 있으면 "화면 전체 반투명"이었다.
+> 후자가 필요해지면 삭제 커밋을 `git revert` 한다. 배경 분석: [reference/desktop-overlay-unity6.md](reference/desktop-overlay-unity6.md)
 
 ## 4. `DebuggingComponent`
 
@@ -132,9 +120,9 @@ MainProcess (BeforeSplashScreen)
              ├ WS_CAPTION/THICKFRAME/MIN/MAX/SYSMENU 제거 + WS_POPUP     → 테두리 없는 창
              ├ SetWindowPos(HWND_TOPMOST, ...)                           → 항상 위
              └ DwmExtendFrameIntoClientArea(margins.cxLeftWidth = -1)    → 창 배경 제거
-매 프레임 렌더 후
-   └ BlitFeature → BlitPass → MakeTransparent_URP (color.a = _TransparencyFactor)
-        → 렌더 결과 알파 강제 하향 → 데스크톱이 비침
+매 프레임 렌더
+   └ 카메라 clearFlags=SolidColor + 배경색 (0,0,0,0) + preserveFramebufferAlpha
+        → 아무것도 안 그린 픽셀의 알파가 0 으로 남음 → 데스크톱이 비침 (커스텀 패스 없음)
 필요 시
    └ WindowNativeManager.SetTransparentClick(true)                        → 클릭 통과
 ```

@@ -132,7 +132,7 @@ Unity 6 (`6000.2.10f1`) + URP 데스크톱 오버레이 게임 프레임워크 �
 
 ### 3. Windows 스탠드얼론 빌드 — 플랫폼 조건부 블록을 건드렸을 때
 
-`ResolutionManager`, `DebuggingComponent`, `WindowNativeManager`, `BlitPass` 등 `#if UNITY_STANDALONE_WIN` 안쪽을 고쳤다면 **실제 빌드가 유일한 검증 수단이다.** 2단계를 통과해도 여기서 터질 수 있다.
+`ResolutionManager`, `DebuggingComponent`, `WindowNativeManager` 등 `#if UNITY_STANDALONE_WIN` 안쪽을 고쳤다면 **실제 빌드가 유일한 검증 수단이다.** 2단계를 통과해도 여기서 터질 수 있다.
 
 ### 4. 실행 확인 — 사람이 봐야 하는 것
 

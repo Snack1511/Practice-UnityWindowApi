@@ -46,7 +46,7 @@ asmdef는 **한 번에 다 쪼갤 필요 없다.** `Project.Editor` 하나만 �
 | `Script.*` | 대부분의 매니저·씬·콘텐츠 |
 | `pattern` (소문자) | `Singleton.cs`, `State.cs`, `EventBusLocater.cs` |
 | `Manager` | `GameFlow/Loader.cs` — **폴더는 GameFlow인데 네임스페이스는 Manager** |
-| (전역) | `Controller/*` 5개, `UIRoot`, `BlitFeature`, `BlitPass`, `GamePathDefine` |
+| (전역) | `Controller/*` 5개, `UIRoot`, `GamePathDefine` |
 
 **영향**
 - `using pattern;` — C# 관례상 네임스페이스는 PascalCase. 소문자는 변수/타입과 헷갈린다.

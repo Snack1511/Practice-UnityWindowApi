@@ -2,7 +2,7 @@
 
 다음 세션이 이어받기 위한 인수인계. **작업을 시작하기 전에 이 문서와 [CLAUDE.md](CLAUDE.md)를 먼저 읽는다.**
 
-마지막 갱신: **2026-08-10** / 커밋 `517f34f` / `origin/main` 동기화됨
+마지막 갱신: **2026-08-12** / `origin/main` 동기화됨
 
 ---
 
@@ -10,23 +10,17 @@
 
 **작업 트리 클린, 미푸시 커밋 없음, 실행 중인 프로세스 없음.** 깨끗한 상태에서 재개할 수 있다.
 
-```
-git status      변경 0건
-git log         517f34f (origin/main 과 동일)
-Unity.exe       미실행
-OverlayTest.exe 미실행
-```
+### 도달한 지점
 
-### 이번 세션에서 도달한 지점
-
-이 프로젝트에서 **처음으로 Windows 플레이어 빌드가 통과했고, 투명 배경과 클릭 통과가 실제로 동작한다.**
-상세는 [docs/CHANGELOG.md](docs/CHANGELOG.md) 2026-08-10 항목.
+Windows 플레이어 빌드가 통과하고, **투명 배경과 클릭 통과가 실제로 동작한다.**
+커스텀 렌더 패스 없이 **프로젝트 설정만으로 투명이 성립**하는 것까지 확인·정리됐다.
+상세는 [docs/CHANGELOG.md](docs/CHANGELOG.md).
 
 | 항목 | 상태 |
 |---|---|
 | advise/001 P0 (1-1 · 1-2 · 1-3 · 1-4 · 1-6) | ✅ 해결 + 빌드/실행 검증 |
-| advise/001 1-5 (BlitPass) | ✅ **판별 완료 — 삭제가 답.** 삭제 작업은 미완 |
-| 투명 배경 | ✅ 실행 확인 |
+| advise/001 1-5 (BlitPass 스택) | ✅ **삭제 완료** — 빌드·실행·투명 육안 확인까지 |
+| 투명 배경 | ✅ 실행 확인 (blit 제거 후 재확인) |
 | 클릭 통과 | ✅ 실행 확인 |
 | 치트 패널 · 콘솔 · 드래그 · 접기 | ✅ 실행 확인 |
 | `Assets` 용량 | 789M → 19M |
@@ -35,26 +29,9 @@ OverlayTest.exe 미실행
 
 ## 다음에 할 일
 
-### 1. BlitPass 스택 삭제 ← 우선순위 최상
+001 의 P0 는 사실상 소진됐다. 남은 것은 아래 표뿐이며 **우선순위는 002-8 EventSystem** 이다 — 재발 조건이 명확하다.
 
-실측으로 **불필요가 확인됐다.** 치트 패널로 `BlitFeature`를 껐을 때 투명이 그대로 유지됐다.
-`src`/`dst` 분리를 구현할 필요가 **없다.**
-
-**순서가 중요하다.** 체크리스트 전문은 [advise/001](advise/001-build-blockers.md)의 "삭제 체크리스트".
-
-1. **`Assets/Settings/PC_Renderer.asset`의 Renderer Features에서 `BlitFeature` 제거** ← 반드시 먼저. 에디터 인스펙터 작업
-2. `Assets/Script/Shader/BlitFeature.cs` 삭제
-3. `Assets/Script/Shader/BlitPass.cs` 삭제
-4. blit 전용 머티리얼·셰이더 (다른 곳에서 안 쓰면)
-5. `CheatPanel.RegisterCheats`의 `Set BitBlitPass` 토글 제거
-6. Windows 빌드 후 투명 육안 확인
-
-> 1번을 건너뛰고 스크립트를 먼저 지우면 `PC_Renderer.asset`에 missing script 항목이 남는다.
-> `Obstacle.prefab`이 지금 겪고 있는 상태와 같아진다.
-
-**삭제 커밋은 독립적으로 끊는다.** blit 유무는 결과가 다르다 — 없으면 "오브젝트만 또렷 + 배경 투명", 있으면 "화면 전체 반투명". 나중에 후자가 필요해지면 `git revert`로 복원할 수 있어야 한다.
-
-### 2. 그 외 열린 항목
+### 열린 항목
 
 | 항목 | 문서 | 비고 |
 |---|---|---|
@@ -102,6 +79,20 @@ BuildPipeline.BuildPlayer(new BuildPlayerOptions {
 
 `DEVELOPMENT_BUILD`가 정의되지 않으면 `CheatPanel` 파일 전체가 컴파일에서 빠진다.
 
+**2026-08-12 에 실제로 통과한 호출** — `EditorApplication.Exit(summary.result == BuildResult.Succeeded ? 0 : 1)`을
+메서드 끝에 두면 배치 모드 종료 코드로 성공/실패가 그대로 나온다. `-quit` 없이 이 Exit 하나로 끝난다.
+
+```bash
+"E:/Unity/Editor/6000.2.10f1/Editor/Unity.exe" -batchmode -nographics \
+  -projectPath "E:/Unity/Project/Practice/Practice-UnityWindowApi" \
+  -executeMethod TempDevBuild.BuildWindows64Development -logFile <로그경로>
+```
+
+> **출력은 프로젝트 밖으로 뺀다.** `.gitignore` 에 빌드 산출물 패턴이 없어서
+> 프로젝트 안에 빌드하면 168 MB 가 `git status` 에 그대로 올라온다.
+>
+> 임시 스크립트는 `Assets/Editor/`에 두고 **빌드 직후 `.cs` 와 `.meta` 를 함께 지운다.**
+
 ### 실행 로그
 
 ```
@@ -115,11 +106,13 @@ BuildPipeline.BuildPlayer(new BuildPlayerOptions {
 
 ```
 O        패널 표시/숨김
-1        Set BitBlitPass
-2        Set TransparentClick
+1        Set TransparentClick
 ```
 
 숫자키는 **UI 입력 경로를 우회**한다. "클릭이 안 된다"와 "기능이 안 된다"를 분리해서 판정할 때 쓴다.
+
+> 매핑은 **등록 순서 고정이 아니라 `AddToggle` 호출 순서**다. 치트를 추가하면 번호가 밀린다.
+> `Set BitBlitPass` 는 2026-08-12 에 제거됐다(이전 `1`번). 에디터에서는 토글이 0개다.
 
 ---
 

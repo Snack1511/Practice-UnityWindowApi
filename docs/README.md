@@ -41,10 +41,9 @@ Assets/
 │  ├─ Pattern/                 Singleton<T>, MonoSingleton<T>, IState, EventBusLocater
 │  ├─ Define/                  GameFlowDefine(진행률), ModelDefine(Model/Save 정의)
 │  ├─ Controller/              MonoBehaviour 유틸 컴포넌트 5종
-│  ├─ Shader/                  BlitFeature / BlitPass (URP ScriptableRendererFeature)
 │  ├─ ScriptableObject/        GamePathDefine (정의만 존재, 코드에서 미사용)
 │  └─ DebuggingComponent.cs    FPS OSD, 디버그 오브젝트 토글(Tab)
-├─ Resources/                  런타임 로드 대상 전부 (Scenes/Prefabs/Table/Sprite/Shader/Material)
+├─ Resources/                  런타임 로드 대상 전부 (Scenes/Prefabs/Table/Sprite/UI)
 ├─ SaveData/                   에디터 실행 시 세이브 파일이 여기 쓰임 (dataPath 기준)
 ├─ Settings/                   URP Asset / Renderer (PC · Mobile)
 ├─ ThirdParty/                 서브모듈 (Collection/Component/GameObject 확장 메서드)
@@ -90,7 +89,7 @@ sequenceDiagram
 | 씬 전환 | `SceneManager.Instance.ChangeScene(type, info, cb, isVisitLoadingScene)` |
 | CSV 테이블 추가 | `TableDataBase` 상속 → `TableManager.LoadTableDataAsync<T>(path)` |
 | 세이브 항목 추가 | `ESaveType` + `SaveBase` 상속 + `SaveDataFactory` + `IOManager.GetSaveType` (**3곳**) |
-| 창 스타일/투명도 | `WindowNativeManager` / `Resources/Shader/MakeTransparent.shader` |
+| 창 스타일/투명도 | `WindowNativeManager` / 카메라 배경색·`preserveFramebufferAlpha` ([window-native 3항](window-native.md)) |
 | 전역 이벤트 | `EventBusLocater.RegistService<T>` / `Notify` |
 
 ## 알아둘 것 (현재 상태)

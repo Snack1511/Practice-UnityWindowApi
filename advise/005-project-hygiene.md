@@ -102,8 +102,7 @@
 | `Assets/Resources/Sprite/asdfadsf.png` | 임시 이름 | 삭제 또는 개명 |
 | `Assets/Resources/Scenes/GameScene.unity` | Build Settings 등록 O, `ESceneType` X | [002-7](002-scene-system.md#2-7-사용되지-않는-경로-정리) |
 | `GameFlow/Loader.cs:50-87` | 주석 처리된 `LoadManager` 전체 | 삭제. git 히스토리에 남아 있다 |
-| `Shader/BlitPass.cs:6` | `using static Unity.Burst.Intrinsics.X86.Avx;` | 삭제 |
-| `Shader/BlitPass.cs` 내 tmp RT 주석 | [001-5](001-build-blockers.md) 해결 시 함께 정리 | 살리든 지우든 결론을 낸다 |
+| ~~`Shader/BlitPass.cs`~~ | ✅ 해결 (2026-08-12) — 파일이 삭제되어 `Avx` using 과 tmp RT 주석이 함께 사라졌다. [001-5](001-build-blockers.md) | — |
 | `Assets/TutorialInfo/`, `Assets/Readme.asset` | Unity 템플릿 잔여물 | 삭제 |
 | `MenuiScene.unity` → `MenuScene.unity` | 오타 파일명 개명이 커밋 안 된 상태(삭제 12건에 포함) | 개명 커밋을 마무리 |
 
@@ -155,4 +154,4 @@
 | `"Table/testTable.csv"` | `GameScene/TestScene.cs:43` | 테스트 코드라 허용 가능 |
 | `"SceneManager"` | `GameFlow/MainProcess.cs:34` | updater 키 문자열. 오타 시 조용히 미등록 → `nameof()` 사용 권장 |
 | `gravityScale = 2` | `Controller/MoveController.cs:33` | 인스펙터 노출 또는 상수화 |
-| `_TransparencyFactor = 0.01` | `Resources/Shader/MakeTransparent.shader` | 머티리얼 프로퍼티라 조정 가능 — 문제 없음 |
+| ~~`_TransparencyFactor = 0.01`~~ | ~~`Resources/Shader/MakeTransparent.shader`~~ | ✅ 해당 없음 (2026-08-12) — 셰이더 삭제됨 |
