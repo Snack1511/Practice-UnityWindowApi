@@ -21,6 +21,32 @@ namespace Script.Manager.StaticManager
 #endif
         }
 
+        /// <summary>
+        /// 포커스를 얻을 때 창을 현재 모니터의 작업 영역에 다시 맞춘다.
+        /// 실행 중에 작업 표시줄이 옮겨지거나 자동 숨김이 켜지면 부팅 때 읽은 값이 낡기 때문이다.
+        ///
+        /// 주 모니터가 아니라 <b>창이 올라가 있는 모니터</b>를 기준으로 잡는다.
+        /// 주 모니터로 맞추면 치트 패널로 다른 모니터에 옮겨둔 창이 도로 끌려온다.
+        ///
+        /// 즉시 감지하는 방법은 WindowNativeManager 의 개선 메모 참고.
+        /// </summary>
+        public static void OnApplicationFocusChanged(bool isFocus)
+        {
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+        if (!isFocus)
+            return;
+
+        if (!WindowNativeManager.TryGetMonitorForWindow(out WindowNativeManager.MonitorInfo monitor))
+            return;
+
+        // 이미 맞으면 아무것도 하지 않는다. 포커스마다 SetWindowPos 를 때리지 않기 위한 것이다.
+        if (WindowNativeManager.IsWindowFittedTo(monitor))
+            return;
+
+        WindowNativeManager.SetWindowToMonitor(monitor);
+#endif
+        }
+
         public static void Release()
         {
         }

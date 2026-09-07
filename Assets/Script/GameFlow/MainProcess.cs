@@ -66,7 +66,8 @@ namespace Script.GameFlow
 
         public static void OnApplicationChangedFocus(bool isFocus)
         {
-
+            //작업 표시줄이 옮겨졌거나 자동 숨김이 켜졌으면 여기서 창 크기를 다시 맞춘다.
+            Manager.StaticManager.ResolutionManager.OnApplicationFocusChanged(isFocus);
         }
     }
 }
