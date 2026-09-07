@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Script.Manager.StaticManager
@@ -24,6 +25,12 @@ namespace Script.Manager.StaticManager
         [DllImport("User32.dll", SetLastError = true)] public static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, uint dwFlags);
 
         [DllImport("user32.dll", SetLastError = true)] private static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder lpString, int nMaxCount);
+
+        [DllImport("User32.dll")] private static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip, MonitorEnumProc lpfnEnum, IntPtr dwData);
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)] private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFOEX lpmi);
+
+        private delegate bool MonitorEnumProc(IntPtr hMonitor, IntPtr hdc, ref RECT rect, IntPtr data);
         #endregion
 
         #region Const Value Struct
@@ -33,6 +40,53 @@ namespace Script.Manager.StaticManager
             public int cxRightWidth;
             public int cyTopHeight;
             public int cyBottomHeight;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
+
+            public int Width => right - left;
+            public int Height => bottom - top;
+        }
+
+        // szDevice 가 고정 길이 배열이라 CharSet 과 SizeConst 를 맞춰야 GetMonitorInfo 가 실패하지 않는다.
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct MONITORINFOEX
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public uint dwFlags;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string szDevice;
+        }
+
+        private const uint MONITORINFOF_PRIMARY = 0x00000001;
+
+        /// <summary>모니터 하나의 전체 영역과 작업 영역(작업 표시줄 제외).</summary>
+        public struct MonitorInfo
+        {
+            public string device;
+            public bool isPrimary;
+
+            public int x;
+            public int y;
+            public int width;
+            public int height;
+
+            public int workX;
+            public int workY;
+            public int workWidth;
+            public int workHeight;
+
+            public override string ToString()
+            {
+                return $"{device} {width}x{height} @{x},{y}{(isPrimary ? " (주)" : "")}";
+            }
         }
 
         public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
@@ -122,6 +176,82 @@ namespace Script.Manager.StaticManager
             return str;
         }
     
+        /// <summary>연결된 모니터 목록. 실패하면 빈 목록.</summary>
+        public static List<MonitorInfo> GetMonitors()
+        {
+            List<MonitorInfo> monitors = new List<MonitorInfo>();
+
+            // 콜백이 네이티브 호출 도중 수집되지 않도록 지역 변수로 붙들어 둔다.
+            MonitorEnumProc callback = (IntPtr hMonitor, IntPtr hdc, ref RECT rect, IntPtr data) =>
+            {
+                MONITORINFOEX info = new MONITORINFOEX { cbSize = Marshal.SizeOf(typeof(MONITORINFOEX)) };
+
+                if (!GetMonitorInfo(hMonitor, ref info))
+                    return true;
+
+                monitors.Add(new MonitorInfo
+                {
+                    device = info.szDevice,
+                    isPrimary = (info.dwFlags & MONITORINFOF_PRIMARY) != 0,
+
+                    x = info.rcMonitor.left,
+                    y = info.rcMonitor.top,
+                    width = info.rcMonitor.Width,
+                    height = info.rcMonitor.Height,
+
+                    workX = info.rcWork.left,
+                    workY = info.rcWork.top,
+                    workWidth = info.rcWork.Width,
+                    workHeight = info.rcWork.Height,
+                });
+
+                return true;
+            };
+
+            EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, callback, IntPtr.Zero);
+            GC.KeepAlive(callback);
+
+            return monitors;
+        }
+
+        /// <summary>주 모니터. 열거에 실패하면 false.</summary>
+        public static bool TryGetPrimaryMonitor(out MonitorInfo monitor)
+        {
+            List<MonitorInfo> monitors = GetMonitors();
+
+            foreach (MonitorInfo candidate in monitors)
+            {
+                if (!candidate.isPrimary)
+                    continue;
+
+                monitor = candidate;
+                return true;
+            }
+
+            //주 모니터 플래그를 못 찾아도 하나라도 있으면 그것을 쓴다.
+            if (monitors.Count > 0)
+            {
+                monitor = monitors[0];
+                return true;
+            }
+
+            monitor = default;
+            return false;
+        }
+
+        /// <summary>창을 해당 모니터의 작업 영역에 꽉 채운다. 작업 표시줄을 덮지 않는다.</summary>
+        public static void SetWindowToMonitor(MonitorInfo monitor)
+        {
+            if (hWnd == IntPtr.Zero)
+                hWnd = GetActiveWindow();
+
+            SetWindowPos(hWnd, HWND_TOPMOST, monitor.workX, monitor.workY, monitor.workWidth, monitor.workHeight,
+                SWP.FRAMECHANGED | SWP.SHOWWINDOW);
+
+            UnityEngine.Debug.Log($"[WindowNative] 창을 {monitor} 의 작업 영역으로 이동 " +
+                                  $"({monitor.workX},{monitor.workY} {monitor.workWidth}x{monitor.workHeight})");
+        }
+
         public static string GetWindowName() 
         {
             string str = "None";
