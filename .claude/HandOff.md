@@ -12,8 +12,19 @@
 ## 지금 상태
 
 **작업 트리 클린, 실행 중인 프로세스 없음.**
-`feat/uiroot-and-cheat-panel` 브랜치에 커밋이 쌓여 있고 **`main` 반영도 푸시도 안 됐다.**
-백업 브랜치는 삭제했다(B-1). 문서는 전부 `.claude/` 아래로 옮겨졌다.
+`feat/uiroot-and-cheat-panel` 브랜치에 **5커밋**이 쌓여 있고 **`main` 반영도 푸시도 안 됐다.**
+
+```
+46ead2e docs: 머신 종속 경로를 CLAUDE.local.md 로 분리
+14a9ed1 feat: 치트 패널 확장과 포커스 시 작업 영역 재계산
+5e640f1 refactor: EventSystem 을 전역 UIRoot 로 옮기고 씬 UI 이전
+d745f2f fix: 창 하단 1px 빈칸
+a5f0767 docs: 작업 규약·문서 체계를 .claude/ 로 통합
+```
+
+원래 17커밋이었던 것을 최종 트리에서 유형별로 다시 쌓았다.
+**되돌릴 안전망은 전부 정리됐다** — 백업 브랜치·`refs/original`·reflog 모두 회수(`gc --prune=now`).
+재구성 전 이력으로는 돌아갈 수 없다. `git fsck` 무결성은 확인했다.
 
 ### 도달한 지점
 
@@ -37,7 +48,11 @@ UI 는 씬이 아니라 **전역 `UIRoot` 밑**에 만든다 — `EventSystem` �
 | 포커스 시 작업 영역 재계산                        | ✅ 실행 확인 — 현재 모니터 기준, 주 모니터로 안 끌려옴 |
 | `process/` 작업 규약 통합본 (en/ko)             | ✅ 도입 — 세션 프로세스·git·문서·메모리·모델 규약 |
 | `docs/roadmap.md` 두 축 로드맵                 | ✅ 구조 축(시스템·모듈·오브젝트) + 시간 축(0~9단계) + 단계별 닫힘 기준 |
-| 커밋 트레일러 소급 제거                          | ✅ 13커밋 전부. 트리 해시 대조로 내용 무변경 확인 |
+| 커밋 트레일러 소급 제거                          | ✅ 전 커밋. 트리 해시 대조로 내용 무변경 확인 |
+| `.claude/` 구조 재편                          | ✅ 문서 전부 `.claude/` 아래로. `ChangeLog/` 를 영역별로 분할 |
+| `.gitignore` 가 `.claude/` 를 무시하던 문제      | ✅ 해결 — 새 파일이 조용히 빠지고 있었다. `ChangeLog` 8개 복구 |
+| `CLAUDE.local.md` 도입                        | ✅ 머신 종속 경로 분리. `roles/verification.md` 는 플레이스홀더 |
+| 커밋 이력 재구성                                | ✅ 17 → 5커밋. 코드 diff 0 확인 |
 
 
 ---
@@ -63,7 +78,9 @@ UI 는 씬이 아니라 **전역 `UIRoot` 밑**에 만든다 — `EventSystem` �
 
 ---
 
-## 대기 중인 결정 (15건 / A 3 · B 4 · C 5 · D 2 · E 1)
+## 대기 중인 결정 (13건 남음 / A 2 · B 3 · C 5 · D 2 · E 1)
+
+> A-1·B-1 은 2026-09-08 해결됐다. 아래에 취소선으로 남아 있다.
 
 **사용자가 "다음 세션에 하나씩 순차 처리하겠다"고 지정했다.**
 한 번에 하나만 묻고, 답을 받은 뒤 다음으로 넘어간다. 목록 전체를 나열하지 않는다.
@@ -179,53 +196,22 @@ Desktop 통합 때 "모델별 개별 규약은 이 프로젝트 관찰 기반이
 
 ## 재개에 필요한 환경 정보
 
-### Unity
+### 경로·명령은 `CLAUDE.local.md` 에 있다
 
-```
-버전     6000.2.10f1   (ProjectSettings/ProjectVersion.txt 와 일치해야 한다)
-설치     E:\Unity\Editor\6000.2.10f1\Editor\Unity.exe
-Hub      E:\Unity\Unity Hub\Unity Hub.exe   (Program Files 아님)
-```
+Unity 설치 경로, 프로젝트 경로, 빌드 출력 경로, 컴파일·빌드·에디터 실행 명령은
+루트 **`CLAUDE.local.md`** 에 있다. **매 세션 자동으로 읽히므로 따로 열 필요 없다.**
 
-> 다른 버전으로 열면 에셋 데이터베이스와 `.meta` 재직렬화가 일어나 되돌리기 어렵다.
-> `6000.0.23f1`과 `6000.5.5f1`도 설치돼 있으니 **경로를 반드시 확인한다.**
+절차와 각 단계의 한계는 [roles/verification.md](roles/verification.md).
 
-### 빌드
+> `CLAUDE.local.md` 는 `.gitignore` 대상이라 **클론 직후에는 없다.**
+> 없으면 [roles/verification.md](roles/verification.md) 의 템플릿으로 만든다.
 
-에디터 컴파일 검사:
+버전은 `ProjectSettings/ProjectVersion.txt` 와 **정확히 일치**해야 한다.
+다른 버전으로 열면 에셋 데이터베이스와 `.meta` 재직렬화가 일어나 되돌리기 어렵다.
 
-```bash
-"E:/Unity/Editor/6000.2.10f1/Editor/Unity.exe" -batchmode -quit -nographics \
-  -projectPath "E:/Unity/Project/Practice/Practice-UnityWindowApi" -logFile <로그경로>
-```
-
-**Development Build** — `-buildWindows64Player`에는 개발 빌드 플래그가 없다.
-`Assets/Editor/`에 임시 스크립트를 만들어 `-executeMethod`로 부르고, **끝나면 삭제한다.**
-
-```csharp
-BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-    scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray(),
-    locationPathName = "<출력경로>/OverlayTest.exe",
-    target = BuildTarget.StandaloneWindows64,
-    options = BuildOptions.Development,   // 이게 있어야 CheatPanel 이 포함된다
-});
-```
-
-`DEVELOPMENT_BUILD`가 정의되지 않으면 `CheatPanel` 파일 전체가 컴파일에서 빠진다.
-
-**2026-08-12 에 실제로 통과한 호출** — `EditorApplication.Exit(summary.result == BuildResult.Succeeded ? 0 : 1)`을
-메서드 끝에 두면 배치 모드 종료 코드로 성공/실패가 그대로 나온다. `-quit` 없이 이 Exit 하나로 끝난다.
-
-```bash
-"E:/Unity/Editor/6000.2.10f1/Editor/Unity.exe" -batchmode -nographics \
-  -projectPath "E:/Unity/Project/Practice/Practice-UnityWindowApi" \
-  -executeMethod TempDevBuild.BuildWindows64Development -logFile <로그경로>
-```
-
-> **출력은 프로젝트 밖으로 뺀다.** `.gitignore` 에 빌드 산출물 패턴이 없어서
-> 프로젝트 안에 빌드하면 168 MB 가 `git status` 에 그대로 올라온다.
->
-> 임시 스크립트는 `Assets/Editor/`에 두고 **빌드 직후 `.cs` 와 `.meta` 를 함께 지운다.**
+**임시 빌드 스크립트는 `Assets/Editor/` 에 만들고 끝나면 `.cs` 와 `.meta` 를 함께 지운다.**
+빌드 출력은 프로젝트 밖으로 뺀다 — `.gitignore` 에 산출물 패턴이 없어서
+프로젝트 안에 빌드하면 168 MB 가 `git status` 에 올라온다.
 
 ### 실행 로그
 
@@ -280,13 +266,34 @@ O            패널 표시/숨김
 
 ---
 
+**`.gitignore` 가 무시하는 폴더에 문서를 두면 새 파일이 조용히 빠진다.**
+`.claude/` 가 무시 목록에 있는데 `git mv` 로 옮긴 파일은 이미 추적 중이라 통과했다.
+새로 만든 `ChangeLog` 8개는 `git add -A` 가 건너뛰었고, 커밋된 줄 알았다.
+이력을 재구성하다 발견했다. **커밋되면 안 되는 파일은 규칙을 먼저 넣고 파일을 나중에 만든다.**
+
+**`@import` 는 컨텍스트를 줄이지 않는다.** `CLAUDE.md` 의 `@경로` 는 실행 시점에 전부 펼쳐진다.
+지금 구조가 마크다운 링크만 쓰는 이유다 — 자동 로드는 `CLAUDE.md` 와 `CLAUDE.local.md` 뿐이고
+`process/` `roles/` `docs/` 수천 줄은 필요할 때만 읽힌다.
+
+**범용 템플릿 안의 예시 경로를 치환하면 안 된다.** `process/` 에는 다른 프로젝트용 예시가 들어 있다.
+구조 이관 때 링크 검증에서 12건이 "깨짐"으로 잡혔지만 전부 코드블록 안 예시라 정상이었다.
+일괄 치환했으면 범용성이 깨졌다.
+
+**sed 의 후행 빈 줄 제거 루프는 다음 줄을 미리 삼킨다.** `:a … N` 이 pattern space 에 다음 줄을
+붙여버려서 앞의 삭제 규칙을 건너뛴다. 트레일러 제거가 절반만 되는 원인이었다.
+삭제와 후행 정리를 **파이프로 분리**해야 한다.
+
 ## 참고 문서
 
 
 | 문서                                     | 내용                                  |
 | -------------------------------------- | ----------------------------------- |
 | [CLAUDE.md](../CLAUDE.md)                 | 프로젝트 규약. **모델 선택, 확인 절차, 질문 응답 규칙** |
-| [docs/CHANGELOG.md](docs/CHANGELOG.md) | 시간순 변경 이력. 이번 세션 전체                 |
+| [docs/CHANGELOG.md](docs/CHANGELOG.md) | 시간순 **인덱스**. 상세는 `ChangeLog/` 가 정본  |
+| [ChangeLog/](ChangeLog/)               | 작업 명세 축. 영역별 상세 기록                 |
+| [docs/roadmap.md](docs/roadmap.md)     | 단계 마일스톤과 닫힘 기준, 3계층 배치 규약        |
+| [process/README.md](process/README.md) | 범용 작업 절차 (en/ko)                      |
+| [roles/README.md](roles/README.md)     | 이 프로젝트 고유 규약                        |
 | [docs/model-guides/](docs/model-guides/README.md)  | 모델별 작업 규약                           |
 | [advise/README.md](advise/README.md)   | 제언 목록. 현재 **6/10** (10개 넘으면 재정리 먼저) |
 | [docs/reference/](docs/reference/)     | 외부 구현 분석                            |
