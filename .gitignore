@@ -74,7 +74,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# Claude Code / agent tooling (local only)
+# Claude Code / agent tooling
+# .claude/ 는 프로젝트 문서 체계(process·roles·advise·docs·ChangeLog·HandOff)가 들어 있어 추적한다.
+# 로컬 전용 설정만 제외한다.
+.claude/settings.local.json
 .agents/
-.claude/
 skills-lock.json

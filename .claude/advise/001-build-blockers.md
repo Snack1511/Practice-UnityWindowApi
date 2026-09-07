@@ -28,6 +28,7 @@ using UnityEditor.Overlays;
 `UnityEditor` 어셈블리는 플레이어 빌드에 포함되지 않는다. 사용하지 않는 `using`이라도 네임스페이스가 존재하지 않으므로 `CS0246`으로 **빌드 자체가 실패**한다. 에디터 플레이에서는 아무 증상이 없어서 빌드를 돌릴 때까지 발견되지 않는다.
 
 **권장**
+
 1. 해당 `using` 삭제 (사용처 없음).
 2. 재발 방지 — 런타임 코드를 asmdef로 분리하면 `UnityEditor` 참조가 **에디터에서 즉시 컴파일 에러**로 잡힌다. → [004](004-architecture-scale.md#4-1-asmdef-도입)
 
@@ -40,7 +41,7 @@ using UnityEditor.Overlays;
 
 **이 두 건은 실제 Windows 빌드로만 검증 가능했고, 그렇게 검증했다.**
 에디터 배치 컴파일은 통과해도 이 블록을 건드리지 않는다 — 검증 절차는
-[CLAUDE.md](../CLAUDE.md)의 `코드 수정 후 확인 절차` 참조.
+[CLAUDE.md](../../CLAUDE.md)의 `코드 수정 후 확인 절차` 참조.
 
 플랫폼 조건부 블록은 **에디터에서 컴파일되지 않으므로 IDE도 검증해주지 않는다.** 두 곳이 깨져 있었다.
 
@@ -79,6 +80,7 @@ namespace Script
 스탠드얼론 Windows 빌드에서 두 파일 모두 `CS0103`/`CS0246`. **이 프로젝트의 주 타깃 플랫폼이 바로 그 플랫폼이다.**
 
 **권장**
+
 1. `ResolutionManager.cs` 최상단에 `using UnityEngine;` 추가.
 2. `DebuggingComponent.cs`에 `using Script.Manager.StaticManager;` 추가.
 3. 근본 대책 — **조건부 컴파일 블록을 CI/수동 빌드로 주기적으로 검증**하거나, 플랫폼 분기를 `#if`가 아니라 런타임 분기(`Application.platform`)로 바꿔 항상 컴파일되게 한다. P/Invoke 선언부는 `#if`가 필요하지만, **호출부는 런타임 분기로 빼는 편이 검증 가능성이 훨씬 높다.**
@@ -92,7 +94,7 @@ namespace Script
 아래 권장 1번(등록)과 2번(정합성 검사기)이 모두 처리됐다.
 
 - `Assets/Editor/SceneRegistryValidator.cs` — `ESceneType` ↔ Build Settings 양방향 대조.
-  `[InitializeOnLoad]`로 에디터 재컴파일마다 자동 실행되고, `Tools > Validate Scene Registry`로 수동 실행도 된다.
+`[InitializeOnLoad]`로 에디터 재컴파일마다 자동 실행되고, `Tools > Validate Scene Registry`로 수동 실행도 된다.
 - `LobbyScene` · `MenuScene`을 Build Settings에 등록. **검사기의 Error 두 건이 사라졌다.**
 
 Windows 스탠드얼론 빌드로 씬 6개가 전부 포함되는 것을 확인했다
@@ -109,28 +111,33 @@ Windows 스탠드얼론 빌드로 씬 6개가 전부 포함되는 것을 확인�
 **근거 (해결 전 기록)**
 
 `ProjectSettings/EditorBuildSettings.asset` 등록 목록:
+
 ```
 StartScene / LoadingScene / GameScene / TestScene
 ```
 
 `ESceneType` 정의 (`GameScene/SceneBase.cs:8`):
+
 ```
 None / StartScene / LoadingScene / LobbyScene / MenuScene / TestScene
 ```
 
 부팅 직후 흐름 (`GameFlow/GameScene/StartScene.cs:47`):
+
 ```csharp
 SceneManager.Instance.ChangeScene(ESceneType.LobbyScene, null, null, true);
 ```
 
 **영향**
+
 - `LobbyScene` · `MenuScene`은 **미등록** → `SceneManager.LoadSceneAsync("LobbyScene", Additive)`가 로드되지 않고 에러 로그만 남는다. 부팅 → 로딩씬까지는 뜨지만 **로비로 넘어가지 못한다.**
 - `GameScene`은 등록되어 있으나 `ESceneType`에 대응 항목이 없다 → 코드에서 접근 불가한 죽은 등록.
 - 이 불일치는 **컴파일 타임에 잡히지 않고, 런타임 로그로만 드러난다.**
 
 **권장**
+
 1. 즉시: Build Profiles(Build Settings)에 `LobbyScene`, `MenuScene` 추가. `GameScene`은 쓰지 않으면 목록에서 제거.
-2. 구조적 방어: **`ESceneType` ↔ Build Settings 정합성 검사**를 에디터 스크립트로 자동화. → [002](002-scene-system.md#2-4-씬-등록이-4곳으로-흩어져-있다)
+2. 구조적 방어: `**ESceneType` ↔ Build Settings 정합성 검사**를 에디터 스크립트로 자동화. → [002](002-scene-system.md#2-4-씬-등록이-4곳으로-흩어져-있다)
 
 ```csharp
 // Assets/Editor/SceneRegistryValidator.cs (신규, Editor 폴더 필수)
@@ -150,6 +157,7 @@ static class SceneRegistryValidator
     }
 }
 ```
+
 에디터 재컴파일마다 자동 검사되고, 런타임 비용은 0이다.
 
 ---
@@ -180,6 +188,7 @@ public static void SetTransparentClick(bool flag)
 게다가 `IsTransparentClick` 프로퍼티는 `false`를 기록하므로 **상태 변수와 실제 창 상태가 어긋난다.**
 
 **권장**
+
 ```csharp
 public static void SetTransparentClick(bool flag)
 {
@@ -193,6 +202,7 @@ public static void SetTransparentClick(bool flag)
     IsTransparentClick = flag;   // 실제 적용 후에 기록
 }
 ```
+
 `hWnd`가 `SetWindowFrame` 호출 전에는 `IntPtr.Zero`라는 점도 함께 방어한다.
 
 ---
@@ -224,6 +234,7 @@ Blitter.BlitTexture(CommandBuffer, data.src, data.src, data.material, 0);
 같은 파일에 임시 RT(`passData.tmp`)를 만들려던 코드가 주석으로 남아 있어 **이미 인지된 문제**로 보인다.
 
 **부수 문제**
+
 - `BlitPass.cs:6` — `using static Unity.Burst.Intrinsics.X86.Avx;` 의미 없는 using. 삭제 권장.
 - `BlitFeature.cs:20` — `settings.blitMaterial`이 null이어도 그대로 패스를 등록한다. `Create()`/`AddRenderPasses`에서 null 체크 후 skip 필요.
 
@@ -236,6 +247,7 @@ Blitter.BlitTexture(CommandBuffer, data.src, data.src, data.material, 0);
 **즉 두 접근의 차이는 blit 스택 하나뿐이다.**
 
 두 방식은 결과가 다르므로 원하는 그림을 먼저 정한다.
+
 - **게임 오브젝트는 또렷, 배경만 데스크톱이 비침** → blit 스택 삭제 (가장 싼 해결)
 - **화면 전체가 반투명** → 현재 방식 유지 + src/dst 분리 필수
 
@@ -257,7 +269,7 @@ Blitter.BlitTexture(CommandBuffer, data.src, data.src, data.material, 0);
 
 **순서가 중요했다** — 에셋 참조를 먼저 끊지 않고 스크립트를 지우면 `PC_Renderer.asset` 에 missing script 항목이 남는다.
 
-- [x] **`PC_Renderer.asset` 의 `Renderer Features` 목록에서 `BlitFeature` 제거** ← 에디터 인스펙터 작업
+- [x] `**PC_Renderer.asset` 의 `Renderer Features` 목록에서 `BlitFeature` 제거** ← 에디터 인스펙터 작업
 - [x] `Assets/Script/Shader/BlitFeature.cs` 삭제
 - [x] `Assets/Script/Shader/BlitPass.cs` 삭제
 - [x] `Resources/Material/Custom_MakeTransparent.mat` · `Resources/Shader/MakeTransparent.shader` 삭제 — 다른 참조 0건
@@ -316,4 +328,5 @@ grep -rln "using UnityEditor" --include=*.cs Assets/ | grep -v "/Editor/"
 - [x] Build Settings에 `LobbyScene` / `MenuScene` 등록 — `b8f969f` (검사기 Error 0건)
 - [ ] `GameScene` 정리 — 죽은 등록 Warning 1건. 빌드를 막지 않아 P0 아님
 - [x] `BlitPass` 스택 삭제 완료 — 빌드·실행·투명 육안 확인까지
-- [ ] 실행 확인 — 투명 배경, 클릭 통과 전환, 창 위치, 씬 흐름. **자동 검증 불가, 사람이 봐야 한다**
+- [x] 실행 확인 — 투명 배경, 클릭 통과 전환, 창 위치, 씬 흐름. **자동 검증 불가, 사람이 봐야 한다**
+

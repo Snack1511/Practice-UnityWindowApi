@@ -1,7 +1,34 @@
 # CLAUDE.md
 
 Unity 6 (`6000.2.10f1`) + URP 데스크톱 오버레이 게임 프레임워크 연습 프로젝트.
-프로젝트 코드는 **`Assets/Script/` 하위 39개 파일이 전부**다. 나머지는 서드파티 에셋/플러그인.
+프로젝트 코드는 **`Assets/Script/` 하위 43개 파일이 전부**다. 나머지는 서드파티 에셋/플러그인.
+
+## 프로세스
+
+작업 순서와 범용 규약은 [`process/`](.claude/process/README.md)에 **영문(`en/`)·국문(`ko/`) 이중 언어**로 있다.
+**에이전트는 `en/`을 읽는다** — 아래 링크가 그쪽을 가리킨다. 사용자가 규칙을 검토·논의할 때는 `ko/`의 같은 파일을 본다.
+**작업 시작 전에 [process/en/00-process.md](.claude/process/en/00-process.md)를 읽는다.**
+
+| 문서 | 언제 보나 |
+|---|---|
+| [process/en/00-process.md](.claude/process/en/00-process.md) | 세션 프로세스. 접수 → 범위 → 조사 → 구현 → 검증 → 기록 → 인수인계 |
+| [process/en/02-git.md](.claude/process/en/02-git.md) | 브랜치·커밋·푸시·stash |
+| [process/en/03-docs.md](.claude/process/en/03-docs.md) | 문서를 어디에 어떤 형식으로 쓰나 |
+| [process/en/07-rule-pipeline.md](.claude/process/en/07-rule-pipeline.md) | 새 규약이 생겼을 때 이 문서들을 갱신하는 절차. **양쪽 언어를 함께 갱신한다** |
+
+한국어로 같은 내용을 보려면 `process/ko/`의 동일 파일명을 연다.
+
+## 이 프로젝트 규약
+
+`process/`가 어느 프로젝트에서든 통하는 **절차**라면, [`roles/`](.claude/roles/README.md)는 이 프로젝트에서만 참인 **값**이다.
+
+| 문서 | 언제 보나 |
+|---|---|
+| [roles/coding.md](.claude/roles/coding.md) | 코드를 쓰기 전. 업데이트 등록·에셋 로드·확장 메서드·비동기·매니저 추가 |
+| [roles/model.md](.claude/roles/model.md) | 작업을 받았을 때. 어느 모델로 할지 |
+| [roles/verification.md](.claude/roles/verification.md) | 코드를 고친 뒤. 컴파일 검사·빌드·육안 확인 명령 |
+
+**아래 「반드시 알아야 할 함정」은 일부러 여기 남겼다.** 안 읽으면 조용히 실패하는 종류라 자동으로 읽혀야 한다.
 
 ## 문서
 
@@ -9,23 +36,16 @@ Unity 6 (`6000.2.10f1`) + URP 데스크톱 오버레이 게임 프레임워크 �
 
 | 문서 | 언제 보나 |
 |---|---|
-| [docs/README.md](docs/README.md) | 폴더 맵, 부트 시퀀스, "어디를 봐야 하나" 표 |
-| [docs/architecture.md](docs/architecture.md) | 초기화 순서, 매니저 3계층, 업데이트 펌프, 공용 패턴 |
-| [docs/scene-and-content.md](docs/scene-and-content.md) | 씬 추가·전환, `SceneBase` 라이프사이클, 콘텐츠 시스템 |
-| [docs/data-and-resources.md](docs/data-and-resources.md) | 리소스 로드, CSV 테이블, 세이브 |
-| [docs/window-native.md](docs/window-native.md) | Win32 창 제어, DWM, URP 투명 렌더링 |
-| [docs/reference/](docs/reference/) | 외부 자료 분석 (적용 여부와 무관하게 보관) |
-| [advise/README.md](advise/README.md) | 알려진 문제와 개선 제언. **수정 작업 전 필수 확인** |
+| [docs/README.md](.claude/docs/README.md) | 폴더 맵, 부트 시퀀스, "어디를 봐야 하나" 표 |
+| [docs/roadmap.md](.claude/docs/roadmap.md) | **무엇을 어떤 순서로 어느 계층에 만드나.** 단계 마일스톤과 닫힘 기준 |
+| [docs/architecture.md](.claude/docs/architecture.md) | 초기화 순서, 매니저 3계층, 업데이트 펌프, 공용 패턴 |
+| [docs/scene-and-content.md](.claude/docs/scene-and-content.md) | 씬 추가·전환, `SceneBase` 라이프사이클, 콘텐츠 시스템 |
+| [docs/data-and-resources.md](.claude/docs/data-and-resources.md) | 리소스 로드, CSV 테이블, 세이브 |
+| [docs/window-native.md](.claude/docs/window-native.md) | Win32 창 제어, DWM, URP 투명 렌더링 |
+| [docs/reference/](.claude/docs/reference/) | 외부 자료 분석 (적용 여부와 무관하게 보관) |
+| [advise/README.md](.claude/advise/README.md) | 알려진 문제와 개선 제언. **수정 작업 전 필수 확인** |
 
 문서를 갱신할 때 원칙: **`docs/` = 지금 어떻게 동작하는가, `advise/` = 어떻게 바꿔야 하는가.** 중복 서술하지 않는다.
-
-## 코드 작성 시
-
-- **매 프레임 로직**은 새 `MonoBehaviour.Update`를 만들지 말고 `GameProcessManager.AddUpdate("키", 메서드)`로 등록한다. Unity `Update` 진입점은 `GameProcess` 하나뿐이다.
-- **에셋 로드**는 `ResourcesManager.Instance.Load/LoadAsync<T>(경로)`를 쓴다. `Resources.Load` 직접 호출은 정리 대상이다.
-- **확장 메서드**를 새로 만들기 전에 서브모듈을 확인한다: `Framework.Extension.Collection` / `.Component` / `.GameObject` (`IsNullOrEmpty`, `AddOrGetComponent`, `TryAddComponent` 등).
-- **비동기**는 `UniTask`. `Coroutine`/`Task` 혼용하지 않는다.
-- 새 매니저를 추가하면 `MainProcess`의 `Initialize`와 `Release` **양쪽**에 넣는다 (해제는 역순).
 
 ## 반드시 알아야 할 함정
 
@@ -33,155 +53,4 @@ Unity 6 (`6000.2.10f1`) + URP 데스크톱 오버레이 게임 프레임워크 �
 - **런타임 스크립트에서 `UnityEditor` 네임스페이스 금지.** asmdef가 없어 에디터에서는 통과하고 빌드에서만 터진다.
 - **플랫폼 조건부 블록(`#if UNITY_STANDALONE_WIN && !UNITY_EDITOR`)은 에디터가 검증하지 않는다.** 손댔으면 실제 Windows 빌드로 확인한다.
 - 세이브 경로가 `Application.dataPath` 기준이라 에디터에서 `Assets/SaveData/`에 파일이 생긴다.
-- 현재 **P0 이슈가 미해결 상태**다 (빌드 컴파일 실패 + 씬 흐름 단절). [advise/001](advise/001-build-blockers.md) 확인.
-
-## 모델 선택 규약
-
-`/fable5`, `/opus5`, `/opus48`, `/sonnet5` 슬래시 커맨드로 모델을 골라 작업을 실행한다.
-**커맨드를 안 쓰면 Opus 5가 기본**이다. 아래는 언제 기본에서 벗어나는지의 기준.
-
-| 모델 | 가격(입력/출력, 100만 토큰) | 이 프로젝트에서 쓰는 곳 |
-|---|---|---|
-| `/opus5` **기본** | $5 / $25 | 씬 추가·전환, 매니저 계층 수정, Win32/DWM/URP 투명 렌더링, 세이브 로직, P0 이슈 |
-| `/fable5` | $10 / $50 | Opus 5가 두 번 이상 실패한 문제. 아키텍처 전면 재설계. 한 턴이 수 분 걸리는 장기 자율 작업 |
-| `/opus48` | $5 / $25 | Opus 5와 같은 값. 서브에이전트를 덜 띄우고 설명을 짧게 하길 원할 때만 |
-| `/sonnet5` | $3 / $15 (**~2026-08-31까지 $2 / $10**) | 오타, 주석, 문서 갱신, 기계적 리네임, 단일 함수 수정 |
-
-### 올려야 하는 신호
-
-이 프로젝트의 함정은 **컴파일 에러가 아니라 런타임 조용한 실패**로 나타난다. 아래에 해당하면 Sonnet 5로 시작하지 않는다.
-
-- 씬 추가 (코드 3곳 + 에디터 2곳, 누락 시 조용히 실패)
-- `#if UNITY_STANDALONE_WIN && !UNITY_EDITOR` 블록 (에디터가 검증 안 함)
-- `MainProcess` 초기화/해제 순서, `GameProcessManager.AddUpdate` 등록
-- 세 파일 이상을 동시에 건드리는 변경
-
-### 내려야 하는 신호
-
-- 수정 지점이 이미 특정됐고 한 파일 안에서 끝난다
-- `docs/`, `advise/` 문서만 고친다
-- 실패해도 컴파일 에러로 즉시 드러난다
-
-가격은 2026-06-24 기준 캐시값이다. Sonnet 5 도입가는 2026-08-31에 만료된다.
-
-모델별 세부 규약과 공통 프롬프팅 원칙: [docs/models/](docs/models/README.md)
-
-### 작업 시작 전 모델을 먼저 제안한다
-
-새 작업을 받으면 **첫 응답에서** 요청을 위 기준에 대조하고, 현재 모델이 안 맞으면 한 줄로 알린다.
-매 턴 하지 않는다 — 작업이 바뀔 때만.
-
-방향에 따라 처리가 다르다.
-
-- **과한 모델을 쓰는 중** (오타 수정을 Opus 5로 등) → 알리고 **그대로 진행한다.** 멈추지 않는다. 돈만 더 들 뿐 결과는 맞다.
-  > 이 작업은 `/sonnet5`로 충분합니다(비용 40%). 이대로 진행합니다.
-
-- **모자란 모델을 쓰는 중** (씬 추가·플랫폼 조건부 블록·매니저 초기화 순서를 Sonnet 5로 등) → **멈추고 확인받는다.**
-  이 방향의 실패는 런타임 조용한 실패로 나타나 즉시 드러나지 않는다.
-  > 이 작업은 씬 등록 5곳을 건드립니다. 누락 시 컴파일 에러 없이 런타임에 실패합니다. `/opus5` 권장 — 그래도 이대로 진행할까요?
-
-- **두 번 이상 같은 방식으로 실패했을 때** → 세 번째 시도 전에 `/fable5`를 제안한다. 같은 모델로 재시도하지 않는다.
-
-제안은 커맨드까지 적어서 사용자가 바로 복사할 수 있게 한다.
-
-### 지시가 모호하면 묻고 대기한다
-
-모델을 고른 뒤, 아래에 해당하면 **작업을 시작하지 않고** 부족한 것을 묻고 기다린다.
-
-- 해석에 따라 **결과물이 크게 달라지는** 모호함 (씬 전환 방식, 데이터 저장 위치, 기존 매니저 확장 vs 신규 추가)
-- 필수 맥락 누락: 대상 파일·씬·매니저가 특정되지 않음, 기존 코드 어디에 붙는지 불명, 성공 조건 불명
-- 이 프로젝트의 함정 영역을 건드리는데 범위가 안 정해짐 (씬 추가, `#if UNITY_STANDALONE_WIN`, `MainProcess` 순서)
-
-**이 기준을 넘지 않으면 묻지 않는다.** 변수명, 기본값, 동등한 두 방식 중 선택 같은 것은 합리적인 쪽을 고르고 한 줄로 알린다.
-질문은 한 번에 모아서 하고, 추측으로 채운 부분이 있으면 그것도 함께 밝힌다.
-
-## 질문에는 대답만 한다 (사용자 지정)
-
-**사용자가 질문하면 대답만 하고 멈춘다.** 파일을 고치거나 만들지 않는다.
-
-| 형태 | 예 | 행동 |
-|---|---|---|
-| 질문 | "~할 수 있나?", "~방법 없나?", "이거 왜 이래?", "~아닌가?" | **대답만.** 방법을 설명하고 끝낸다 |
-| 지시 | "~해라", "~하자", "진행해", "추가해" | 실행한다 |
-| 애매 | "이거 고치는 게 낫지 않나?" | 대답하고 **"할까?"로 끝낸다.** 먼저 고치지 않는다 |
-
-**조사는 추가 작업이 아니다.** 정확히 답하려고 파일을 읽고, `grep` 하고, 빌드 로그를 뒤지는 것은 대답의 일부다. 근거 없이 답하는 것보다 낫다.
-경계는 **읽기와 쓰기**다 — 읽는 건 얼마든지, 쓰는 건 지시받았을 때만.
-
-질문에 답하다가 코드를 써야 답이 되겠다 싶으면, **코드 대신 방법을 적고 "써줄까?"라고 묻는다.**
-
-## 코드 수정 후 확인 절차 (사용자 지정)
-
-코드를 고쳤으면 **고쳤다고 말하고 끝내지 않는다.** 아래 순서로 확인하고, 각 단계를 실제로 했는지 밝힌다.
-
-### 1. 정적 검토 — 항상 한다
-
-`git diff`로 변경 범위를 확인한다. 의도한 파일만 바뀌었는지, 부수 변경이 없는지 본다.
-
-### 2. 에디터 컴파일 검사 — Unity 배치 모드
-
-```bash
-"<Unity설치경로>/Editor/Unity.exe" -batchmode -quit -nographics \
-  -projectPath "E:/Unity/Project/Practice/Practice-UnityWindowApi" \
-  -logFile - 2>&1 | grep -iE "error CS|Compilation failed"
-```
-
-에디터 플랫폼 기준 컴파일만 검사한다. **`#if UNITY_STANDALONE_WIN && !UNITY_EDITOR` 블록은 여기서 컴파일되지 않으므로 검증되지 않는다.**
-
-> **에디터 버전이 일치해야 한다.** `ProjectSettings/ProjectVersion.txt`의 버전과 다른 에디터로 프로젝트를 열면 **에셋 데이터베이스와 `.meta` 재직렬화가 일어나고 되돌리기 어렵다.** 버전이 없으면 실행하지 말고 사용자에게 알린다. 임의로 다른 버전으로 열지 않는다.
-
-### 3. Windows 스탠드얼론 빌드 — 플랫폼 조건부 블록을 건드렸을 때
-
-`ResolutionManager`, `DebuggingComponent`, `WindowNativeManager` 등 `#if UNITY_STANDALONE_WIN` 안쪽을 고쳤다면 **실제 빌드가 유일한 검증 수단이다.** 2단계를 통과해도 여기서 터질 수 있다.
-
-### 4. 실행 확인 — 사람이 봐야 하는 것
-
-투명 배경, 클릭 통과 전환, 창 위치·크기는 자동 검증이 불가능하다. 무엇을 눈으로 확인해야 하는지 목록으로 제시한다.
-
-### 5. 변경 내용을 렌더링해서 보여준다
-
-검토가 끝나면 **수정한 소스를 Artifact로 띄운다.** 파일별 diff와 각 변경의 이유를 함께 담는다.
-터미널 diff는 흘러가서 다시 못 보지만 Artifact는 링크로 남는다.
-
-### 지키는 원칙
-
-**하지 않은 검증을 했다고 하지 않는다.** 1단계만 했으면 "정적 검토만 했고 컴파일은 확인 못 했다"라고 적는다.
-이 프로젝트는 실패가 런타임에야 드러나므로, 근거 없는 완료 보고가 가장 비싼 실수다.
-
-## 연결이 끊긴 뒤 재개할 때 (사용자 지정)
-
-응답이 도중에 잘려도 **이미 실행된 부작용은 되돌아가지 않는다.** 파일 쓰기, 커밋, 푸시, Artifact 발행은 그대로 남아 있다.
-따라서 재개 시 **가장 위험한 행동은 "안 됐겠지" 하고 다시 실행하는 것**이다. 중복 커밋, 중복 푸시, 덮어쓰기가 여기서 나온다.
-
-### 재개 첫 동작은 항상 상태 확인이다
-
-기억이나 직전 발언이 아니라 **실제 상태를 다시 읽는다.**
-
-```bash
-git status --porcelain      # 작업 트리에 무엇이 남아 있나
-git log --oneline -3        # 커밋이 실제로 됐나
-git status -sb | head -1    # 푸시됐나 (ahead/behind)
-```
-
-파일을 고치던 중이었다면, 다시 수정하기 전에 **그 파일을 읽어 의도한 내용이 이미 들어갔는지 확인한다.**
-
-### 행동별 재실행 안전도
-
-| 행동 | 재실행 | 재개 시 |
-|---|---|---|
-| 파일 읽기 · grep · diff | 안전 | 그냥 다시 한다 |
-| Artifact 재발행 (같은 경로) | 안전 | 같은 URL로 덮어쓴다 |
-| 파일 쓰기 · Edit | **주의** | 먼저 읽어서 이미 반영됐는지 확인 |
-| `git commit` | **위험** | `git log`로 확인. 했으면 amend, 안 했으면 commit |
-| `git push` | **위험** | `git status -sb`의 ahead 수 확인 |
-| 서브에이전트 | **위험** | 백그라운드에서 계속 돈다. 다시 띄우지 말고 알림을 기다린다 |
-
-### 사용자에게 밝힌다
-
-무엇이 끝났고 무엇이 안 끝났는지 먼저 보고한 뒤 이어간다. 끊긴 사실을 감추고 조용히 재시도하지 않는다.
-잘린 응답에서 사용자가 승인했다고 말한 내용은 **승인이 아니다.** 다시 확인받는다.
-
-## advise 폴더 관리 규칙 (사용자 지정)
-
-- 제언 문서가 **10개를 넘는 시점에 전체 재정리**한다. 카운트는 `advise/*.md` 중 `README.md` 제외.
-- 새 제언을 추가할 때마다 `advise/README.md`의 목록 표와 카운트를 갱신하고, **10개에 도달하면 재정리를 먼저 제안한다.**
+- **수정 작업 전 [advise/README.md](.claude/advise/README.md)를 확인한다.** 001 의 P0 와 002-8 은 해소됐고, 남은 항목은 [HandOff.md](.claude/HandOff.md)의 열린 항목 표에 있다.

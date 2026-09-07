@@ -99,7 +99,38 @@ sequenceDiagram
 
 > 4·5번이 코드가 아니라 에디터 설정이라 자동 검증이 없다. 실제로 지금 LobbyScene/MenuScene이 5번에서 누락되어 있다. → [advise/001](../advise/001-build-blockers.md), [advise/002](../advise/002-scene-system.md)
 
-## 5. 로딩 UI
+## 5. UI 배치 규칙
+
+**씬에 `Canvas`와 `EventSystem`을 두지 않는다.** UI는 전역 `UIRoot` 밑에 런타임으로 만든다.
+
+```
+UIRoot (Prefabs/UIRoot.prefab, DontDestroyOnLoad, UIManager 소유)
+├─ Window        Canvas sortingOrder 10   HUD·로비 패널 등 기본 화면
+├─ Popup                          20      다이얼로그·확인창
+├─ CanvasEffect                   30      UI 연출·파티클
+├─ Overlay                        40      로딩·토스트·시스템 메시지
+└─ EventSystem   EventSystem + InputSystemUIInputModule
+```
+
+레이어 캔버스는 전부 `ScreenSpaceOverlay`다. `ScreenSpaceCamera`로 두면 `DontDestroyOnLoad` 오브젝트가 씬 카메라를 참조하게 되어 씬이 바뀔 때 참조가 끊긴다.
+`CanvasScaler`는 `ConstantPixelSize` — 기존 씬 캔버스와 같은 설정이라 옮겨온 UI의 크기가 달라지지 않는다.
+
+씬에서 UI를 만들고 지우는 방법:
+
+```csharp
+// EnterScene
+lobbyPanel = UIManager.Instance.CreateUI("Prefabs/UILobbyPanel.prefab", EUILayer.Window);
+
+// ReleaseResource — UIRoot 는 씬 언로드로 사라지지 않으므로 직접 지운다
+UnityEngine.Object.Destroy(lobbyPanel);
+```
+
+`EventSystem`이 여기 하나만 있는 이유는 [advise/002-8](../advise/002-scene-system.md). 씬마다 두면 Additive 로드 때 중복되어 UI 입력이 통째로 죽는다.
+`Assets/Editor/SceneRegistryValidator.cs`가 Build Settings에 등록된 씬에 `EventSystem`이 섞여 들어오면 경고한다 — Canvas를 추가하면 에디터가 `EventSystem`을 자동 생성하므로 다시 들어오기 쉽다.
+
+예외 — 치트 패널(`GameContent/UI/CheatPanel.cs`)은 UGUI가 아니라 UI Toolkit이고 자체 패널을 쓴다. `UIRoot` 밑에 있지 않다.
+
+## 6. 로딩 UI
 
 `Assets/Script/GameContent/UILoading.cs` + `Resources/Prefabs/UILoading.prefab`
 
@@ -111,7 +142,7 @@ public void SetLoadingProgress(LoadingProgressResult info); // Slider.SetValueWi
 `LoadingScene.LoadingProcess`가 프리팹을 로드→Instantiate→로딩씬 첫 루트 오브젝트에 부착한다 (`LoadingScene.cs:43-51`).
 인스턴스는 `static UILoading uiLoading` 필드에 보관되고 **명시적으로 Destroy되지 않는다** — 로딩씬 언로드에 의존.
 
-## 6. 콘텐츠 시스템
+## 7. 콘텐츠 시스템
 
 씬과 **별개의 축**. 씬이 "화면 단위"라면 콘텐츠는 "게임플레이 모드 단위"(던전/마을/광산)로, `DontDestroyOnLoad`인 `ContentManager` 밑에 상주하며 씬 전환과 무관하게 살아 있다.
 

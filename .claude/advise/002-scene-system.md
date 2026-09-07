@@ -36,6 +36,7 @@ LoadScene(nextScene, sceneInfo, () =>
 `isVisitLoadingScene: false` 경로로 전환하면 **이전 씬이 Additive로 계속 남는다.** 전환을 반복할수록 씬이 누적되고, `ExitScene`/`ReleaseResource`가 호출되지 않아 리소스도 해제되지 않는다. 호출자가 넘긴 완료 콜백도 사라지므로 "전환 끝났다"는 신호를 아무도 못 받는다.
 
 **권장**
+
 ```csharp
 asyncOperation.completed += _ =>
 {
@@ -43,6 +44,7 @@ asyncOperation.completed += _ =>
     SceneLoadComplete?.Invoke();
 };
 ```
+
 `asyncOperation`이 null인 경로(씬 미등록 등)에서도 콜백이 유실되므로, **실패 시 로그를 남기고 콜백을 호출할지 여부를 명시적으로 정한다.** 조용한 실패가 이 클래스의 반복 패턴이다.
 
 ---
@@ -71,6 +73,7 @@ public void UpdateScene()
 `SceneBase`에는 이미 `IsActiveScene()`이 있는데 아무도 확인하지 않는다.
 
 **권장 (최소 변경)**
+
 ```csharp
 public void UpdateScene()
 {
@@ -81,9 +84,11 @@ public void UpdateScene()
 
 **권장 (구조적)**
 전환 상태를 명시한다. `Pattern/State.cs`의 `IState`가 이 용도로 이미 정의만 되어 있다.
+
 ```
 Idle → Loading → Entering → Running → Exiting → Idle
 ```
+
 전환 중에는 Update를 돌리지 않고, `ChangeScene` 재진입도 차단한다(현재는 **로딩 중 다시 `ChangeScene`을 부르면 두 전환이 겹친다** — `nextScene`이 덮어써지고 이전 콜백은 살아 있다).
 
 ---
@@ -110,13 +115,15 @@ targetSceneInstance.EnterScene(sceneInfo);    // 같은 프레임에서 즉시 �
 
 씬 하나 추가에 필요한 수정 지점:
 
-| # | 위치 | 종류 | 누락 시 |
-|---|---|---|---|
-| 1 | `ESceneType` (`SceneBase.cs:8`) | 코드 | 컴파일 에러 (즉시 발견) |
-| 2 | `SceneBase` 파생 클래스 | 코드 | 컴파일 에러 (즉시 발견) |
-| 3 | `SceneManager.RegistScenes()` (`SceneManager.cs:34`) | 코드 | **런타임 조용한 실패** |
-| 4 | Build Settings 등록 | 에디터 설정 | **런타임 조용한 실패** |
-| (+) | `.unity` 파일명 == enum 이름 | 파일 | **런타임 조용한 실패** |
+
+| #   | 위치                                                   | 종류     | 누락 시           |
+| --- | ---------------------------------------------------- | ------ | -------------- |
+| 1   | `ESceneType` (`SceneBase.cs:8`)                      | 코드     | 컴파일 에러 (즉시 발견) |
+| 2   | `SceneBase` 파생 클래스                                   | 코드     | 컴파일 에러 (즉시 발견) |
+| 3   | `SceneManager.RegistScenes()` (`SceneManager.cs:34`) | 코드     | **런타임 조용한 실패** |
+| 4   | Build Settings 등록                                    | 에디터 설정 | **런타임 조용한 실패** |
+| (+) | `.unity` 파일명 == enum 이름                              | 파일     | **런타임 조용한 실패** |
+
 
 3·4·5는 전부 컴파일러가 검증하지 못한다. **실제로 지금 LobbyScene/MenuScene이 4번에서 누락되어 있다** ([001-3](001-build-blockers.md#1-3-lobbyscene이-build-settings에-없다--첫-화면-이후-진행-불가)).
 
@@ -136,6 +143,7 @@ private void RegistScenes()
     }
 }
 ```
+
 단, **"클래스명 == enum명 == 파일명"이라는 암묵 규약을 명시 규약으로 승격**시키는 셈이므로 팀 합의가 필요하다. 규약을 싫어한다면 3번 수동 등록을 유지하되 1번 검증 스크립트를 `scenes` 딕셔너리까지 확인하도록 확장하는 편이 낫다 — **어느 쪽이든 "조용한 실패"만은 없애야 한다.**
 
 ---
@@ -165,6 +173,7 @@ uiLoading = GameObject.Instantiate(origin);      // (c) 매 로딩마다 Instant
 - **(c) UILoading 인스턴스** — `Destroy` 호출이 없고 로딩씬 언로드에 의존한다. 부모 지정(`SetParent(roots[0])`)이 실패하는 경우(루트 오브젝트 없음)엔 씬에 속하지 않아 **언로드로도 사라지지 않는다.**
 
 **권장**
+
 ```csharp
 public override void EnterScene(ISceneInfo sceneInfo)
 {
@@ -183,6 +192,7 @@ public override void ExitScene()
     base.ExitScene();
 }
 ```
+
 `static` 제거, 파이널라이저 삭제.
 
 ---
@@ -200,6 +210,7 @@ LoadingProcess(info.loadingTargetScene, ...);     // info가 null이면 NRE
 
 **권장**
 제네릭으로 씬과 인포 타입을 묶으면 컴파일 타임에 강제된다.
+
 ```csharp
 public abstract class SceneBase<TInfo> : SceneBase where TInfo : class, ISceneInfo
 {
@@ -215,23 +226,26 @@ public abstract class SceneBase<TInfo> : SceneBase where TInfo : class, ISceneIn
     protected virtual void OnEnter() { }
 }
 ```
+
 과하다고 판단되면 최소한 **캐스팅 실패 시 명시적 에러 로그 + early return**은 넣는다.
 
 ---
 
 ## 2-7. 사용되지 않는 경로 정리
 
-| 대상 | 상태 | 판단 |
-|---|---|---|
-| `StartScene.OnLoadResourceAsync` (`StartScene.cs:17`) | 10초 가짜 진행률. `ChangeSceneSingle` 경로라 **호출되지 않음** | 로딩 UI 검증용이면 `TestScene`으로 옮기고 StartScene에서는 제거 |
-| `ChangeSceneWithOutLoadSceneObject` (`SceneController.cs:150`) | 호출처 없음 | 쓸 계획이 없으면 삭제. "나중에 쓸지도"는 남길 이유가 안 된다 |
-| `SceneController.Release()` (`:26`) | 정의만 있고 `SceneManager.Release()`가 호출하지 않음 (`SceneManager.cs:24` 본문 비어 있음) | 종료 경로 연결 또는 삭제 — 둘 중 하나로 결정 |
-| `MenuScene` | "로비 안에서 메뉴를 띄우자"는 재검토 주석 (`MenuScene.cs:14-17`) | 방향이 정해졌으면 씬을 지우고 UI로 전환. 미결이면 결정 시점을 문서에 남긴다 |
-| `Assets/Resources/Scenes/GameScene.unity` | Build Settings 등록 O, `ESceneType` X | 사용 여부 확정 후 등록 해제 또는 enum 추가 |
+
+| 대상                                                             | 상태                                                                       | 판단                                             |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------- |
+| `StartScene.OnLoadResourceAsync` (`StartScene.cs:17`)          | 10초 가짜 진행률. `ChangeSceneSingle` 경로라 **호출되지 않음**                          | 로딩 UI 검증용이면 `TestScene`으로 옮기고 StartScene에서는 제거 |
+| `ChangeSceneWithOutLoadSceneObject` (`SceneController.cs:150`) | 호출처 없음                                                                   | 쓸 계획이 없으면 삭제. "나중에 쓸지도"는 남길 이유가 안 된다           |
+| `SceneController.Release()` (`:26`)                            | 정의만 있고 `SceneManager.Release()`가 호출하지 않음 (`SceneManager.cs:24` 본문 비어 있음) | 종료 경로 연결 또는 삭제 — 둘 중 하나로 결정                    |
+| `MenuScene`                                                    | "로비 안에서 메뉴를 띄우자"는 재검토 주석 (`MenuScene.cs:14-17`)                          | 방향이 정해졌으면 씬을 지우고 UI로 전환. 미결이면 결정 시점을 문서에 남긴다   |
+| `Assets/Resources/Scenes/GameScene.unity`                      | Build Settings 등록 O, `ESceneType` X                                      | 사용 여부 확정 후 등록 해제 또는 enum 추가                    |
+
 
 ---
 
-## 2-8. `EventSystem`이 씬마다 있어 전환 후 UI 입력이 죽는다
+## ~~2-8. `EventSystem`이 씬마다 있어 전환 후 UI 입력이 죽는다~~ ✅ 해결 (`57d306e`)
 
 **근거** — 씬별 `EventSystem` 보유 현황
 
@@ -243,6 +257,7 @@ StartScene     없음
 ```
 
 실행 로그 (`Player.log`):
+
 ```
 There can be only one active Event System.
   ↳ UIElementsRuntimeUtility.RegisterEventSystem
@@ -265,7 +280,7 @@ LoadingScene 언로드  → 활성 EventSystem 파기
 
 실제로 치트 패널의 토글 두 개가 무반응이라 기능 결함으로 오인됐고, 로그의 경고 한 줄을 찾고서야 원인이 드러났다. `UILobbyPanel`·`GoldHUD` 등 로비의 다른 UI도 같은 상태였다.
 
-**즉시 조치** — `LoadingScene`의 `EventSystem` 제거 (`이 커밋`).
+**즉시 조치** — `LoadingScene`의 `EventSystem` 제거 (2026-08-10).
 로딩 화면은 클릭을 받지 않으므로 없어도 무방하고, 로비 것이 유일해져 경고도 사라진다.
 
 **구조적 권장** — 씬마다 두지 말고 **부팅 시 하나만 만들어 `DontDestroyOnLoad`** 로 유지한다.
@@ -285,3 +300,35 @@ if (EventSystem.current == null)
 씬에서 전부 제거하면 **씬이 늘어도 재발하지 않는다.** 즉시 조치는 로딩씬 하나만 막은 것이라, `MenuScene`이 로비와 함께 뜨는 순간 같은 문제가 다시 난다.
 
 **검증 방법** — 실행 로그에 `There can be only one active Event System` 이 나오면 중복이다. 없어야 정상이다.
+
+### 적용 결과 (`57d306e`)
+
+문서에 적어둔 조치방안대로 `UIRoot` 프리팹을 만들고 `UIManager`가 소유하게 했다. 씬에서는 UI를 전부 걷어냈다.
+
+```
+UIRoot (Prefabs/UIRoot.prefab, DontDestroyOnLoad)
+├─ Window        Canvas sortingOrder 10   HUD·로비 패널 등 기본 화면
+├─ Popup                          20      다이얼로그·확인창
+├─ CanvasEffect                   30      UI 연출·파티클
+├─ Overlay                        40      로딩·토스트·시스템 메시지
+└─ EventSystem   EventSystem + InputSystemUIInputModule
+```
+
+| 대상                                     | 변경                                                                                                         |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `Manager/SingletonManager/UIManager.cs`  | 신규. `Singleton<UIManager>`. `UIRoot` 프리팹을 **동기 로드** 후 Instantiate·`DontDestroyOnLoad`. `GetLayer` / `CreateUI` 제공 |
+| `GameContent/UI/UIRoot.cs`               | 빈 스텁 → 레이어 4개 참조와 `EUILayer` enum                                                                        |
+| `GameFlow/MainProcess.cs`                | `UIManager` 초기화(IO 다음)·해제(역순) 등록                                                                        |
+| `GameFlow/GameScene/LobbyScene.cs`       | `UILobbyPanel` 을 `EnterScene` 에서 Window 레이어에 생성, `ReleaseResource` 에서 파기                                |
+| `Resources/Scenes/LobbyScene.unity`      | `UIRoot`·`Canvas`·`UILobbyPanel` 인스턴스·`EventSystem` 제거                                                    |
+| `Resources/Scenes/MenuScene.unity`       | 비어 있던 `Canvas` 와 `EventSystem` 제거                                                                        |
+| `Editor/SceneRegistryValidator.cs`       | 씬 에셋에 `EventSystem` 이 남아 있으면 경고 추가                                                                  |
+
+**동기 로드인 이유** — `EventSystem` 이 첫 씬보다 늦게 생기면 그 사이에 뜬 UI 가 입력을 못 받는다.
+`GameProcessManager` 가 `GameProcess` 프리팹을 비동기로 로드해 **몇 프레임 동안 Update 가 안 도는** 것과 같은 함정이다.
+
+**`ScreenSpaceOverlay` 인 이유** — 기존 씬 캔버스는 `ScreenSpaceCamera` 로 씬 카메라를 참조하고 있었다.
+`DontDestroyOnLoad` 오브젝트가 씬 카메라를 붙들면 씬이 바뀔 때 참조가 끊긴다. Overlay 는 카메라 참조가 필요 없다.
+
+**남은 것** — `CanvasEffect`·`Popup`·`Overlay` 레이어는 비어 있다. 쓰는 쪽이 생길 때 채운다.
+`MenuScene` 은 씬 자체가 비었다 — "로비 안에서 메뉴를 띄우자"는 2-7 의 미결 항목이 그대로 남아 있다.

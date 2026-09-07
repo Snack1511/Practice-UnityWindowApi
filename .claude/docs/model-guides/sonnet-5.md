@@ -1,6 +1,6 @@
 # Sonnet 5 작업 규약
 
-`/sonnet5`로 실행할 때. 공통 원칙은 [README](README.md), 모델 선택 기준은 [CLAUDE.md](../../CLAUDE.md).
+`/sonnet5`로 실행할 때. 공통 원칙은 [README](README.md), 모델 선택 기준은 [CLAUDE.md](../../../CLAUDE.md).
 
 가장 싸다 — $3/$15, **2026-08-31까지 도입가 $2/$10**. Opus의 40% 값으로 같은 결과가 나오는 작업이 있다.
 코딩과 에이전트 작업이 강점이고, Opus용으로 쓴 프롬프트가 대체로 그대로 동작한다.

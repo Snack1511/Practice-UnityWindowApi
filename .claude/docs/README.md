@@ -12,12 +12,16 @@ Windows Native Window API + URP 투명 렌더링을 활용한 **데스크톱 오
 
 | 문서 | 내용 |
 |---|---|
+| [roadmap.md](roadmap.md) | **3계층 배치 규약(시스템·모듈·오브젝트)과 마일스톤.** 무엇을 어느 계층에 만들 것인가 |
 | [architecture.md](architecture.md) | 부트스트랩 순서, 매니저 3계층, 업데이트 펌프, 공용 패턴 |
 | [scene-and-content.md](scene-and-content.md) | `SceneBase` 라이프사이클, `SceneController` 전환 경로 4종, 콘텐츠 시스템 |
 | [data-and-resources.md](data-and-resources.md) | Resources 캐시, CSV 테이블, JSON 세이브, Model/Save 분리 설계 메모 |
 | [window-native.md](window-native.md) | Win32 P/Invoke 창 제어, DWM, URP Blit 투명화 파이프라인 |
 | [reference/desktop-overlay-unity6.md](reference/desktop-overlay-unity6.md) | **[외부 참고]** Unity 6.1 데스크톱 오버레이 구성법 + 현 프로젝트 설정 대조표 |
 | [reference/uniwindowcontroller.md](reference/uniwindowcontroller.md) | **[외부 참고]** UniWindowController(MIT) API·설계 분석 + 기능 대조표 |
+
+`roadmap.md`만 성격이 다르다. 나머지가 "지금 어떻게 동작하는가"라면 이쪽은 **"무엇을 어느 계층에 만들 것인가"**다.
+`advise/`(어떻게 바꿔야 하는가)와도 구분된다.
 
 `reference/`는 **외부 자료를 분석해 둔 곳**이다. 프로젝트 코드 설명이 아니라 판단 근거용이며, 적용 여부와 무관하게 보관한다.
 

@@ -15,8 +15,8 @@
 새 매니저를 추가하면 `Initialize`/`Release` 두 곳 모두 손대야 대칭이 유지된다.
 
 ```
-Initialize:  GameProcess → Resolution → Resources → Table → Scene → IO → Content
-Release:     Content → IO → Scene → Table → Resources → Resolution → GameProcess
+Initialize:  GameProcess → Resolution → Resources → Table → Scene → IO → UI → Content
+Release:     Content → UI → IO → Scene → Table → Resources → Resolution → GameProcess
 ```
 
 `OnApplicationChangedFocus(bool)`는 훅만 걸려 있고 본문 비어 있음 — 포커스 기반 처리(오버레이 앱이라 향후 필요) 확장 지점.
@@ -37,8 +37,12 @@ Release:     Content → IO → Scene → Table → Resources → Resolution →
 ### SingletonManager — `Singleton<T>` (순수 C#)
 `Pattern/Singleton.cs`. `Instance` getter에서 `new T()` 지연 생성. MonoBehaviour 아님 → Unity 라이프사이클과 무관.
 
-- `SceneManager`, `TableManager`, `IOManager`
+- `SceneManager`, `TableManager`, `IOManager`, `UIManager`
 - `ResourcesManager`는 이 폴더에 있으나 **`MonoSingleton<T>` 상속** (예외 — 정리 대상)
+
+**`UIManager`** — `Prefabs/UIRoot.prefab`을 **동기 로드**해 Instantiate하고 `DontDestroyOnLoad`로 유지한다.
+`EventSystem`이 이 프리팹 안에 들어 있어서, 첫 씬보다 늦게 생기면 그 사이에 뜬 UI가 입력을 못 받는다 — 그래서 `LoadAsync`가 아니라 `Load`다.
+UI 레이어 구조는 [scene-and-content.md 5항](scene-and-content.md).
 
 ### MonoSingleManager — `MonoSingleton<T>`
 `Instance` 접근 시 `new GameObject(typeof(T).Name)` + `DontDestroyOnLoad` + `AddComponent<T>()`.
