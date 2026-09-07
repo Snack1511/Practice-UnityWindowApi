@@ -76,7 +76,8 @@ crashlytics-build.properties
 
 # Claude Code / agent tooling
 # .claude/ 는 프로젝트 문서 체계(process·roles·advise·docs·ChangeLog·HandOff)가 들어 있어 추적한다.
-# 로컬 전용 설정만 제외한다.
+# 머신 종속 값과 로컬 전용 설정만 제외한다.
+CLAUDE.local.md
 .claude/settings.local.json
 .agents/
 skills-lock.json

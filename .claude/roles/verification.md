@@ -5,11 +5,38 @@
 
 절차 5단계는 [process/en/00-process.md](../process/en/00-process.md) §6. 여기에는 **이 프로젝트의 명령과 한계**만 둔다.
 
+## 로컬 경로는 `CLAUDE.local.md` 에 있다
+
+아래 명령의 `<...>` 는 머신마다 다른 값이라 저장소에 커밋하지 않는다.
+루트 `CLAUDE.local.md` 에 두고 `.gitignore` 로 제외한다. **매 세션 자동으로 읽히므로 따로 열 필요 없다.**
+
+| 플레이스홀더 | 뜻 |
+|---|---|
+| `<UNITY_EDITOR>` | 프로젝트 버전과 일치하는 Unity 실행 파일 경로 |
+| `<PROJECT>` | 이 프로젝트 루트의 절대 경로 |
+| `<BUILD_OUT>` | 빌드 산출 폴더. **프로젝트 밖이어야 한다** |
+
+**클론 직후에는 이 파일이 없다.** 아래를 루트에 `CLAUDE.local.md` 로 만든다.
+
+```markdown
+# 로컬 환경 (이 머신 전용)
+
+| 항목 | 값 |
+|---|---|
+| `<UNITY_EDITOR>` | (Unity 설치 경로)/Editor/Unity.exe |
+| `<PROJECT>`      | (클론한 경로) |
+| `<BUILD_OUT>`    | (프로젝트 밖 임의 폴더) |
+
+검증 절차는 .claude/roles/verification.md 참조. 여기엔 값만 둔다.
+```
+
+에디터 버전은 `ProjectSettings/ProjectVersion.txt` 와 **정확히 일치**해야 한다.
+
 ## 컴파일 검사 (2단계)
 
 ```bash
-"E:/Unity/Editor/6000.2.10f1/Editor/Unity.exe" -batchmode -quit -nographics \
-  -projectPath "E:/Unity/Project/Practice/Practice-UnityWindowApi" \
+"<UNITY_EDITOR>" -batchmode -quit -nographics \
+  -projectPath "<PROJECT>" \
   -logFile - 2>&1 | grep -iE "error CS|Compilation failed"
 ```
 
@@ -28,7 +55,7 @@
 // Assets/Editor/TempDevBuild.cs — 실행 후 삭제
 BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
     scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray(),
-    locationPathName = "E:/Unity/Build/OverlayTest/OverlayTest.exe",
+    locationPathName = "<BUILD_OUT>/OverlayTest.exe",
     target = BuildTarget.StandaloneWindows64,
     options = BuildOptions.Development,   // 이게 있어야 CheatPanel 이 포함된다
 });
@@ -36,7 +63,7 @@ EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
 ```
 
 ```bash
-"E:/Unity/Editor/6000.2.10f1/Editor/Unity.exe" -batchmode -nographics   -projectPath "E:/Unity/Project/Practice/Practice-UnityWindowApi"   -executeMethod TempDevBuild.BuildWindows64Development -logFile <로그경로>
+"<UNITY_EDITOR>" -batchmode -nographics   -projectPath "<PROJECT>"   -executeMethod TempDevBuild.BuildWindows64Development -logFile <로그경로>
 ```
 
 메서드 끝의 `EditorApplication.Exit` 하나로 종료 코드가 성공/실패를 그대로 준다. `-quit` 불필요.
