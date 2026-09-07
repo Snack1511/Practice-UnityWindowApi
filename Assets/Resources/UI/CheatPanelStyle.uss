@@ -70,6 +70,49 @@
     color: rgb(24, 26, 32);
 }
 
+/* 동작 버튼. 토글과 달리 숫자키로 조작할 수 없으므로 클릭이 유일한 경로다. */
+.cheat-button {
+    height: 28px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: rgb(24, 26, 32);
+    background-color: rgb(172, 172, 172);
+    border-width: 1px;
+    border-color: rgb(110, 110, 110);
+}
+
+.cheat-button:hover {
+    background-color: rgb(188, 188, 188);
+}
+
+.cheat-button:active {
+    background-color: rgb(150, 150, 150);
+}
+
+/* 목록이 비었을 때의 안내 문구. */
+.cheat-empty {
+    font-size: 13px;
+    color: rgb(90, 90, 90);
+}
+
+/* ---- 세부 치트 패널 : 치트 패널 오른쪽 ---- */
+
+/* cheat-root 와 같은 이유로 position 과 크기를 한 규칙에 함께 둔다. */
+.panel.display-root {
+    position: absolute;
+    left: 352px;
+    top: 16px;
+    width: 320px;
+    height: 260px;
+    background-color: rgb(195, 195, 195);
+    display: none;
+}
+
+.panel.display-root.panel--folded {
+    height: auto;
+}
+
 /* ---- 콘솔 패널 : 화면 하단 ---- */
 
 .panel.console-root {

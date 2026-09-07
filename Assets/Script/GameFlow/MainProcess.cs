@@ -22,6 +22,8 @@ namespace Script.GameFlow
             Manager.SingletonManager.TableManager.Instance.Initialize();
             Manager.SingletonManager.SceneManager.Instance.Initialize();
             Manager.SingletonManager.IOManager.Instance.Initialize();
+            //UIRoot 를 띄운다. EventSystem 이 여기 들어 있으므로 첫 씬보다 먼저 만들어져야 한다.
+            Manager.SingletonManager.UIManager.Instance.Initialize();
       
             //모노 싱글톤 클래스 매니저 초기화
             Manager.MonoSingleManager.ContentManager.Instance.Initialize();
@@ -48,6 +50,7 @@ namespace Script.GameFlow
             Manager.MonoSingleManager.ContentManager.Instance.Release();
             
             //싱글톤 클래스 매니저 초기화
+            Manager.SingletonManager.UIManager.Instance.Release();
             Manager.SingletonManager.IOManager.Instance.Release();
             Manager.SingletonManager.SceneManager.Instance.Release();
             Manager.SingletonManager.TableManager.Instance.Release();

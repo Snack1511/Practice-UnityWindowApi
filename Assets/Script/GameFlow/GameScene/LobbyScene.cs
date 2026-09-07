@@ -1,18 +1,23 @@
 using System;
 using Cysharp.Threading.Tasks;
 using Script.Define;
-using Script.GameFlow.Command;
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
 using Script.GameContent.UI;
-#endif
+using Script.GameFlow.Command;
+using Script.Manager.SingletonManager;
+using UnityEngine;
 
 namespace Script.GameFlow.GameScene
 {
     public class LobbyScene : SceneBase
     {
+        //로비 UI 는 씬이 아니라 전역 UIRoot 의 Window 레이어 밑에 만든다 (advise/002-8).
+        private const string LobbyPanelPath = "Prefabs/UILobbyPanel.prefab";
+
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         private CheatPanel cheatPanel;
 #endif
+
+        private GameObject lobbyPanel;
 
         public LobbyScene(ESceneType SceneType) : base(SceneType)
         {
@@ -21,6 +26,9 @@ namespace Script.GameFlow.GameScene
         public override void EnterScene(ISceneInfo context)
         {
             base.EnterScene(context);
+
+            //UIRoot 는 DontDestroyOnLoad 라 씬 언로드로 사라지지 않는다. 나갈 때 직접 지운다.
+            lobbyPanel = UIManager.Instance.CreateUI(LobbyPanelPath, EUILayer.Window);
         }
         public override void ExitScene()
         {
@@ -61,8 +69,18 @@ namespace Script.GameFlow.GameScene
         public override void ReleaseResource()
         {
             ReleaseCheatPanel();
+            ReleaseLobbyPanel();
 
             base.ReleaseResource();
+        }
+
+        private void ReleaseLobbyPanel()
+        {
+            if (lobbyPanel == null)
+                return;
+
+            UnityEngine.Object.Destroy(lobbyPanel);
+            lobbyPanel = null;
         }
 
         private void ReleaseCheatPanel()

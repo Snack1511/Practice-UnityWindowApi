@@ -8,6 +8,15 @@
         <ui:ScrollView name="cheat-list" mode="Vertical" class="panel-body cheat-list" />
     </ui:VisualElement>
 
+    <!-- 세부 치트 패널 : 치트 패널의 버튼으로 열고 닫는다. 독립적으로 접히고 이동한다 -->
+    <ui:VisualElement name="display-root" class="panel display-root">
+        <ui:VisualElement name="display-header" class="panel-header">
+            <ui:Label name="display-title" text="화면 설정" class="panel-title" />
+            <ui:Label name="display-fold" text="—" class="panel-fold" />
+        </ui:VisualElement>
+        <ui:ScrollView name="display-list" mode="Vertical" class="panel-body cheat-list" />
+    </ui:VisualElement>
+
     <!-- 콘솔 패널 : 화면 하단. 독립적으로 접히고 이동한다 -->
     <ui:VisualElement name="console-root" class="panel console-root">
         <ui:VisualElement name="console-header" class="panel-header console-header">

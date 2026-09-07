@@ -37,10 +37,15 @@ namespace Script.GameContent.UI
         private VisualElement root;
         private VisualElement cheatRoot;
         private VisualElement consoleRoot;
+        private VisualElement displayRoot;
         private ScrollView list;
         private ScrollView consoleList;
+        private ScrollView displayList;
 
         private bool visible;
+
+        //세부 치트 패널은 치트 패널과 따로 열고 닫는다.
+        private bool displayPanelVisible;
 
         // UI 클릭이 막혀도 치트를 쓸 수 있도록 숫자키로도 토글한다.
         // 등록 순서가 곧 Alpha1..Alpha9 순서다.
@@ -125,10 +130,13 @@ namespace Script.GameContent.UI
 
             cheatRoot = root.Q<VisualElement>("cheat-root");
             consoleRoot = root.Q<VisualElement>("console-root");
+            displayRoot = root.Q<VisualElement>("display-root");
             list = root.Q<ScrollView>("cheat-list");
             consoleList = root.Q<ScrollView>("console-list");
+            displayList = root.Q<ScrollView>("display-list");
 
-            if (cheatRoot == null || consoleRoot == null || list == null || consoleList == null)
+            if (cheatRoot == null || consoleRoot == null || displayRoot == null
+                || list == null || consoleList == null || displayList == null)
             {
                 Debug.LogError("[CheatPanel] uxml 에서 필요한 요소를 찾지 못했습니다.");
                 return false;
@@ -136,6 +144,7 @@ namespace Script.GameContent.UI
 
             SetupPanelChrome(cheatRoot, "cheat-header", "cheat-fold", draggable: true);
             SetupPanelChrome(consoleRoot, "console-header", "console-fold", draggable: true);
+            SetupPanelChrome(displayRoot, "display-header", "display-fold", draggable: true);
 
             return true;
         }
@@ -212,7 +221,20 @@ namespace Script.GameContent.UI
 
                 Debug.Log($"[CheatPanel] TransparentClick 요청 = {value}");
             });
+
+            // 세부 치트는 별도 패널로 연다. 치트가 늘어도 한 패널에 다 밀어넣지 않기 위한 형태다.
+            // 에디터에서 창을 옮기면 에디터 창 자체가 움직이므로 빌드에서만 노출한다.
+            BuildDisplayCheats();
+            AddButton("화면 설정", ToggleDisplayPanel);
 #endif
+
+            // 오버레이 창은 테두리가 없어 닫을 방법이 마땅치 않다. 종료 경로를 남긴다.
+            // 에디터에서 Application.Quit 은 아무 일도 하지 않는다 — 로그로 눌린 것만 확인된다.
+            AddButton("Quit", () =>
+            {
+                Debug.Log("[CheatPanel] 종료 요청");
+                Application.Quit();
+            });
         }
 
         /// <summary>치트 항목을 추가한다. 새 치트는 여기에 한 줄이면 된다.</summary>
@@ -224,6 +246,56 @@ namespace Script.GameContent.UI
 
             list.Add(toggle);
             toggles.Add(toggle);
+        }
+
+        /// <summary>동작 버튼을 추가한다. 토글이 아니므로 숫자키 매핑에는 들어가지 않는다.</summary>
+        public void AddButton(string label, Action onClick)
+        {
+            Button button = new Button(onClick) { text = label };
+            button.AddToClassList("cheat-button");
+
+            list.Add(button);
+        }
+
+        /// <summary>세부 치트 패널을 열고 닫는다.</summary>
+        private void ToggleDisplayPanel()
+        {
+            displayPanelVisible = !displayPanelVisible;
+            displayRoot.style.display = displayPanelVisible ? DisplayStyle.Flex : DisplayStyle.None;
+
+            Debug.Log($"[CheatPanel] 화면 설정 패널 = {displayPanelVisible}");
+        }
+
+        /// <summary>세부 치트 : 연결된 모니터의 작업 영역으로 창을 옮긴다.</summary>
+        private void BuildDisplayCheats()
+        {
+#if !UNITY_EDITOR
+            displayList.Clear();
+
+            System.Collections.Generic.List<WindowNativeManager.MonitorInfo> monitors = WindowNativeManager.GetMonitors();
+            if (monitors.Count == 0)
+            {
+                Label empty = new Label("모니터를 찾지 못했습니다.");
+                empty.AddToClassList("cheat-empty");
+                displayList.Add(empty);
+
+                Debug.LogWarning("[CheatPanel] 모니터 열거 결과가 0개입니다.");
+                return;
+            }
+
+            for (int i = 0; i < monitors.Count; i++)
+            {
+                //람다가 붙들 값이라 반복마다 새 지역 변수에 담는다.
+                WindowNativeManager.MonitorInfo monitor = monitors[i];
+                string label = $"{i + 1}. {monitor.width}x{monitor.height}{(monitor.isPrimary ? " (주)" : "")}";
+
+                Button button = new Button(() => WindowNativeManager.SetWindowToMonitor(monitor)) { text = label };
+                button.AddToClassList("cheat-button");
+                displayList.Add(button);
+            }
+
+            Debug.Log($"[CheatPanel] 화면 설정 : 모니터 {monitors.Count} 개 등록");
+#endif
         }
 
         private void OnUpdate()
@@ -290,7 +362,9 @@ namespace Script.GameContent.UI
             Vector2 screenPoint = new Vector2(mouse.x, Screen.height - mouse.y);
             Vector2 panelPoint = RuntimePanelUtils.ScreenToPanel(root.panel, screenPoint);
 
-            return Contains(cheatRoot, panelPoint) || Contains(consoleRoot, panelPoint);
+            return Contains(cheatRoot, panelPoint)
+                   || Contains(consoleRoot, panelPoint)
+                   || Contains(displayRoot, panelPoint);
         }
 
         private static bool Contains(VisualElement element, Vector2 point)
