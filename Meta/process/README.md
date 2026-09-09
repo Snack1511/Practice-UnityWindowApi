@@ -33,4 +33,15 @@
 게다가 이중이면 "어느 언어가 정본인가"가 새로 생겨 정본 1곳 원칙과 부딪힌다.
 
 폐기 근거는 [07-rule-pipeline.md](07-rule-pipeline.md) 의 해당 절에 남겼다.
-영문판이 필요해지면 `git show HEAD:.claude/process/en/<파일>` 로 꺼낼 수 있다.
+
+영문판은 `17fb220` (docs: 문서 체계를 Meta/ 로 이전하고 이중 언어판 폐기) 에서 지웠다.
+**그 직전** 커밋의 트리에 남아 있으므로 이렇게 꺼낸다.
+
+```bash
+git show 17fb220^:.claude/process/en/00-process.md
+git show 17fb220^ --stat -- .claude/process/en/    # 파일 목록
+```
+
+`HEAD` 기준으로는 못 꺼낸다 — 지운 커밋 이후로는 트리에 없고, `HEAD~N` 은 커밋이 쌓일수록 어긋난다.
+SHA 도 리베이스하면 바뀌므로, 안 맞으면 커밋 메시지로 다시 찾는다:
+`git log --oneline --diff-filter=D -- .claude/process/en/`
