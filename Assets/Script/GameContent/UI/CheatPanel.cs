@@ -22,7 +22,11 @@ namespace Script.GameContent.UI
         // 확장자 없는 경로를 넘기면 ArgumentException 이 난다. 확장자를 붙여 호출한다.
         // Resources 는 확장자를 뗀 경로로 색인하므로 uxml 과 uss 의 파일명이 같으면
         // "UI/CheatPanel" 하나로 충돌한다. 그래서 스타일시트 파일명을 따로 뒀다.
-        private const string ThemePath = "UI/UnityDefaultRuntimeTheme.tss";
+        // PanelSettings 는 런타임 생성이 아니라 에셋으로 둔다.
+        // 6000.5 의 Advanced Text Generator 는 PanelSettings 의 ICU 데이터를 요구하는데,
+        // ScriptableObject.CreateInstance 로 만든 인스턴스에는 에디터가 그 참조를 붙여주지 못한다.
+        // 그 상태로 두면 InitTextLib 이 실패하면서 레이아웃 갱신이 매 프레임 예외로 죽는다.
+        private const string SettingsPath = "UI/CheatPanelSettings.asset";
         private const string TreePath = "UI/CheatPanel.uxml";
         private const string StylePath = "UI/CheatPanelStyle.uss";
         private const string UpdateKey = "CheatPanel";
@@ -101,19 +105,15 @@ namespace Script.GameContent.UI
 
         private async UniTask<bool> BuildDocumentAsync()
         {
-            ThemeStyleSheet theme = await ResourcesManager.Instance.LoadAsync<ThemeStyleSheet>(ThemePath);
+            PanelSettings settings = await ResourcesManager.Instance.LoadAsync<PanelSettings>(SettingsPath);
             VisualTreeAsset tree = await ResourcesManager.Instance.LoadAsync<VisualTreeAsset>(TreePath);
             StyleSheet style = await ResourcesManager.Instance.LoadAsync<StyleSheet>(StylePath);
 
-            if (theme == null || tree == null || style == null)
+            if (settings == null || tree == null || style == null)
             {
-                Debug.LogError("[CheatPanel] tss / uxml / uss 를 불러오지 못했습니다.");
+                Debug.LogError("[CheatPanel] asset / uxml / uss 를 불러오지 못했습니다.");
                 return false;
             }
-
-            PanelSettings settings = ScriptableObject.CreateInstance<PanelSettings>();
-            settings.themeStyleSheet = theme;
-            settings.scaleMode = PanelScaleMode.ConstantPixelSize;
 
             UIDocument document = gameObject.AddComponent<UIDocument>();
             document.panelSettings = settings;

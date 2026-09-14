@@ -14,6 +14,12 @@
 |---|---|---|
 | docs-system | [문서 체계 정비](../WorkFlow/docs-system/2026-09-08/작업내역_docs-system_process-roles-and-structure.md) | `process/` 도입(en/ko), `roles/` 분리, 두 축 로드맵과 닫힘 기준, 트레일러 소급 제거, `.claude/` 재편 |
 
+## 2026-09-15
+
+| 영역 | 기록 | 한 줄 |
+|---|---|---|
+| cheat-panel | [런타임 PanelSettings 를 에셋으로 교체](../WorkFlow/cheat-panel/2026-09-15/작업내역_cheat-panel_panelsettings-icu-fix.md) | 6000.5.5f1 Windows 빌드 검증에서 나온 회귀. Advanced Text Generator 가 ICU 데이터를 요구하는데 런타임 생성 `PanelSettings` 에는 붙지 않아 UI Toolkit 레이아웃이 매 프레임 죽었다 |
+
 ## 2026-09-06
 
 | 영역 | 기록 | 한 줄 |
