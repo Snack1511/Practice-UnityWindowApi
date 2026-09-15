@@ -69,7 +69,7 @@ sequenceDiagram
     U->>M: BeforeSplashScreen
     M->>M: Application.quitting / focusChanged 구독
     M->>G: Initialize() — GameProcess.prefab 비동기 로드
-    M->>M: ResolutionManager.Initialize() (Win 빌드 한정)
+    M->>M: WindowNativeManager.Initialize() (Win 빌드 한정)
     M->>M: Resources / Table / Scene / IO Manager.Initialize()
     M->>M: ContentManager.Initialize()
     M->>G: AddUpdate("SceneManager", SceneManager.Update)

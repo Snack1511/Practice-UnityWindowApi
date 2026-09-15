@@ -59,7 +59,7 @@
 
 ### 2순위 — 배치 모드 (에디터를 닫아야 한다)
 
-`ResolutionManager`, `DebuggingComponent`, `WindowNativeManager` 등 `#if UNITY_STANDALONE_WIN` 안쪽을 고쳤다면 **실제 빌드가 유일한 검증 수단이다.** 2단계를 통과해도 여기서 터질 수 있다.
+`WindowNativeManager`(서브모듈), `DebuggingComponent` 등 `#if UNITY_STANDALONE_WIN` 안쪽을 고쳤다면 **실제 빌드가 유일한 검증 수단이다.** 2단계를 통과해도 여기서 터질 수 있다.
 
 **`-buildWindows64Player` 에는 개발 빌드 플래그가 없다.** `Assets/Editor/` 에 임시 스크립트를 만들어
 `-executeMethod` 로 부르고 **끝나면 `.cs` 와 `.meta` 를 함께 지운다.**

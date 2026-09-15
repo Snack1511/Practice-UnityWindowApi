@@ -53,7 +53,7 @@ WindowNativeManager   (변경)  — P/Invoke 선언과 상수만. 로직 없음.
         ↑
 WindowController      (신규)  — 상태 프로퍼티 + 적용 로직. 순수 C#
         ↑
-ResolutionManager     (변경)  — 부팅 시 원하는 값을 세팅하는 호출자
+WindowNativeManager.Initialize (변경)  — 부팅 시 원하는 값을 세팅하는 호출자
 ```
 
 ```csharp
@@ -84,7 +84,7 @@ public static class WindowController
 - `WindowController`가 순수 C#이라 **P/Invoke를 모킹하면 테스트 가능**
 - `WindowNativeManager`의 `#if ... || DEBUG` 가드가 선언부에만 남아 [001-2](001-build-blockers.md)류 사고가 줄어든다
 
-**비용** — 파일 1개 추가, 기존 호출부 1곳(`ResolutionManager`) 수정. 지금 호출부가 하나뿐이라 **이보다 쌀 수 없는 시점**이다.
+**비용** — 파일 1개 추가, 기존 호출부 1곳(`WindowNativeManager.Initialize`) 수정. 지금 호출부가 하나뿐이라 **이보다 쌀 수 없는 시점**이다.
 
 ---
 

@@ -31,8 +31,8 @@ Release:     Content → UI → IO → Scene → Table → Resources → Resolut
 - **`GameProcessManager`** — 업데이트 펌프의 주인. `Dictionary<string, Action> updaters`를 들고 매 프레임 전부 Invoke.
   `Initialize()`가 `Loader<GameProcess>`로 `Prefabs/GameProcess.prefab`을 **비동기 로드 후 Instantiate**한다(`Forget()` — 완료 대기 없음).
   즉 **GameProcess 인스턴스가 생기기 전 몇 프레임 동안 Update가 돌지 않는다.**
-- **`ResolutionManager`** — 스탠드얼론 Windows 빌드에서만 `WindowNativeManager.SetWindowFrame(0, 0, systemWidth, systemHeight - 49)` 호출.
-- **`WindowNativeManager`** — Win32 P/Invoke 모음. → [window-native.md](window-native.md)
+- **`WindowNativeManager`** — Win32 P/Invoke 모음 + 창 배치 정책(`Initialize` · `OnApplicationFocusChanged` · `Release`).
+  스탠드얼론 Windows 빌드에서만 실제로 동작한다. **서브모듈이다** (`Assets/ThirdParty/Unity-WindowNativeCustom`). → [window-native.md](window-native.md)
 
 ### SingletonManager — `Singleton<T>` (순수 C#)
 `Pattern/Singleton.cs`. `Instance` getter에서 `new T()` 지연 생성. MonoBehaviour 아님 → Unity 라이프사이클과 무관.

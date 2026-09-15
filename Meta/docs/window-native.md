@@ -13,7 +13,7 @@
 #if (UNITY_STANDALONE_WIN && !UNITY_EDITOR) || DEBUG
 ```
 
-`|| DEBUG` 때문에 **에디터와 개발 빌드에서도 이 코드가 컴파일된다.** 에디터에서 `GetActiveWindow()`는 유니티 에디터 창 핸들을 돌려주므로, 에디터에서 `SetWindowFrame`을 호출하면 **에디터 창 자체의 스타일이 바뀐다.** 호출부(`ResolutionManager`)는 별도로 `UNITY_STANDALONE_WIN && !UNITY_EDITOR`로 막아두었다.
+`|| DEBUG` 때문에 **에디터와 개발 빌드에서도 이 코드가 컴파일된다.** 에디터에서 `GetActiveWindow()`는 유니티 에디터 창 핸들을 돌려주므로, 에디터에서 `SetWindowFrame`을 호출하면 **에디터 창 자체의 스타일이 바뀐다.** 생명주기 메서드(`Initialize` 등)는 별도로 `UNITY_STANDALONE_WIN && !UNITY_EDITOR`로 막아두었다.
 
 ### 임포트 목록
 
@@ -94,9 +94,10 @@ public struct MonitorInfo
 
 > 파일 안에 **개선 메모 주석**이 있다. `WM_SETTINGCHANGE` / `WM_DISPLAYCHANGE` / `WM_DPICHANGED` 를 창 서브클래싱으로 받는 정석 방법과, 도입 전에 확인할 것(델리게이트 수명, 프레임 경계, 프로시저 복원)을 적어뒀다. 지금은 넣지 않는다.
 
-## 2. `ResolutionManager` — 적용 지점
+## 2. `WindowNativeManager.Initialize` — 적용 지점
 
-`Assets/ThirdParty/Unity-WindowNativeCustom/Script/ResolutionManager.cs`
+`Assets/ThirdParty/Unity-WindowNativeCustom/Script/WindowNativeManager.cs` 의 생명주기 구역.
+**바깥 `#if` 밖에 있다** — 호출부가 플랫폼 분기 없이 부를 수 있도록 메서드는 항상 존재하고, 동작만 Windows 빌드에서 열린다.
 
 ```csharp
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
@@ -179,7 +180,7 @@ FPS는 `unscaledDeltaTime`을 10% 계수로 스무딩한다. `OnGUI` 사용이�
 
 ```
 MainProcess (BeforeSplashScreen)
-   └ ResolutionManager.Initialize()
+   └ WindowNativeManager.Initialize()
         └ WindowNativeManager.SetWindowFrame(주 모니터 작업 영역)
              ├ WS_CAPTION/THICKFRAME/MIN/MAX/SYSMENU 제거 + WS_POPUP     → 테두리 없는 창
              ├ SetWindowPos(HWND_TOPMOST, ...)                           → 항상 위

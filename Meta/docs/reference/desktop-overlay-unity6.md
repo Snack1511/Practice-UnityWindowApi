@@ -169,7 +169,7 @@ public class TransparentGame : MonoBehaviour
 | `HWND_TOPMOST` | ❌ | ✅ **추가로 수행** |
 | `SWP_FRAMECHANGED` | ❌ | ✅ **추가로 수행** |
 | `DwmExtendFrameIntoClientArea(hwnd, MARGINS{-1,0,0,0})` | ✅ | ✅ **완전히 동일** |
-| 호출 시점 | `MonoBehaviour.Start()` (첫 씬) | `[RuntimeInitializeOnLoadMethod(BeforeSplashScreen)]` → `ResolutionManager.Initialize()` |
+| 호출 시점 | `MonoBehaviour.Start()` (첫 씬) | `[RuntimeInitializeOnLoadMethod(BeforeSplashScreen)]` → `WindowNativeManager.Initialize()` |
 | 컴파일 가드 | `#if UNITY_STANDALONE_WIN && !UNITY_EDITOR` | 선언부 `... \|\| DEBUG`, 호출부 `#if UNITY_STANDALONE_WIN && !UNITY_EDITOR` |
 
 **결론 — 현 프로젝트의 창 조작 코드는 원문 스크립트의 완전한 상위집합이다.**

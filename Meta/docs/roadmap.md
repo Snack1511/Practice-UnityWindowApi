@@ -198,7 +198,7 @@ grep -rn "Resources\.Load" Assets/Script
 
 | 시스템 | 현황 | 실체 |
 |---|---|---|
-| 윈도우 컨트롤 | ✅ **완료** | `WindowNativeManager` · `ResolutionManager`. 투명 배경·클릭 통과·모니터 전환·작업 영역 추종까지 실동작 확인 |
+| 윈도우 컨트롤 | ✅ **완료** | `WindowNativeManager` (서브모듈). 투명 배경·클릭 통과·모니터 전환·작업 영역 추종까지 실동작 확인 |
 | 씬 전환 | ⚠️ **동작하나 결함** | `SceneManager` · `SceneController`. 콜백 유실·상태 전이 타이밍·등록 4중화 → [advise/002](../advise/002-scene-system.md) |
 | 로드 | ⚠️ **부분** | `ResourcesManager`(캐시) · `Loader<T>`(1회용) · `TableManager`(CSV). 확장자 처리 결함, `Resources` 의존 → [advise/003](../advise/003-data-layer.md) |
 | UI | ⚠️ **뼈대만** | `UIManager` · `UIRoot`. 레이어 4개(Window/Popup/CanvasEffect/Overlay) + EventSystem. **Window 외 3개는 비어 있다** |

@@ -5,7 +5,7 @@ Unity 6 (`6000.5.5f1`) + URP 데스크톱 오버레이 게임 프레임워크 �
 
 | 서브모듈 | 내용 |
 |---|---|
-| `Assets/ThirdParty/Unity-WindowNativeCustom` | Win32 창 제어 (`WindowNativeManager` · `ResolutionManager`). 네임스페이스 `WindowNative` |
+| `Assets/ThirdParty/Unity-WindowNativeCustom` | Win32 창 제어 (`WindowNativeManager` 하나). 네임스페이스 `WindowNative` |
 | `Assets/ThirdParty/UnityFramework-Extension` | 확장 메서드 (`Framework.Extension.*`) |
 
 **클론 직후에는 서브모듈이 비어 있다.** `git submodule update --init --recursive` 를 먼저 돌린다 —
