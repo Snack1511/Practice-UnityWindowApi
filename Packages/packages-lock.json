@@ -7,6 +7,15 @@
       "dependencies": {},
       "hash": "2e993ff18f28c931602a07292df0b0804eebef99"
     },
+    "com.paps.unity-toolbar-extender-ui-toolkit": {
+      "version": "https://github.com/Sammmte/unity-toolbar-extender-ui-toolkit.git?path=/Assets/Package#v3.0.2",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.serialization": "3.1.2"
+      },
+      "hash": "caddaa54e54c3376908e1962182dc45021409452"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
@@ -141,6 +150,15 @@
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
+    },
+    "com.unity.serialization": {
+      "version": "6.5.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.collections": "2.1.2",
+        "com.unity.burst": "1.7.2"
+      }
     },
     "com.unity.shadergraph": {
       "version": "17.5.0",
