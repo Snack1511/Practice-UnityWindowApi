@@ -46,6 +46,19 @@
 
 ## Windows 스탠드얼론 빌드 (3단계)
 
+### 1순위 — 에디터 툴바 `▶ Dev Build`
+
+에디터가 열려 있으면 **툴바 버튼이 가장 빠르다.** Development Build 를 만들고 바로 실행한다.
+임시 스크립트를 만들었다 지울 필요가 없다. 산출 경로는 Unity Build Settings 창과 공유한다.
+
+> **툴바에 안 보이면 코드 문제가 아니다.** Unity 6.3 신규 툴바 API 버그로 새 요소는 처음에 표시되지 않는다.
+> **툴바 오른쪽 끝 「⋮」 메뉴에서 한 번 켜면** 이후 유지된다. 사용자별 에디터 상태라 **머신마다 다시 켜야 한다.**
+
+툴바 요소는 `Assets/Editor/DevToolbar.cs` 하나에 있다 —
+`Cheat Panel` 토글 · `Scene ▾` · `▶ Dev Build` · 빌드 폴더 · `Player.log`.
+
+### 2순위 — 배치 모드 (에디터를 닫아야 한다)
+
 `ResolutionManager`, `DebuggingComponent`, `WindowNativeManager` 등 `#if UNITY_STANDALONE_WIN` 안쪽을 고쳤다면 **실제 빌드가 유일한 검증 수단이다.** 2단계를 통과해도 여기서 터질 수 있다.
 
 **`-buildWindows64Player` 에는 개발 빌드 플래그가 없다.** `Assets/Editor/` 에 임시 스크립트를 만들어
@@ -71,6 +84,20 @@ EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
 - `DEVELOPMENT_BUILD` 가 정의되지 않으면 **`CheatPanel` 파일 전체가 컴파일에서 빠진다.**
 - **출력은 프로젝트 밖으로 뺀다.** `.gitignore` 에 빌드 산출물 패턴이 없어서 프로젝트 안에 빌드하면
   168 MB 가 `git status` 에 그대로 올라온다.
+
+## 치트 패널 스위치
+
+| 구간 | 기본값 | 바꾸는 법 |
+|---|---|---|
+| 에디터 플레이 | **꺼짐** | 툴바 `Cheat Panel` 토글 |
+| 개발 빌드 | **항상 켜짐** | 없음 (고정) |
+
+에디터에서 기본으로 끈 이유는 치트가 전부 **빌드된 오버레이 창**을 대상으로 하기 때문이다.
+`Set TransparentClick` 과 모니터 이동은 `#if !UNITY_EDITOR` 라 에디터에서는 `Quit` 만 남고, 패널은 게임 뷰를 가리기만 한다.
+
+토글은 `PlayerPrefs` 키 `CheatPanel.EnabledInEditor` 에 저장된다 —
+런타임 스크립트에서 `UnityEditor` 를 참조할 수 없어 `EditorPrefs` 를 못 쓴다.
+**플레이 중에 바꾸면 다음 플레이부터 반영된다.**
 
 ## 실행 로그
 

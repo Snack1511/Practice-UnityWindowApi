@@ -18,6 +18,7 @@
 
 | 영역 | 기록 | 한 줄 |
 |---|---|---|
+| editor-tooling | [에디터 툴바에 검증 동작과 치트 패널 스위치](../WorkFlow/editor-tooling/2026-09-15/작업내역_editor-tooling_main-toolbar-dev-actions.md) | `unity-toolbar-extender-ui-toolkit` 도입. Dev Build·Player.log·빌드 폴더·씬 전환·치트 패널 토글. 치트 자체는 빌드 창이 대상이라 런타임에 남겼다 |
 | cheat-panel | [런타임 PanelSettings 를 에셋으로 교체](../WorkFlow/cheat-panel/2026-09-15/작업내역_cheat-panel_panelsettings-icu-fix.md) | 6000.5.5f1 Windows 빌드 검증에서 나온 회귀. Advanced Text Generator 가 ICU 데이터를 요구하는데 런타임 생성 `PanelSettings` 에는 붙지 않아 UI Toolkit 레이아웃이 매 프레임 죽었다 |
 
 ## 2026-09-06
@@ -45,8 +46,8 @@
 
 ## 영역 목록
 
-`WorkFlow/` 아래 현재 영역 6개 — `docs-system` · `window-control` · `cheat-panel` ·
-`ui-system` · `transparency-rendering` · `p0-resolution`.
+`WorkFlow/` 아래 현재 영역 7개 — `docs-system` · `window-control` · `cheat-panel` ·
+`ui-system` · `transparency-rendering` · `p0-resolution` · `editor-tooling`.
 
 새 영역을 만들 때는 폴더명을 **영어 슬러그**로 짓고, 그 아래 `YYYY-MM-DD/작업내역_<영역>_<주제>.md` 로 맞춘다.
 이름은 작업이 끝난 뒤 제안하고 사용자 승인을 받는다 → [process/00-process.md](../process/00-process.md) §8

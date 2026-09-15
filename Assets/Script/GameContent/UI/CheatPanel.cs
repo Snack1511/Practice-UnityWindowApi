@@ -36,6 +36,27 @@ namespace Script.GameContent.UI
         /// <summary>콘솔이 보관하는 최대 줄 수. 넘으면 오래된 것부터 버린다.</summary>
         private const int MaxConsoleLines = 200;
 
+        /// <summary>
+        /// 에디터에서 치트 패널을 켤지 저장하는 키. 에디터 툴바 토글이 같은 키를 쓴다.
+        /// 런타임 스크립트라 <c>EditorPrefs</c> 를 쓸 수 없어 <c>PlayerPrefs</c> 에 둔다 —
+        /// <c>UnityEditor</c> 네임스페이스를 참조하면 asmdef 가 없어 빌드에서만 터진다.
+        /// </summary>
+        public const string EnabledPrefKey = "CheatPanel.EnabledInEditor";
+
+        /// <summary>
+        /// 치트 패널을 만들지 여부.
+        /// **에디터는 기본 꺼짐** — 치트가 전부 빌드 창을 대상으로 하고, 에디터에서는 게임 뷰를 가리기만 한다.
+        /// **개발 빌드는 항상 켜짐** — 빌드에서 상태를 볼 수단이 이것뿐이다.
+        /// </summary>
+        public static bool IsEnabled
+        {
+#if UNITY_EDITOR
+            get { return PlayerPrefs.GetInt(EnabledPrefKey, 0) != 0; }
+#else
+            get { return true; }
+#endif
+        }
+
         public KeyCode ToggleKey { get; set; } = KeyCode.O;
 
         private VisualElement root;

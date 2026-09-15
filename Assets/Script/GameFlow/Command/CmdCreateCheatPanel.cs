@@ -21,6 +21,13 @@ namespace Script.GameFlow.Command
 
         public override async UniTask Execute()
         {
+            // 에디터는 기본 꺼짐, 개발 빌드는 항상 켜짐. 에디터 툴바의 'Cheat Panel' 토글로 바꾼다.
+            if (!CheatPanel.IsEnabled)
+            {
+                Debug.Log("[CmdCreateCheatPanel] 치트 패널이 꺼져 있어 만들지 않습니다. 에디터 툴바에서 켤 수 있습니다.");
+                return;
+            }
+
             CheatPanel panel = await CheatPanel.CreateAsync();
 
             if (panel == null)
