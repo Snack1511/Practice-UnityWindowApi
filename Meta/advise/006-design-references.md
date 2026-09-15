@@ -15,7 +15,7 @@
 
 ### 현재
 
-`Assets/Script/Manager/StaticManager/WindowNativeManager.cs:87` — `SetWindowFrame()` 하나가 **다섯 가지 일**을 한다.
+`Assets/ThirdParty/Unity-WindowNativeCustom/Script/WindowNativeManager.cs:87` — `SetWindowFrame()` 하나가 **다섯 가지 일**을 한다.
 
 ```csharp
 public static string SetWindowFrame(int x, int y, int w, int h)

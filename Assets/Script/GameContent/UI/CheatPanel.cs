@@ -1,9 +1,10 @@
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
+﻿#if DEVELOPMENT_BUILD || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Script.Manager.SingletonManager;
 using Script.Manager.StaticManager;
+using WindowNative;
 using UnityEngine;
 using UnityEngine.UIElements;
 

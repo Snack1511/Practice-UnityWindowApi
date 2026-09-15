@@ -15,7 +15,7 @@ namespace Script.GameFlow
 
             //스태틱 클래스 매니저 초기화
             Manager.StaticManager.GameProcessManager.Initialize();
-            Manager.StaticManager.ResolutionManager.Initialize();
+            WindowNative.ResolutionManager.Initialize();
         
             //싱글톤 클래스 매니저 초기화
             Manager.SingletonManager.ResourcesManager.Instance.Initialize();
@@ -57,7 +57,7 @@ namespace Script.GameFlow
             Manager.SingletonManager.ResourcesManager.Instance.Release();
             
             //스태틱 클래스 매니저 초기화
-            Manager.StaticManager.ResolutionManager.Release();
+            WindowNative.ResolutionManager.Release();
             Manager.StaticManager.GameProcessManager.Release();
             
             Application.focusChanged -= OnApplicationChangedFocus;
@@ -67,7 +67,7 @@ namespace Script.GameFlow
         public static void OnApplicationChangedFocus(bool isFocus)
         {
             //작업 표시줄이 옮겨졌거나 자동 숨김이 켜졌으면 여기서 창 크기를 다시 맞춘다.
-            Manager.StaticManager.ResolutionManager.OnApplicationFocusChanged(isFocus);
+            WindowNative.ResolutionManager.OnApplicationFocusChanged(isFocus);
         }
     }
 }

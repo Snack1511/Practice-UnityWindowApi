@@ -5,7 +5,7 @@
 
 ## 1. `WindowNativeManager` — Win32 P/Invoke
 
-`Assets/Script/Manager/StaticManager/WindowNativeManager.cs`
+`Assets/ThirdParty/Unity-WindowNativeCustom/Script/WindowNativeManager.cs`
 
 ### 컴파일 조건
 
@@ -96,7 +96,7 @@ public struct MonitorInfo
 
 ## 2. `ResolutionManager` — 적용 지점
 
-`Assets/Script/Manager/StaticManager/ResolutionManager.cs`
+`Assets/ThirdParty/Unity-WindowNativeCustom/Script/ResolutionManager.cs`
 
 ```csharp
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR

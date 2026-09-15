@@ -157,7 +157,7 @@ public class TransparentGame : MonoBehaviour
 
 ### 창 조작 코드 대조
 
-원문 `TransparentGame.cs` vs 현 프로젝트 `WindowNativeManager.SetWindowFrame` (`Assets/Script/Manager/StaticManager/WindowNativeManager.cs:87`)
+원문 `TransparentGame.cs` vs 현 프로젝트 `WindowNativeManager.SetWindowFrame` (`Assets/ThirdParty/Unity-WindowNativeCustom/Script/WindowNativeManager.cs:87`)
 
 | 동작 | 원문 | 현 프로젝트 |
 |---|---|---|

@@ -1,7 +1,15 @@
 # CLAUDE.md
 
 Unity 6 (`6000.5.5f1`) + URP 데스크톱 오버레이 게임 프레임워크 연습 프로젝트.
-프로젝트 코드는 **`Assets/Script/` 하위 43개 파일이 전부**다. 나머지는 서드파티 에셋/플러그인.
+프로젝트 코드는 **`Assets/Script/` 하위 41개 파일**과 **서브모듈 2개**가 전부다. 나머지는 서드파티 에셋/플러그인.
+
+| 서브모듈 | 내용 |
+|---|---|
+| `Assets/ThirdParty/Unity-WindowNativeCustom` | Win32 창 제어 (`WindowNativeManager` · `ResolutionManager`). 네임스페이스 `WindowNative` |
+| `Assets/ThirdParty/UnityFramework-Extension` | 확장 메서드 (`Framework.Extension.*`) |
+
+**클론 직후에는 서브모듈이 비어 있다.** `git submodule update --init --recursive` 를 먼저 돌린다 —
+안 돌리면 `WindowNativeManager` 를 못 찾아 컴파일이 통째로 깨진다.
 
 ## 프로세스
 
@@ -53,6 +61,8 @@ Unity 6 (`6000.5.5f1`) + URP 데스크톱 오버레이 게임 프레임워크 �
 
 - **씬 추가는 코드 3곳 + 에디터 설정 2곳**이다. Build Settings 등록과 `.unity` 파일명(= enum 이름) 누락은 **컴파일 에러가 아니라 런타임 조용한 실패**로 나타난다.
 - **런타임 스크립트에서 `UnityEditor` 네임스페이스 금지.** asmdef가 없어 에디터에서는 통과하고 빌드에서만 터진다.
+- **창 제어 코드는 서브모듈에 있다.** 고치려면 `Assets/ThirdParty/Unity-WindowNativeCustom/` 안에서 **따로 커밋·푸시**하고,
+  본체에서 서브모듈 포인터를 커밋해야 한다. 본체만 커밋하면 변경이 남의 클론에 안 간다.
 - **플랫폼 조건부 블록(`#if UNITY_STANDALONE_WIN && !UNITY_EDITOR`)은 에디터가 검증하지 않는다.** 손댔으면 실제 Windows 빌드로 확인한다.
 - 세이브 경로가 `Application.dataPath` 기준이라 에디터에서 `Assets/SaveData/`에 파일이 생긴다.
 - **수정 작업 전 [advise/README.md](Meta/advise/README.md)를 확인한다.** 001 의 P0 와 002-8 은 해소됐고, 남은 항목은 [HandOff.md](.claude/HandOff.md)의 열린 항목 표에 있다.

@@ -148,7 +148,7 @@
 
 | 값 | 위치 | 문제 |
 |---|---|---|
-| `- 49` | `StaticManager/ResolutionManager.cs:9` | 작업 표시줄 높이 가정. **DPI 배율·작업 표시줄 위치(좌/우/상)·자동 숨김에서 전부 어긋난다.** `SystemParametersInfo(SPI_GETWORKAREA)`로 실제 작업 영역을 질의하는 것이 정답 |
+| `- 49` | `Assets/ThirdParty/Unity-WindowNativeCustom/Script/ResolutionManager.cs:9` | 작업 표시줄 높이 가정. **DPI 배율·작업 표시줄 위치(좌/우/상)·자동 숨김에서 전부 어긋난다.** `SystemParametersInfo(SPI_GETWORKAREA)`로 실제 작업 영역을 질의하는 것이 정답 |
 | `"Prefabs/GameProcess.prefab"` | `StaticManager/GameProcessManager.cs:17` | `GamePathDefine.asset`에 같은 값이 있으나 미사용 |
 | `"Prefabs/UILoading"` | `GameScene/LoadingScene.cs:43` | 상수화 대상 |
 | `"Table/testTable.csv"` | `GameScene/TestScene.cs:43` | 테스트 코드라 허용 가능 |

@@ -18,6 +18,7 @@
 
 | 영역 | 기록 | 한 줄 |
 |---|---|---|
+| window-control | [WindowNative 를 서브모듈로 분리](../WorkFlow/window-control/2026-09-15/작업내역_window-control_windownative-submodule.md) | `Unity-WindowNativeCustom` (private) 로 분리. 네임스페이스 `WindowNative`. 빌드·실행으로 P/Invoke 경로 재검증 |
 | editor-tooling | [에디터 툴바에 검증 동작과 치트 패널 스위치](../WorkFlow/editor-tooling/2026-09-15/작업내역_editor-tooling_main-toolbar-dev-actions.md) | `unity-toolbar-extender-ui-toolkit` 도입. Dev Build·Player.log·빌드 폴더·씬 전환·치트 패널 토글. 치트 자체는 빌드 창이 대상이라 런타임에 남겼다 |
 | cheat-panel | [런타임 PanelSettings 를 에셋으로 교체](../WorkFlow/cheat-panel/2026-09-15/작업내역_cheat-panel_panelsettings-icu-fix.md) | 6000.5.5f1 Windows 빌드 검증에서 나온 회귀. Advanced Text Generator 가 ICU 데이터를 요구하는데 런타임 생성 `PanelSettings` 에는 붙지 않아 UI Toolkit 레이아웃이 매 프레임 죽었다 |
 

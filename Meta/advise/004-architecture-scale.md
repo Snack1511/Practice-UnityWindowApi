@@ -87,7 +87,7 @@ public class ResourcesManager : MonoSingleton<ResourcesManager>   // ← Singlet
 | `Singleton<T>.instance` / `MonoSingleton<T>.instance` | `Pattern/Singleton.cs:17, 36` |
 | `GameProcessManager.updaters` / `ProcessObject` | `StaticManager/GameProcessManager.cs:13, 15` |
 | `EventBusLocater.locators` | `Pattern/EventBusLocater.cs:15` |
-| `WindowNativeManager.hWnd` / `IsTransparentClick` | `StaticManager/WindowNativeManager.cs:85, 134` |
+| `WindowNativeManager.hWnd` / `IsTransparentClick` | `Assets/ThirdParty/Unity-WindowNativeCustom/Script/WindowNativeManager.cs:85, 134` |
 | `LoadingScene.uiLoading` | `GameScene/LoadingScene.cs:21` |
 
 현재 프로젝트 설정: `m_EnterPlayModeOptionsEnabled: 1`, `m_EnterPlayModeOptions: 0` → **도메인 리로드가 켜져 있어** 플레이 진입마다 정적 상태가 초기화된다. 그래서 지금은 문제가 없다.
