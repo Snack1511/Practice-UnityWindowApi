@@ -12,6 +12,7 @@ Windows Native Window API + URP 투명 렌더링을 활용한 **데스크톱 오
 
 | 문서 | 내용 |
 |---|---|
+| [determines/](determines/README.md) | **기획 결정의 정본.** 컨셉 · 정책 · 시스템 · 콘텐츠 · 예외. 게임이 무엇이어야 하는가 |
 | [roadmap.md](roadmap.md) | **3계층 배치 규약(시스템·모듈·오브젝트)과 마일스톤.** 무엇을 어느 계층에 만들 것인가 |
 | [architecture.md](architecture.md) | 부트스트랩 순서, 매니저 3계층, 업데이트 펌프, 공용 패턴 |
 | [scene-and-content.md](scene-and-content.md) | `SceneBase` 라이프사이클, `SceneController` 전환 경로 4종, 콘텐츠 시스템 |
