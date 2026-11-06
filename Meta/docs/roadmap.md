@@ -127,7 +127,7 @@ grep -rn "Resources\.Load" Assets/Script
 - [ ] `ContentBase` 파생 3종이 빈 스텁이 아니다
 - [ ] 인벤토리 · 상점 시스템, 모듈 5종, 오브젝트 5종 구현
 
-**판정** — 핵심 루프 1회전 완주가 끊기지 않는다 (루프 정본 → [determines/00.Concept](determines/00.Concept/README.md)):
+**판정** — 핵심 루프 1회전 완주가 끊기지 않는다 (루프 정본 → `<PLANNING_DOCS>/00.Concept/README.md`):
 광산 채굴로 골드 획득 → 상점에서 유닛 · 함정 구매 → 던전 배치 → 침공 알림 · 대기 → 방어 → 마력 · 영혼 획득.
 별도로 마을 약탈 1회가 시뮬레이션 → 결과 화면 → 보상 → 그 마을 방어도 상승까지 이어진다.
 
@@ -192,7 +192,7 @@ grep -rn "Resources\.Load" Assets/Script
 | 6 | 이펙트 | — | — |
 
 **5단계가 압도적으로 크다.** 인벤토리 · 상점 시스템, 모듈 5종, 오브젝트 5종이 전부 여기 몰려 있다.
-선행 조건이던 §7 의 미정 항목은 2026-10-29 에 결정됐고, 2026-11-06 장르 확정으로 일부 갱신됐다 → [determines/](determines/README.md).
+선행 조건이던 §7 의 미정 항목은 2026-10-29 에 결정됐고, 2026-11-06 장르 확정으로 일부 갱신됐다 → `<PLANNING_DOCS>/README.md`.
 
 ---
 
@@ -208,7 +208,7 @@ grep -rn "Resources\.Load" Assets/Script
 | 인벤토리 | ❌ **없음** | 코드 0건. 던전·광산·마을이 모두 써서 모듈에서 승격됐다. **경제를 흡수한다** — 재화(골드·마력·영혼)는 아이템 타입이다. **목록형** — 종류별 개수만 쌓는다 (배낭 없음). `Resources/Prefabs/GoldHUD.prefab`만 있고 참조하는 코드가 없다 |
 | 상점 | ❌ **없음** | 코드 0건. 유닛·함정·기믹·관리 탭. 재화 소모처는 콘텐츠가 아니라 이 시스템이다 |
 
-**경제는 독립 시스템이 아니다.** 재화가 아이템이라 인벤토리가 다룬다. 재화 정의 · 구매 비용 구조 → [determines/02.System](determines/02.System/README.md).
+**경제는 독립 시스템이 아니다.** 재화가 아이템이라 인벤토리가 다룬다. 재화 정의 · 구매 비용 구조 → `<PLANNING_DOCS>/02.System/README.md`.
 
 **세이브는 별도 축이다.** `IOManager`가 있으나 경로가 `Application.dataPath` 기준이라 에디터에서 `Assets/SaveData/`에 파일이 생긴다. → [advise/003](../advise/003-data-layer.md)
 
@@ -228,7 +228,7 @@ grep -rn "Resources\.Load" Assets/Script
 인벤토리는 2026-10-29 에 시스템으로 승격돼 이 표에서 빠졌다 → §3.
 소모는 2026-11-06 에 소유가 마을에서 **상점 시스템**으로 바뀌었다. 약탈 시뮬레이션은 같은 날 추가됐다.
 
-> 모듈은 소유 컨트롤러가 먼저 있어야 붙는다. 소유 관계는 정해졌지만(→ [determines/03.Content](determines/03.Content/README.md))
+> 모듈은 소유 컨트롤러가 먼저 있어야 붙는다. 소유 관계는 정해졌지만(→ `<PLANNING_DOCS>/03.Content/README.md`)
 > `ContentBase` 파생 3종(`ContentDungeon` · `ContentVillage` · `ContentMine`)이 **아직 빈 스텁**이다.
 
 ---
@@ -243,7 +243,7 @@ grep -rn "Resources\.Load" Assets/Script
 | 배치물 | 방 기믹 | 던전 | ❌ 없음 |
 | 적 | 용사 파티 | 던전 | ❌ 없음 |
 
-전부 **런타임 생성**이다. 콘텐츠가 켜질 때 만들고 꺼질 때 파괴한다. 씬에 배치하지 않는다 (C-5 → [determines/01.Policy](determines/01.Policy/README.md)).
+전부 **런타임 생성**이다. 콘텐츠가 켜질 때 만들고 꺼질 때 파괴한다. 씬에 배치하지 않는다 (C-5 → `<PLANNING_DOCS>/01.Policy/README.md`).
 
 > ~~이동 캐릭터 · 전투단 · 스크롤링 배경 · 이벤트 오브젝트~~ (변경: 위 5종, 2026-11-06)
 > — 방치형 모험 전제의 목록이었다. 장르가 던전 디펜스로 확정되며 교체했다. 배낭 격자 · 슬롯 · 아이템은 배낭 폐기로 없어졌다.
@@ -282,17 +282,17 @@ grep -rn "Resources\.Load" Assets/Script
 
 ## 7. ~~미정 — 정해야 진행되는 것~~ ✅ 전부 결정 (2026-10-29)
 
-5단계 착수 전 선행 조건이던 5건이 결정됐다. **내용의 정본은 [determines/](determines/README.md)** 이고 여기엔 결과만 둔다.
+5단계 착수 전 선행 조건이던 5건이 결정됐다. **내용의 정본은 `<PLANNING_DOCS>/README.md`** 이고 여기엔 결과만 둔다.
 
 | 항목 | 결정 | 정본 |
 |---|---|---|
 | 항목 | 결정 | 정본 |
 |---|---|---|
-| 컨텐츠 3종의 역할 | ~~던전·광산 = 획득, 마을 = 소비~~ → 던전 = 방어, 광산 = 노동자 채굴, 마을 = 약탈 대상 · 시험장 (2026-11-06) | [03.Content](determines/03.Content/README.md) |
-| 배낭이 UI인가 오브젝트인가 | ~~UI~~ → **배낭 폐기**. 격자는 던전 배치에 쓴다 (2026-11-06) | [02.System](determines/02.System/README.md) |
-| RNG 재현성 정책 | 콘텐츠별 RNG 상태를 세이브에 저장. 대상 = 던전 · 광산 · 마을 | [01.Policy](determines/01.Policy/README.md) |
-| 경제 자원 정의 | 재화는 아이템의 한 타입. 골드 · 마력 · 영혼. 인벤토리는 목록형 | [02.System](determines/02.System/README.md) |
-| 오브젝트 배치 방식 | 런타임 생성 | [01.Policy](determines/01.Policy/README.md) |
+| 컨텐츠 3종의 역할 | ~~던전·광산 = 획득, 마을 = 소비~~ → 던전 = 방어, 광산 = 노동자 채굴, 마을 = 약탈 대상 · 시험장 (2026-11-06) | `<PLANNING_DOCS>/03.Content/README.md` |
+| 배낭이 UI인가 오브젝트인가 | ~~UI~~ → **배낭 폐기**. 격자는 던전 배치에 쓴다 (2026-11-06) | `<PLANNING_DOCS>/02.System/README.md` |
+| RNG 재현성 정책 | 콘텐츠별 RNG 상태를 세이브에 저장. 대상 = 던전 · 광산 · 마을 | `<PLANNING_DOCS>/01.Policy/README.md` |
+| 경제 자원 정의 | 재화는 아이템의 한 타입. 골드 · 마력 · 영혼. 인벤토리는 목록형 | `<PLANNING_DOCS>/02.System/README.md` |
+| 오브젝트 배치 방식 | 런타임 생성 | `<PLANNING_DOCS>/01.Policy/README.md` |
 
 **위 §3~§5 표에 반영한 것:**
 

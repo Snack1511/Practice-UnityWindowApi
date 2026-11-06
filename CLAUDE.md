@@ -47,7 +47,7 @@ Unity 6 (`6000.5.5f1`) + URP 데스크톱 오버레이 게임 프레임워크 �
 | 문서 | 언제 보나 |
 |---|---|
 | [docs/README.md](Meta/docs/README.md) | 폴더 맵, 부트 시퀀스, "어디를 봐야 하나" 표 |
-| [docs/determines/](Meta/docs/determines/README.md) | **기획 결정의 정본.** 게임이 무엇이어야 하는가. 콘텐츠·시스템 구현 전 필수 |
+| `<PLANNING_DOCS>/README.md` | **기획 결정의 정본. 저장소 밖 Obsidian 볼트에 있다.** 경로는 `CLAUDE.local.md`. 게임이 무엇이어야 하는가. 콘텐츠·시스템 구현 전 필수. **기획을 참조·기록할 때는 여기만 본다** |
 | [docs/roadmap.md](Meta/docs/roadmap.md) | **무엇을 어떤 순서로 어느 계층에 만드나.** 단계 마일스톤과 닫힘 기준 |
 | [docs/architecture.md](Meta/docs/architecture.md) | 초기화 순서, 매니저 3계층, 업데이트 펌프, 공용 패턴 |
 | [docs/scene-and-content.md](Meta/docs/scene-and-content.md) | 씬 추가·전환, `SceneBase` 라이프사이클, 콘텐츠 시스템 |
