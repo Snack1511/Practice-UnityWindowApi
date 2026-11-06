@@ -1,6 +1,6 @@
 # Practice-UnityWindowApi — 코드 위키
 
-Windows Native Window API + URP 투명 렌더링을 활용한 **데스크톱 오버레이형 게임 프레임워크 연습 프로젝트**.
+Windows Native Window API + URP 투명 렌더링을 활용한 **데스크톱 오버레이형 게임 데스크탑 던전(ProjectDD)**. 상용화를 고려한다 (연습 프로젝트 아님).
 게임 콘텐츠보다 **부트스트랩 / 씬 전환 / 리소스·테이블·세이브 파이프라인** 골격 설계가 주된 목적.
 
 - Unity `6000.5.5f1` (Unity 6), URP `17.5.0`, 에셋 직렬화 = Force Text

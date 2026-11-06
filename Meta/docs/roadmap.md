@@ -205,10 +205,10 @@ grep -rn "Resources\.Load" Assets/Script
 | 로드 | ⚠️ **부분** | `ResourcesManager`(캐시) · `Loader<T>`(1회용) · `TableManager`(CSV). 확장자 처리 결함, `Resources` 의존 → [advise/003](../advise/003-data-layer.md) |
 | UI | ⚠️ **뼈대만** | `UIManager` · `UIRoot`. 레이어 4개(Window/Popup/CanvasEffect/Overlay) + EventSystem. **Window 외 3개는 비어 있다**. 상점 UI(탭 4개) · 침공 알림 · 약탈 결과 화면이 여기 올라간다 |
 | 이펙트 | ❌ **없음** | `UIRoot`의 `CanvasEffect` 레이어만 자리를 잡아둔 상태 |
-| 인벤토리 | ❌ **없음** | 코드 0건. 던전·광산·마을이 모두 써서 모듈에서 승격됐다. **경제를 흡수한다** — 재화(골드·마력·영혼)는 아이템 타입이다. **목록형** — 종류별 개수만 쌓는다 (배낭 없음). `Resources/Prefabs/GoldHUD.prefab`만 있고 참조하는 코드가 없다 |
+| 인벤토리 | ❌ **없음** | 코드 0건. 던전·광산·마을이 모두 써서 모듈에서 승격됐다. **보유 유닛 · 함정만 담는다** (2026-11-06) — 재화(골드·마력·영혼)와 마력 아이템은 인벤토리가 아니다. 담는 곳의 계층은 미확정. `Resources/Prefabs/GoldHUD.prefab`만 있고 참조하는 코드가 없다 |
 | 상점 | ❌ **없음** | 코드 0건. 유닛·함정·기믹·관리 탭. 재화 소모처는 콘텐츠가 아니라 이 시스템이다 |
 
-**경제는 독립 시스템이 아니다.** 재화가 아이템이라 인벤토리가 다룬다. 재화 정의 · 구매 비용 구조 → `<PLANNING_DOCS>/02.System/README.md`.
+~~**경제는 독립 시스템이 아니다.** 재화가 아이템이라 인벤토리가 다룬다~~ (변경: 인벤토리는 유닛 · 함정만, 2026-11-06). 재화 보관을 별도 시스템으로 둘지 미확정. 재화 정의 · 구매 비용 구조 → `<PLANNING_DOCS>/02.System/README.md`.
 
 **세이브는 별도 축이다.** `IOManager`가 있으나 경로가 `Application.dataPath` 기준이라 에디터에서 `Assets/SaveData/`에 파일이 생긴다. → [advise/003](../advise/003-data-layer.md)
 
@@ -237,7 +237,7 @@ grep -rn "Resources\.Load" Assets/Script
 
 | 분류 | 오브젝트 | 쓰는 곳 | 현황 |
 |---|---|---|---|
-| 배치 | 던전 배치 격자 | 던전 | ❌ 없음 — UI 로 그릴지 월드로 그릴지 미확정 |
+| 배치 | 던전 배치 격자 | 던전 | ❌ 없음 — 층 → 방 → 격자 칸. 유닛 · 함정 소 · 중 · 대 크기. UI 로 그릴지 월드로 그릴지 미확정 |
 | 아군 | 유닛 | 던전 · 광산(`노동자`) · 마을 약탈 부대 | ❌ 없음 |
 | 배치물 | 함정 | 던전 | ❌ 없음 |
 | 배치물 | 방 기믹 | 던전 | ❌ 없음 |
@@ -291,7 +291,7 @@ grep -rn "Resources\.Load" Assets/Script
 | 컨텐츠 3종의 역할 | ~~던전·광산 = 획득, 마을 = 소비~~ → 던전 = 방어, 광산 = 노동자 채굴, 마을 = 약탈 대상 · 시험장 (2026-11-06) | `<PLANNING_DOCS>/03.Content/README.md` |
 | 배낭이 UI인가 오브젝트인가 | ~~UI~~ → **배낭 폐기**. 격자는 던전 배치에 쓴다 (2026-11-06) | `<PLANNING_DOCS>/02.System/README.md` |
 | RNG 재현성 정책 | 콘텐츠별 RNG 상태를 세이브에 저장. 대상 = 던전 · 광산 · 마을 | `<PLANNING_DOCS>/01.Policy/README.md` |
-| 경제 자원 정의 | 재화는 아이템의 한 타입. 골드 · 마력 · 영혼. 인벤토리는 목록형 | `<PLANNING_DOCS>/02.System/README.md` |
+| 경제 자원 정의 | 재화는 아이템의 한 타입. 골드 · 마력 · 영혼. ~~인벤토리는 목록형~~ → 인벤토리 = 보유 유닛 · 함정 (2026-11-06) | `<PLANNING_DOCS>/02.System/README.md` |
 | 오브젝트 배치 방식 | 런타임 생성 | `<PLANNING_DOCS>/01.Policy/README.md` |
 
 **위 §3~§5 표에 반영한 것:**
