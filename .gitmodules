@@ -4,3 +4,6 @@
 [submodule "Assets/ThirdParty/Unity-WindowNativeCustom"]
 	path = Assets/ThirdParty/Unity-WindowNativeCustom
 	url = https://github.com/Snack1511/Unity-WindowNativeCustom.git
+[submodule "Assets/ThirdParty/Unity-EditorToolModel"]
+	path = Assets/ThirdParty/Unity-EditorToolModel
+	url = https://github.com/Snack1511/Unity-EditorToolModel.git

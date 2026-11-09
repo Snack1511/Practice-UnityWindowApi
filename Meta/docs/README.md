@@ -6,6 +6,7 @@ Windows Native Window API + URP 투명 렌더링을 활용한 **데스크톱 오
 - Unity `6000.5.5f1` (Unity 6), URP `17.5.0`, 에셋 직렬화 = Force Text
 - 비동기: `UniTask` (Cysharp, git URL 패키지)
 - 서브모듈: `Assets/ThirdParty/UnityFramework-Extension` ([repo](https://github.com/Snack1511/UnityFramework-Extension.git))
+- 서브모듈: `Assets/ThirdParty/Unity-EditorToolModel` ([repo](https://github.com/Snack1511/Unity-EditorToolModel.git)) — 에디터 툴 공용 구조 + SO Browser. 에디터 전용
 - 어셈블리 정의(asmdef) 없음 → 전부 `Assembly-CSharp`에 컴파일됨
 
 ## 문서 인덱스

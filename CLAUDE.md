@@ -1,12 +1,13 @@
 # CLAUDE.md
 
 Unity 6 (`6000.5.5f1`) + URP 데스크톱 오버레이 게임 **데스크탑 던전(ProjectDD)**. 상용화를 고려한다 (연습 프로젝트 아님).
-프로젝트 코드는 **`Assets/Script/` 하위 41개 파일**과 **서브모듈 2개**가 전부다. 나머지는 서드파티 에셋/플러그인.
+프로젝트 코드는 **`Assets/Script/` 하위 41개 파일**과 **서브모듈 3개**가 전부다. 나머지는 서드파티 에셋/플러그인.
 
 | 서브모듈 | 내용 |
 |---|---|
 | `Assets/ThirdParty/Unity-WindowNativeCustom` | Win32 창 제어 (`WindowNativeManager` 하나). 네임스페이스 `WindowNative` |
 | `Assets/ThirdParty/UnityFramework-Extension` | 확장 메서드 (`Framework.Extension.*`) |
+| `Assets/ThirdParty/Unity-EditorToolModel` | 에디터 툴 공용 구조(ToolModel/Manager/Helper) + `Tools/SO Browser`. 네임스페이스 `EditorToolModel`. 전부 `Editor/` 라 빌드 미포함 |
 
 **클론 직후에는 서브모듈이 비어 있다.** `git submodule update --init --recursive` 를 먼저 돌린다 —
 안 돌리면 `WindowNativeManager` 를 못 찾아 컴파일이 통째로 깨진다.
